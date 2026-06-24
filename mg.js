@@ -104,89 +104,98 @@
   /* =========================================================================
      §2 — CONTACT REBUILD (route-gated: /contactus)
      Keep native LF form inputs (backend works); overlay brand design.
+     DOM (live-inspected 2026-06-24):
+       h1._11._10.pSyxI  — "Contact us" title
+       section._5.Rgl6R  — wraps the form section
+       div._14.pSyxI     — form fields area (h≈461)
+       button._47.pSyxI.HLZ5F — SEND button
      ========================================================================= */
   if (/^\/contactus\/?$/.test(path)) {
-    waitFor("input[name='first_name'],input[name='email']", function () {
+    waitFor("input[name='first_name']", function () {
 
       css(
-        /* Page chrome: hide LF generic title/subtitle block */
-        "[class*='_1'] h1,[class*='_1'] p:first-of-type{display:none!important;}" +
+        /* Replace LF title with brand heading */
+        "h1._11{display:none!important;}" +
 
-        /* Brand page wrapper */
-        ".mgc-pg{max-width:1100px;margin:0 auto;padding:80px 40px;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;}" +
-        ".mgc-kicker{font-size:9px;font-weight:600;letter-spacing:.2em;color:#0d0d0d;text-transform:uppercase;margin-bottom:32px;}" +
+        /* Brand page layout: form left, info card right */
+        ".mgc-wrap{max-width:1100px;margin:0 auto;padding:80px 40px;display:grid;" +
+          "grid-template-columns:3fr 2fr;gap:72px;align-items:start;}" +
+        ".mgc-form-col{}" +
+        ".mgc-heading{font-size:9px;font-weight:600;letter-spacing:.2em;color:#0d0d0d;" +
+          "text-transform:uppercase;margin-bottom:40px;}" +
 
-        /* Restyle LF inputs */
+        /* LF subtitle hide */
+        "[class*='_13'][class*='pSyxI']{display:none!important;}" +
+
+        /* Restyle LF inputs — border-bottom only */
         "input[name='first_name'],input[name='last_name'],input[name='email']," +
         "input[name='subject'],textarea[name='message']{" +
-          "display:block!important;width:100%!important;box-sizing:border-box!important;" +
-          "border:none!important;border-bottom:1px solid #e6e4e0!important;border-radius:0!important;" +
-          "padding:14px 0!important;font-size:13px!important;letter-spacing:.04em!important;" +
-          "font-family:'Montserrat',sans-serif!important;background:transparent!important;" +
-          "outline:none!important;margin-bottom:24px!important;color:#0d0d0d!important;" +
+          "border:none!important;border-bottom:1px solid #e6e4e0!important;" +
+          "border-radius:0!important;padding:14px 0!important;font-size:13px!important;" +
+          "letter-spacing:.04em!important;font-family:'Montserrat',sans-serif!important;" +
+          "background:transparent!important;outline:none!important;color:#0d0d0d!important;" +
         "}" +
         "textarea[name='message']{min-height:120px!important;resize:vertical!important;}" +
-        /* Hide icon wrappers inside LF field rows */
-        "[class*='Qsx7X'] svg,[class*='Qsx7X'] .iconoir{display:none!important;}" +
-        /* Hide Last Name and Subject (SPEC asks for NAME/EMAIL/PHONE/MESSAGE) */
-        "[for*='last_name'],[id*='last_name'],[name='last_name']," +
-        "[for*='subject'],[id*='subject'],[name='subject']{display:none!important;}" +
-        /* Parent wrappers of hidden fields */
-        "[class*='_27'],[class*='_39']{display:none!important;}" +
+        /* Hide field icons */
+        "[class*='Qsx7X'] svg,[class*='Qsx7X'] path{display:none!important;}" +
 
-        /* SEND button restyle */
-        "[class*='_47']{" +
-          "background:#0d0d0d!important;color:#fff!important;border:none!important;" +
+        /* SEND button */
+        "button._47{background:#0d0d0d!important;color:#fff!important;border:none!important;" +
           "width:100%!important;padding:16px!important;font-size:11px!important;" +
           "letter-spacing:.18em!important;font-family:'Montserrat',sans-serif!important;" +
-          "cursor:pointer!important;transition:opacity .2s!important;" +
-        "}" +
-        "[class*='_47']:hover{opacity:.7!important;}" +
+          "cursor:pointer!important;border-radius:0!important;}" +
+        "button._47:hover{opacity:.75!important;}" +
 
         /* Contact info card */
-        ".mgc-card{background:#0d0d0d;padding:48px 40px;}" +
-        ".mgc-card-h{font-size:9px;font-weight:600;letter-spacing:.2em;color:#555;text-transform:uppercase;margin-bottom:28px;}" +
-        ".mgc-row{font-size:13px;color:#aaa;margin-bottom:14px;letter-spacing:.02em;}" +
-        ".mgc-row a{color:#aaa;text-decoration:none;}" +
-        ".mgc-row a:hover{color:#fff;}" +
-        ".mgc-hours{font-size:12px;color:#555;margin-top:24px;letter-spacing:.04em;}" +
+        ".mgc-card{background:#0d0d0d;padding:48px 40px;margin-top:49px;}" +
+        ".mgc-card-h{font-size:9px;font-weight:600;letter-spacing:.2em;color:#555;" +
+          "text-transform:uppercase;margin-bottom:28px;}" +
+        ".mgc-info{font-size:13px;color:#aaa;margin-bottom:14px;letter-spacing:.02em;}" +
+        ".mgc-info a{color:#aaa;text-decoration:none;}" +
+        ".mgc-info a:hover{color:#fff;}" +
+        ".mgc-hrs{font-size:12px;color:#555;margin-top:24px;letter-spacing:.04em;}" +
 
-        "@media(max-width:768px){" +
-          ".mgc-pg{grid-template-columns:1fr;gap:48px;padding:48px 24px;}" +
-        "}"
+        "@media(max-width:768px){.mgc-wrap{grid-template-columns:1fr;gap:48px;padding:48px 24px;}}"
       );
 
-      /* Find the section containing the form */
-      var sec = document.querySelector("[class*='pSyxI']:not(.mgh-nav):not(.mgh-cart):not(.mgh-burger):not(.mgh-dc)");
-      if (!sec) return;
+      if (document.querySelector(".mgc-wrap")) return; /* idempotent */
 
-      /* Inject CONTACT kicker above the form */
-      if (!document.querySelector(".mgc-kicker")) {
-        var kicker = document.createElement("div");
-        kicker.className = "mgc-kicker";
-        kicker.textContent = "CONTACT";
-        sec.insertBefore(kicker, sec.firstChild);
+      /* The section wrapping form (._5.Rgl6R) */
+      var formSection = document.querySelector("section._5");
+      if (!formSection) {
+        /* fallback: the section containing first_name */
+        var inp = document.querySelector("input[name='first_name']");
+        formSection = inp ? inp.closest("section") : null;
       }
+      if (!formSection) return;
 
-      /* Build contact info card */
+      /* Insert CONTACT heading at top of form section */
+      var heading = document.createElement("div");
+      heading.className = "mgc-heading";
+      heading.textContent = "CONTACT";
+      formSection.insertBefore(heading, formSection.firstChild);
+
+      /* Build GET IN TOUCH card */
       var card = document.createElement("div");
       card.className = "mgc-card";
       card.innerHTML =
         '<div class="mgc-card-h">GET IN TOUCH</div>' +
-        '<div class="mgc-row"><a href="mailto:info@mermaidsglance.com">INFO@MERMAIDSGLANCE.COM</a></div>' +
-        '<div class="mgc-row"><a href="tel:+13025202387">+1 302 520 2387</a></div>' +
-        '<div class="mgc-hours">MON–FRI, 10AM–9PM</div>';
+        '<div class="mgc-info"><a href="mailto:info@mermaidsglance.com">INFO@MERMAIDSGLANCE.COM</a></div>' +
+        '<div class="mgc-info"><a href="tel:+13025202387">+1 302 520 2387</a></div>' +
+        '<div class="mgc-hrs">MON–FRI, 10AM–9PM</div>';
 
-      /* Wrap form col + info card in a grid */
-      if (!document.querySelector(".mgc-pg")) {
-        var pg = document.createElement("div");
-        pg.className = "mgc-pg";
-        sec.parentNode.insertBefore(pg, sec);
-        pg.appendChild(sec);
-        var infoCol = document.createElement("div");
-        infoCol.appendChild(card);
-        pg.appendChild(infoCol);
-      }
+      /* Wrap in 2-col grid */
+      var wrap = document.createElement("div");
+      wrap.className = "mgc-wrap";
+      var formCol = document.createElement("div");
+      formCol.className = "mgc-form-col";
+      var infoCol = document.createElement("div");
+      infoCol.appendChild(card);
+
+      formSection.parentNode.insertBefore(wrap, formSection);
+      formCol.appendChild(formSection);
+      wrap.appendChild(formCol);
+      wrap.appendChild(infoCol);
     });
   }
 
