@@ -1,0 +1,253 @@
+/* =============================================================================
+   Mermaid's Glance — i18n engine  (EN base · TR · DE · FR)
+   -----------------------------------------------------------------------------
+   LightFunnels has NO native multi-language (verified: funnel node has no
+   locale/language/translations field). So we translate entirely client-side.
+
+   Loaded by the inline loader stub BEFORE mg.js, on every page. A single
+   persistent DOM-dictionary MutationObserver translates ALL chrome — the inline
+   header_scripts nav/cart/size-guide/checkout output AND mg.js's footer / contact
+   / about output — with zero changes to that (fragile) rebuild code, because we
+   translate post-render by exact text-node match. Product title + description are
+   handled by a separate route-gated layer on the PDP.
+
+   See I18N-SPEC.md. Phase 1 = engine + short UI dictionary (below).
+   Long-form content (manifesto, FAQ Q&A) → i18n-content.<lang>.json (Phase 2).
+   Product copy → products.<lang>.json (Phase 3, PDP only).
+
+   Hosting: jsDelivr, same repo/tag as mg.js. Bump the tag to bust CDN cache.
+   ============================================================================= */
+(function () {
+  if (window.__mgI18n) return;
+  window.__mgI18n = true;
+
+  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v13";
+
+  /* ---- language detection ------------------------------------------------- */
+  var SUPPORTED = { tr: 1, de: 1, fr: 1, en: 1 };
+  function pickLang() {
+    try {
+      var saved = localStorage.getItem("mgLang");
+      if (saved && SUPPORTED[saved]) return saved;
+    } catch (e) {}
+    var nav = (navigator.language || navigator.userLanguage || "en")
+      .slice(0, 2).toLowerCase();
+    return SUPPORTED[nav] ? nav : "en";
+  }
+  var LANG = pickLang();
+  window.MG_LANG = LANG;
+  document.documentElement.setAttribute("lang", LANG);
+
+  /* ---- short UI dictionary (Phase 1) -------------------------------------
+     Keyed by the EXACT English text as rendered. Brand proper names
+     (MERMAID'S GLANCE, THE AXELLE/NOCTURNE/… collection names) are deliberately
+     absent → never translated. Drafts below: TR is production-grade; DE/FR are
+     solid drafts flagged for Selin's brand-voice polish (// SELIN).            */
+  var DICT = {
+    /* nav — structural + category labels */
+    "HOME":                 { tr: "ANA SAYFA",          de: "STARTSEITE",        fr: "ACCUEIL" },
+    "NEW ARRIVALS":         { tr: "YENİ GELENLER",       de: "NEUHEITEN",         fr: "NOUVEAUTÉS" },
+    "THE COLLECTIONS":      { tr: "KOLEKSİYONLAR",       de: "DIE KOLLEKTIONEN",  fr: "LES COLLECTIONS" },
+    "ALL PIECES":           { tr: "TÜM PARÇALAR",        de: "ALLE TEILE",        fr: "TOUTES LES PIÈCES" },
+    "CLIENT SERVICES":      { tr: "MÜŞTERİ HİZMETLERİ",  de: "KUNDENSERVICE",     fr: "SERVICE CLIENT" },
+    "LINGERIE":             { tr: "İÇ GİYİM",            de: "DESSOUS",           fr: "LINGERIE" },
+    "BODYSUIT":             { tr: "BODY",                de: "BODY",              fr: "BODY" },
+    "CHEMISE & NIGHTDRESS": { tr: "KOMBİNEZON & GECELİK",de: "CHEMISE & NACHTKLEID", fr: "NUISETTE & CHEMISE DE NUIT" }, // SELIN
+    "ROBE & KIMONO":        { tr: "ROB & KİMONO",        de: "MORGENMANTEL & KIMONO", fr: "PEIGNOIR & KIMONO" },
+    "CAMI & PAJAMA SET":    { tr: "ATLET & PİJAMA TAKIMI", de: "CAMI & PYJAMA-SET", fr: "CARACO & PYJAMA" }, // SELIN
+    "BODYSTOCKING":         { tr: "VÜCUT ÇORABI",        de: "BODYSTOCKING",      fr: "COMBINAISON RÉSILLE" },
+    "HARNESS & ACCESSORY":  { tr: "HARNESS & AKSESUAR",  de: "HARNESS & ACCESSOIRE", fr: "HARNAIS & ACCESSOIRE" },
+    "CONTACT":              { tr: "İLETİŞİM",            de: "KONTAKT",           fr: "CONTACT" },
+    "TRACK YOUR ORDER":     { tr: "SİPARİŞ TAKİBİ",      de: "SENDUNG VERFOLGEN", fr: "SUIVRE MA COMMANDE" },
+    "FAQ":                  { tr: "SSS",                 de: "FAQ",               fr: "FAQ" },
+    "ABOUT US":             { tr: "HAKKIMIZDA",          de: "ÜBER UNS",          fr: "À PROPOS" },
+
+    /* cart drawer */
+    "YOUR BAG":             { tr: "SEPETİNİZ",           de: "IHRE TASCHE",       fr: "VOTRE PANIER" },
+    "SUBTOTAL":             { tr: "ARA TOPLAM",          de: "ZWISCHENSUMME",     fr: "SOUS-TOTAL" },
+    "COMPLETE ORDER":       { tr: "SİPARİŞİ TAMAMLA",    de: "BESTELLUNG ABSCHLIESSEN", fr: "FINALISER LA COMMANDE" },
+    "ADD TO BAG":           { tr: "SEPETE EKLE",         de: "IN DIE TASCHE",     fr: "AJOUTER AU PANIER" },
+    "SIZE GUIDE":           { tr: "BEDEN REHBERİ",       de: "GRÖSSENTABELLE",    fr: "GUIDE DES TAILLES" },
+    "SIZE":                 { tr: "BEDEN",               de: "GRÖSSE",            fr: "TAILLE" },
+    "COLOR":                { tr: "RENK",                de: "FARBE",             fr: "COULEUR" },
+    "Remove":               { tr: "Kaldır",              de: "Entfernen",         fr: "Retirer" },
+
+    /* footer headings + links */
+    "THE COMPANY":          { tr: "ŞİRKET",              de: "DAS UNTERNEHMEN",   fr: "L'ENTREPRISE" },
+    "LEGAL":                { tr: "YASAL",               de: "RECHTLICHES",       fr: "MENTIONS LÉGALES" },
+    "INFORMATION":          { tr: "BİLGİ",               de: "INFORMATIONEN",     fr: "INFORMATIONS" },
+    "Privacy Policy":       { tr: "Gizlilik Politikası", de: "Datenschutz",       fr: "Politique de confidentialité" },
+    "Refund Policy":        { tr: "İade Politikası",     de: "Rückgaberecht",     fr: "Politique de remboursement" },
+    "Shipping Policy":      { tr: "Kargo Politikası",    de: "Versandrichtlinie", fr: "Politique d'expédition" },
+    "Terms of Service":     { tr: "Kullanım Koşulları",  de: "AGB",               fr: "Conditions d'utilisation" },
+    "About Us":             { tr: "Hakkımızda",          de: "Über uns",          fr: "À propos" },
+    "Size Guide":           { tr: "Beden Rehberi",       de: "Größentabelle",     fr: "Guide des tailles" },
+    "Ultra-luxury lingerie.": { tr: "Ultra-lüks iç giyim.", de: "Ultra-luxuriöse Dessous.", fr: "Lingerie ultra-luxe." },
+    "Crafted for women who choose to feel extraordinary.": {
+      tr: "Olağanüstü hissetmeyi seçen kadınlar için tasarlandı.",
+      de: "Gefertigt für Frauen, die sich außergewöhnlich fühlen wollen.", // SELIN
+      fr: "Conçue pour les femmes qui choisissent de se sentir extraordinaires." }, // SELIN
+
+    /* contact page */
+    "GET IN TOUCH":         { tr: "BİZE ULAŞIN",         de: "KONTAKT AUFNEHMEN", fr: "NOUS CONTACTER" },
+    "SEND MESSAGE":         { tr: "MESAJ GÖNDER",        de: "NACHRICHT SENDEN",  fr: "ENVOYER LE MESSAGE" },
+    "FREQUENTLY ASKED QUESTIONS": { tr: "SIKÇA SORULAN SORULAR", de: "HÄUFIG GESTELLTE FRAGEN", fr: "QUESTIONS FRÉQUENTES" },
+    "MON–FRI, 10AM–9PM":    { tr: "PZT–CUM, 10:00–21:00", de: "MO–FR, 10–21 UHR", fr: "LUN–VEN, 10H–21H" },
+
+    /* about page title (manifesto body → Phase 2 JSON) */
+    "The Power of Grace: That Moment": {
+      tr: "Zarafetin Gücü: O An",
+      de: "Die Kraft der Anmut: Jener Moment", // SELIN
+      fr: "Le Pouvoir de la Grâce : Cet Instant" } // SELIN
+  };
+
+  /* Regex rules for dynamic strings (e.g. "3 ITEMS"). Each: [pattern, {lang:tpl}]. */
+  var RULES = [
+    [/^(\d+)\s+ITEMS?$/, { tr: "$1 ÜRÜN", de: "$1 ARTIKEL", fr: "$1 ARTICLE$2" }]
+  ];
+
+  /* Placeholder/attribute dictionary (form inputs render text via placeholder). */
+  var ATTR = {
+    "First name": { tr: "Ad",       de: "Vorname",  fr: "Prénom" },
+    "Last name":  { tr: "Soyad",    de: "Nachname", fr: "Nom" },
+    "Email":      { tr: "E-posta",  de: "E-Mail",   fr: "E-mail" },
+    "Subject":    { tr: "Konu",     de: "Betreff",  fr: "Sujet" },
+    "Message":    { tr: "Mesaj",    de: "Nachricht",fr: "Message" }
+  };
+
+  /* External content packs (Phase 2/3) merged into DICT once fetched. */
+  function loadPack(name) {
+    fetch(CDN + "/" + name)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j) return;
+        for (var k in j) if (j.hasOwnProperty(k)) DICT[k] = j[k];
+        translateAll(); /* re-run with the enriched dictionary */
+      })
+      .catch(function () {});
+  }
+
+  /* ---- translation core --------------------------------------------------- */
+  function lookup(raw) {
+    if (LANG === "en") return null;
+    var key = raw.trim();
+    if (!key) return null;
+    var hit = DICT[key];
+    if (hit && hit[LANG]) return raw.replace(key, hit[LANG]); /* keep surrounding ws */
+    for (var i = 0; i < RULES.length; i++) {
+      var m = key.match(RULES[i][0]);
+      if (m) {
+        var tpl = RULES[i][1][LANG];
+        if (!tpl) continue;
+        var plural = /ITEMS$/.test(key) && LANG === "fr" ? "S" : "";
+        return raw.replace(key, tpl.replace("$1", m[1]).replace("$2", plural));
+      }
+    }
+    return null;
+  }
+
+  var SKIP = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1, OPTION: 1 };
+  function translateNode(node) {
+    var p = node.parentNode;
+    if (!p || SKIP[p.nodeName]) return;
+    var out = lookup(node.nodeValue);
+    if (out != null && out !== node.nodeValue) node.nodeValue = out;
+  }
+  function translateAttrs(root) {
+    if (LANG === "en") return;
+    var inputs = (root.querySelectorAll ? root : document).querySelectorAll("input[placeholder],textarea[placeholder]");
+    for (var i = 0; i < inputs.length; i++) {
+      var ph = inputs[i].getAttribute("placeholder");
+      var t = ph && ATTR[ph.trim()];
+      if (t && t[LANG]) inputs[i].setAttribute("placeholder", t[LANG]);
+    }
+  }
+  function walk(root) {
+    if (LANG === "en") return;
+    if (root.nodeType === 3) { translateNode(root); return; }
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false), n;
+    while ((n = w.nextNode())) translateNode(n);
+    translateAttrs(root);
+  }
+  function translateAll() { walk(document.body || document.documentElement); }
+
+  /* Persistent observer: the LF SPA re-renders chrome on navigation, and mg.js
+     injects footer/contact/about after first paint — a one-shot pass loses that
+     race. Idempotent by construction: translated text no longer matches an EN
+     key, so re-running is a no-op (no observer feedback loop). Debounced. */
+  var _t;
+  function schedule() { clearTimeout(_t); _t = setTimeout(translateAll, 120); }
+  function startObserver() {
+    new MutationObserver(schedule).observe(document.documentElement, {
+      childList: true, subtree: true, characterData: true
+    });
+    translateAll();
+  }
+
+  /* ---- product layer (PDP) — Phase 3 stub --------------------------------
+     window.data.product carries title + descriptionHtml (LF renders from it).
+     We swap from products.<lang>.json keyed by handle, BEFORE/after LF renders.  */
+  function translateProduct() {
+    if (LANG === "en") return;
+    if (!/^\/products\//.test(location.pathname)) return;
+    fetch(CDN + "/i18n/products." + LANG + ".json")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (map) {
+        if (!map) return;
+        function apply() {
+          try {
+            var pr = window.data && window.data.product;
+            if (!pr) return false;
+            var t = map[pr.handle];
+            if (!t) return true; /* known-absent; stop polling */
+            if (t.title) pr.title = t.title;
+            if (t.descriptionHtml) pr.descriptionHtml = t.descriptionHtml;
+            return true;
+          } catch (e) { return false; }
+        }
+        if (apply()) return;
+        var tries = 0, iv = setInterval(function () {
+          if (apply() || ++tries > 40) clearInterval(iv);
+        }, 100);
+      })
+      .catch(function () {});
+  }
+
+  /* ---- FOUC soft-gate ----------------------------------------------------
+     Only when not English. Hide body briefly so the first EN→target swap isn't
+     visible, with a hard failsafe so a JS error never leaves the page blank.    */
+  function gate() {
+    if (LANG === "en") return function () {};
+    var s = document.createElement("style");
+    s.id = "mg-i18n-gate";
+    s.textContent = "body{visibility:hidden!important}";
+    (document.head || document.documentElement).appendChild(s);
+    var done = false;
+    function reveal() { if (done) return; done = true; var g = document.getElementById("mg-i18n-gate"); if (g) g.remove(); }
+    setTimeout(reveal, 900); /* failsafe */
+    return reveal;
+  }
+
+  /* ---- public API (switcher hook for Phase 4) ----------------------------- */
+  window.MG_I18N = {
+    lang: LANG,
+    supported: ["en", "tr", "de", "fr"],
+    set: function (l) {
+      if (!SUPPORTED[l]) return;
+      try { localStorage.setItem("mgLang", l); } catch (e) {}
+      location.reload(); /* simplest robust re-render in the target language */
+    },
+    t: function (key) { var h = DICT[key]; return (h && h[LANG]) || key; }
+  };
+
+  /* ---- boot --------------------------------------------------------------- */
+  var reveal = gate();
+  function boot() {
+    startObserver();
+    translateProduct();
+    loadPack("i18n/content." + LANG + ".json"); /* Phase 2 long-form (404 ok for now) */
+    setTimeout(reveal, 150); /* reveal shortly after first pass */
+  }
+  if (document.body) boot();
+  else document.addEventListener("DOMContentLoaded", boot);
+})();
