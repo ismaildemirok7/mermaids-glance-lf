@@ -17,7 +17,7 @@
   if (window.__mgExt) return;
   window.__mgExt = true;
 
-  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v15";
+  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v16";
   var path = location.pathname;
 
   /* Wait for a selector to appear in the SPA-rendered DOM. */

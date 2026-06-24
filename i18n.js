@@ -21,7 +21,7 @@
   if (window.__mgI18n) return;
   window.__mgI18n = true;
 
-  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v15";
+  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v16";
 
   /* ---- language detection ------------------------------------------------- */
   var SUPPORTED = { tr: 1, de: 1, fr: 1, en: 1 };
@@ -66,7 +66,8 @@
     "YOUR BAG":             { tr: "SEPETİNİZ",           de: "IHRE TASCHE",       fr: "VOTRE PANIER" },
     "SUBTOTAL":             { tr: "ARA TOPLAM",          de: "ZWISCHENSUMME",     fr: "SOUS-TOTAL" },
     "COMPLETE ORDER":       { tr: "SİPARİŞİ TAMAMLA",    de: "BESTELLUNG ABSCHLIESSEN", fr: "FINALISER LA COMMANDE" },
-    "ADD TO BAG":           { tr: "SEPETE EKLE",         de: "IN DIE TASCHE",     fr: "AJOUTER AU PANIER" },
+    "ADD TO BAG":           { tr: "ÇANTAYA EKLE",        de: "IN DIE TASCHE",     fr: "AJOUTER AU PANIER" },
+    "SEPETE EKLE":          { tr: "ÇANTAYA EKLE",        de: "IN DIE TASCHE",     fr: "AJOUTER AU PANIER" },
     "SIZE GUIDE":           { tr: "BEDEN REHBERİ",       de: "GRÖSSENTABELLE",    fr: "GUIDE DES TAILLES" },
     "SIZE":                 { tr: "BEDEN",               de: "GRÖSSE",            fr: "TAILLE" },
     "COLOR":                { tr: "RENK",                de: "FARBE",             fr: "COULEUR" },
