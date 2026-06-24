@@ -38,8 +38,8 @@
     document.head.appendChild(s);
   }
 
-  /* Hide the shopping-bag icon that LF injects into the native ATC button. */
-  css("button[class*='HLZ5F'] svg,button[class*='HLZ5F'] img{display:none!important;}");
+  /* Hide the cart-plus icon (Iconoir font span) that LF renders next to the ATC button. */
+  css("[class*='iconoir-cart-plus'],[class*='iconoir-cart']{display:none!important;}");
 
   /* =========================================================================
      §3 — FOOTER REBUILD (global — every page)
