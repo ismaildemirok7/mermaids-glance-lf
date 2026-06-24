@@ -44,66 +44,80 @@
   /* =========================================================================
      §3 — FOOTER REBUILD (global — every page)
      White editorial footer — left-aligned, brand wordmark first.
-     ========================================================================= */
-  waitFor(".mg-foot", function () { setTimeout(function () {
-    var foot = document.querySelector(".mg-foot");
-    if (!foot || document.querySelector(".mgf-wrap")) return;
-    foot.innerHTML =
-      '<div class="mgf-wrap">' +
-        '<div class="mgf-cols">' +
-          '<div class="mgf-col mgf-brand">' +
-            '<div class="mgf-wm">MERMAID\'S GLANCE</div>' +
-            '<div class="mgf-tag">Ultra-luxury lingerie.<br>Crafted for women who choose to feel extraordinary.</div>' +
-            '<div class="mgf-soc">' +
-              '<a href="https://www.instagram.com/mermaidsglanceofficial/" target="_blank" rel="noopener" class="mgf-si">Instagram</a>' +
-            '</div>' +
-          '</div>' +
-          '<div class="mgf-col">' +
-            '<div class="mgf-head">THE COMPANY</div>' +
-            '<a href="mailto:info@mermaidsglance.com" class="mgf-lnk">info@mermaidsglance.com</a>' +
-            '<a href="tel:+13025202387" class="mgf-lnk">+1 302 520 2387</a>' +
-          '</div>' +
-          '<div class="mgf-col">' +
-            '<div class="mgf-head">LEGAL</div>' +
-            '<a href="/privacypolicy" class="mgf-lnk">Privacy Policy</a>' +
-            '<a href="/refundpolicy" class="mgf-lnk">Refund Policy</a>' +
-            '<a href="/shippingpolicy" class="mgf-lnk">Shipping Policy</a>' +
-            '<a href="/termsofservice" class="mgf-lnk">Terms of Service</a>' +
-          '</div>' +
-          '<div class="mgf-col">' +
-            '<div class="mgf-head">INFORMATION</div>' +
-            '<a href="/about-us" class="mgf-lnk">About Us</a>' +
-            '<a href="/contactus" class="mgf-lnk">FAQ</a>' +
-            '<a href="https://www.instagram.com/mermaidsglanceofficial/" target="_blank" rel="noopener" class="mgf-lnk">Instagram</a>' +
-          '</div>' +
-        '</div>' +
-        '<div class="mgf-bot">' +
-          '<span>© 2025 MERMAID\'S GLANCE</span>' +
-        '</div>' +
-      '</div>';
 
-    css(
-      ".mg-foot{background:#ffffff!important;color:#0d0d0d!important;padding:0!important;border-top:1px solid #e8e6e3!important;}" +
-      ".mgf-wrap{max-width:1200px;margin:0 auto;padding:64px 40px 32px;}" +
-      ".mgf-cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;align-items:start;}" +
-      ".mgf-col{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;}" +
-      ".mgf-head{font-size:9px;font-weight:600;letter-spacing:.18em;color:#9a9a9a;text-transform:uppercase;margin-bottom:6px;}" +
-      ".mgf-lnk{font-size:13px;color:#555;text-decoration:none;letter-spacing:.02em;transition:color .2s;}" +
-      ".mgf-lnk:hover{color:#0d0d0d;}" +
-      ".mgf-wm{font-size:22px;font-weight:300;letter-spacing:.28em;color:#0d0d0d;text-transform:uppercase;margin-bottom:14px;}" +
-      ".mgf-tag{font-size:12px;color:#9a9a9a;letter-spacing:.02em;line-height:1.75;}" +
-      ".mgf-soc{display:flex;gap:20px;margin-top:18px;justify-content:flex-start;}" +
-      ".mgf-si{font-size:11px;color:#9a9a9a;text-decoration:none;letter-spacing:.1em;transition:color .2s;}" +
-      ".mgf-si:hover{color:#0d0d0d;}" +
-      ".mgf-bot{border-top:1px solid #e8e6e3;margin-top:48px;padding-top:24px;text-align:left;}" +
-      ".mgf-bot span{font-size:11px;color:#bbb;letter-spacing:.08em;}" +
-      "@media(max-width:768px){" +
-        ".mgf-cols{grid-template-columns:1fr 1fr;}" +
-        ".mgf-brand{grid-column:1/-1;}" +
-        ".mgf-wrap{padding:48px 24px 28px;}" +
-      "}"
-    );
-  }, 500); });
+     CSS is injected ONCE up front. The rebuild is idempotent and driven by a
+     PERSISTENT MutationObserver: the LF SPA re-renders the footer section on
+     navigation (and sometimes right after first paint), wiping our markup — a
+     one-shot waitFor loses that race on home/PDP. The observer re-runs the
+     rebuild whenever it finds a `.mg-foot` that lacks `.mgf-wrap`.
+     ========================================================================= */
+  css(
+    ".mg-foot{background:#ffffff!important;color:#0d0d0d!important;padding:0!important;border-top:1px solid #e8e6e3!important;}" +
+    ".mgf-wrap{max-width:1200px;margin:0 auto;padding:64px 40px 32px;}" +
+    ".mgf-cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;align-items:start;}" +
+    ".mgf-col{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;}" +
+    ".mgf-head{font-size:9px;font-weight:600;letter-spacing:.18em;color:#9a9a9a;text-transform:uppercase;margin-bottom:6px;}" +
+    ".mgf-lnk{font-size:13px;color:#555;text-decoration:none;letter-spacing:.02em;transition:color .2s;}" +
+    ".mgf-lnk:hover{color:#0d0d0d;}" +
+    ".mgf-wm{font-size:22px;font-weight:300;letter-spacing:.28em;color:#0d0d0d;text-transform:uppercase;margin-bottom:14px;}" +
+    ".mgf-tag{font-size:12px;color:#9a9a9a;letter-spacing:.02em;line-height:1.75;}" +
+    ".mgf-soc{display:flex;gap:20px;margin-top:18px;justify-content:flex-start;}" +
+    ".mgf-si{font-size:11px;color:#9a9a9a;text-decoration:none;letter-spacing:.1em;transition:color .2s;}" +
+    ".mgf-si:hover{color:#0d0d0d;}" +
+    ".mgf-bot{border-top:1px solid #e8e6e3;margin-top:48px;padding-top:24px;text-align:left;}" +
+    ".mgf-bot span{font-size:11px;color:#bbb;letter-spacing:.08em;}" +
+    "@media(max-width:768px){" +
+      ".mgf-cols{grid-template-columns:1fr 1fr;}" +
+      ".mgf-brand{grid-column:1/-1;}" +
+      ".mgf-wrap{padding:48px 24px 28px;}" +
+    "}"
+  );
+
+  var FOOT_HTML =
+    '<div class="mgf-wrap">' +
+      '<div class="mgf-cols">' +
+        '<div class="mgf-col mgf-brand">' +
+          '<div class="mgf-wm">MERMAID\'S GLANCE</div>' +
+          '<div class="mgf-tag">Ultra-luxury lingerie.<br>Crafted for women who choose to feel extraordinary.</div>' +
+          '<div class="mgf-soc">' +
+            '<a href="https://www.instagram.com/mermaidsglanceofficial/" target="_blank" rel="noopener" class="mgf-si">Instagram</a>' +
+          '</div>' +
+        '</div>' +
+        '<div class="mgf-col">' +
+          '<div class="mgf-head">THE COMPANY</div>' +
+          '<a href="mailto:info@mermaidsglance.com" class="mgf-lnk">info@mermaidsglance.com</a>' +
+          '<a href="tel:+13025202387" class="mgf-lnk">+1 302 520 2387</a>' +
+        '</div>' +
+        '<div class="mgf-col">' +
+          '<div class="mgf-head">LEGAL</div>' +
+          '<a href="/privacypolicy" class="mgf-lnk">Privacy Policy</a>' +
+          '<a href="/refundpolicy" class="mgf-lnk">Refund Policy</a>' +
+          '<a href="/shippingpolicy" class="mgf-lnk">Shipping Policy</a>' +
+          '<a href="/termsofservice" class="mgf-lnk">Terms of Service</a>' +
+        '</div>' +
+        '<div class="mgf-col">' +
+          '<div class="mgf-head">INFORMATION</div>' +
+          '<a href="/about-us" class="mgf-lnk">About Us</a>' +
+          '<a href="/contactus" class="mgf-lnk">FAQ</a>' +
+          '<a href="https://www.instagram.com/mermaidsglanceofficial/" target="_blank" rel="noopener" class="mgf-lnk">Instagram</a>' +
+        '</div>' +
+      '</div>' +
+      '<div class="mgf-bot">' +
+        '<span>© 2025 MERMAID\'S GLANCE</span>' +
+      '</div>' +
+    '</div>';
+
+  function buildFooter() {
+    var foot = document.querySelector(".mg-foot");
+    if (!foot || foot.querySelector(".mgf-wrap")) return;
+    foot.innerHTML = FOOT_HTML;
+  }
+  var _ftT;
+  new MutationObserver(function () {
+    clearTimeout(_ftT);
+    _ftT = setTimeout(buildFooter, 200);
+  }).observe(document.documentElement, { childList: true, subtree: true });
+  setTimeout(buildFooter, 600);
 
   /* =========================================================================
      §2 — CONTACT REBUILD (route-gated: /contactus)
