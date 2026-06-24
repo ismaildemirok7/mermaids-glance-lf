@@ -103,10 +103,15 @@ Inspect the real LF footer; rebuild to attached structure:
 ## §4 — About Us rebuild (EXTERNAL, `mgAbout`)
 
 Route `^/about/?$`. Replace generic content with the MANIFESTO (verbatim, English,
-in `manifesto.txt` in this repo). Remove/hide unneeded generic images. ADD brand
-images from `IMG` (to be sourced — confirm with user / `/mg` Vesna+Ece which
-frames: product vs atmosphere). Typographic, editorial layout matching brand
-(Montserrat, generous whitespace, ink `#0d0d0d` on light).
+in `manifesto.txt` in this repo). Remove/hide unneeded generic images.
+
+**Image direction (decided 2026-06-24): ATMOSPHERE / MOOD only** — no product
+shots. Textured, light/silhouette-driven editorial frames matching the manifesto's
+grace/wholeness tone (feeling, not selling). Source via `/mg` Vesna+Ece (curate or
+generate brand frames) → commit to `images/` → reference as `IMG + "/about-*.jpg"`.
+Suggested: 1 quiet hero + 1 mid-section frame, lots of negative space.
+Typographic, editorial layout (Montserrat, generous whitespace, ink `#0d0d0d` on
+light).
 
 ## Deploy checklist (every change)
 
