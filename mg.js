@@ -38,9 +38,12 @@
     document.head.appendChild(s);
   }
 
+  /* Hide the shopping-bag icon that LF injects into the native ATC button. */
+  css("button[class*='HLZ5F'] svg,button[class*='HLZ5F'] img{display:none!important;}");
+
   /* =========================================================================
      §3 — FOOTER REBUILD (global — every page)
-     Replace the LF builder footer with 4-column brand structure.
+     White editorial footer — left-aligned, brand wordmark first.
      ========================================================================= */
   waitFor(".mg-foot", function () { setTimeout(function () {
     var foot = document.querySelector(".mg-foot");
@@ -48,30 +51,30 @@
     foot.innerHTML =
       '<div class="mgf-wrap">' +
         '<div class="mgf-cols">' +
-          '<div class="mgf-col">' +
-            '<div class="mgf-head">THE COMPANY</div>' +
-            '<a href="mailto:info@mermaidsglance.com" class="mgf-lnk">INFO@MERMAIDSGLANCE.COM</a>' +
-            '<a href="tel:+13025202387" class="mgf-lnk">+1 302 520 2387</a>' +
-          '</div>' +
-          '<div class="mgf-col mgf-mid">' +
+          '<div class="mgf-col mgf-brand">' +
             '<div class="mgf-wm">MERMAID\'S GLANCE</div>' +
             '<div class="mgf-tag">Ultra-luxury lingerie.<br>Crafted for women who choose to feel extraordinary.</div>' +
             '<div class="mgf-soc">' +
-              '<a href="https://www.instagram.com/mermaidsglance" target="_blank" rel="noopener" class="mgf-si">Instagram</a>' +
-              '<a href="https://www.tiktok.com/@mermaidsglance" target="_blank" rel="noopener" class="mgf-si">TikTok</a>' +
+              '<a href="https://www.instagram.com/mermaidsglanceofficial/" target="_blank" rel="noopener" class="mgf-si">Instagram</a>' +
             '</div>' +
+          '</div>' +
+          '<div class="mgf-col">' +
+            '<div class="mgf-head">THE COMPANY</div>' +
+            '<a href="mailto:info@mermaidsglance.com" class="mgf-lnk">info@mermaidsglance.com</a>' +
+            '<a href="tel:+13025202387" class="mgf-lnk">+1 302 520 2387</a>' +
           '</div>' +
           '<div class="mgf-col">' +
             '<div class="mgf-head">LEGAL</div>' +
             '<a href="/privacypolicy" class="mgf-lnk">Privacy Policy</a>' +
             '<a href="/refundpolicy" class="mgf-lnk">Refund Policy</a>' +
+            '<a href="/shippingpolicy" class="mgf-lnk">Shipping Policy</a>' +
             '<a href="/termsofservice" class="mgf-lnk">Terms of Service</a>' +
           '</div>' +
           '<div class="mgf-col">' +
             '<div class="mgf-head">INFORMATION</div>' +
             '<a href="/about-us" class="mgf-lnk">About Us</a>' +
-            '<a href="https://www.instagram.com/mermaidsglance" target="_blank" rel="noopener" class="mgf-lnk">Instagram</a>' +
             '<a href="/contactus" class="mgf-lnk">FAQ</a>' +
+            '<a href="https://www.instagram.com/mermaidsglanceofficial/" target="_blank" rel="noopener" class="mgf-lnk">Instagram</a>' +
           '</div>' +
         '</div>' +
         '<div class="mgf-bot">' +
@@ -80,24 +83,23 @@
       '</div>';
 
     css(
-      ".mg-foot{background:#0d0d0d!important;color:#fff!important;padding:0!important;}" +
+      ".mg-foot{background:#ffffff!important;color:#0d0d0d!important;padding:0!important;border-top:1px solid #e8e6e3!important;}" +
       ".mgf-wrap{max-width:1200px;margin:0 auto;padding:64px 40px 32px;}" +
-      ".mgf-cols{display:grid;grid-template-columns:1fr 2fr 1fr 1fr;gap:48px;align-items:start;}" +
-      ".mgf-col{display:flex;flex-direction:column;gap:10px;}" +
-      ".mgf-head{font-size:9px;font-weight:600;letter-spacing:.18em;color:#555;text-transform:uppercase;margin-bottom:6px;}" +
-      ".mgf-lnk{font-size:13px;color:#aaa;text-decoration:none;letter-spacing:.02em;transition:color .2s;}" +
-      ".mgf-lnk:hover{color:#fff;}" +
-      ".mgf-mid{align-items:center;text-align:center;}" +
-      ".mgf-wm{font-size:16px;font-weight:300;letter-spacing:.28em;color:#fff;text-transform:uppercase;margin-bottom:14px;}" +
-      ".mgf-tag{font-size:12px;color:#666;letter-spacing:.02em;line-height:1.75;}" +
-      ".mgf-soc{display:flex;gap:20px;margin-top:18px;justify-content:center;}" +
-      ".mgf-si{font-size:11px;color:#555;text-decoration:none;letter-spacing:.1em;transition:color .2s;}" +
-      ".mgf-si:hover{color:#fff;}" +
-      ".mgf-bot{border-top:1px solid #1e1e1e;margin-top:48px;padding-top:24px;text-align:center;}" +
-      ".mgf-bot span{font-size:11px;color:#444;letter-spacing:.08em;}" +
+      ".mgf-cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;align-items:start;}" +
+      ".mgf-col{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;}" +
+      ".mgf-head{font-size:9px;font-weight:600;letter-spacing:.18em;color:#9a9a9a;text-transform:uppercase;margin-bottom:6px;}" +
+      ".mgf-lnk{font-size:13px;color:#555;text-decoration:none;letter-spacing:.02em;transition:color .2s;}" +
+      ".mgf-lnk:hover{color:#0d0d0d;}" +
+      ".mgf-wm{font-size:22px;font-weight:300;letter-spacing:.28em;color:#0d0d0d;text-transform:uppercase;margin-bottom:14px;}" +
+      ".mgf-tag{font-size:12px;color:#9a9a9a;letter-spacing:.02em;line-height:1.75;}" +
+      ".mgf-soc{display:flex;gap:20px;margin-top:18px;justify-content:flex-start;}" +
+      ".mgf-si{font-size:11px;color:#9a9a9a;text-decoration:none;letter-spacing:.1em;transition:color .2s;}" +
+      ".mgf-si:hover{color:#0d0d0d;}" +
+      ".mgf-bot{border-top:1px solid #e8e6e3;margin-top:48px;padding-top:24px;text-align:left;}" +
+      ".mgf-bot span{font-size:11px;color:#bbb;letter-spacing:.08em;}" +
       "@media(max-width:768px){" +
         ".mgf-cols{grid-template-columns:1fr 1fr;}" +
-        ".mgf-mid{grid-column:1/-1;order:-1;}" +
+        ".mgf-brand{grid-column:1/-1;}" +
         ".mgf-wrap{padding:48px 24px 28px;}" +
       "}"
     );
@@ -185,7 +187,7 @@
       card.className = "mgc-card";
       card.innerHTML =
         '<div class="mgc-card-h">GET IN TOUCH</div>' +
-        '<div class="mgc-info"><a href="mailto:info@mermaidsglance.com">INFO@MERMAIDSGLANCE.COM</a></div>' +
+        '<div class="mgc-info"><a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a></div>' +
         '<div class="mgc-info"><a href="tel:+13025202387">+1 302 520 2387</a></div>' +
         '<div class="mgc-hrs">MON–FRI, 10AM–9PM</div>';
 
@@ -201,6 +203,51 @@
       formCol.appendChild(formSection);
       wrap.appendChild(formCol);
       wrap.appendChild(infoCol);
+
+      /* FAQ section below the form grid */
+      if (!document.querySelector(".mgc-faq")) {
+        var faqs = [
+          ["How long does delivery take?",
+            "For international orders (US, UK, EU): 7–15 business days after a 2–5 day preparation period. For Türkiye: 15–21 business days due to customs clearance at our local HQ. Weekends and national holidays are not counted."],
+          ["Can I cancel my order?",
+            "You have exactly 24 hours from the moment of purchase to cancel or amend your order. After this window, your order enters our international logistics network and cannot be reversed."],
+          ["What is your return policy?",
+            "Non-intimate pieces can be returned within 14 days of delivery, provided they are unworn, unwashed, tags attached, and in original packaging. A proof of purchase is required."],
+          ["Are intimate items returnable?",
+            "Intimate bottoms (panties, thongs) and bodysuits are strictly non-returnable and non-exchangeable. This is our hygiene guarantee — every piece you receive is 100% pristine and unworn."],
+          ["What if my order arrives damaged or incorrect?",
+            "Please inspect your order upon reception. If a piece arrives defective or incorrect, contact us within 48 hours of delivery at info@mermaidsglance.com with photographic evidence. We will dispatch a flawless replacement at no cost."],
+          ["How do I track my order?",
+            "You will receive a dispatch email with your tracking number once your piece leaves our fulfillment center. A status of "Arrived in Destination Country" means it has been handed to your local postal carrier — follow the same number through their system."],
+          ["What about customs duties?",
+            "International duties and customs fees are the responsibility of the customer and are non-refundable. For Türkiye, we route orders through our local HQ to handle customs on your behalf — no surprise fees."]
+        ];
+        var faqEl = document.createElement("div");
+        faqEl.className = "mgc-faq";
+        faqEl.innerHTML =
+          '<div class="mgc-faq-h">FREQUENTLY ASKED QUESTIONS</div>' +
+          faqs.map(function(f) {
+            return '<details class="mgc-faq-item"><summary class="mgc-faq-q">' + f[0] + '</summary><p class="mgc-faq-a">' + f[1] + '</p></details>';
+          }).join("");
+        var root = document.getElementById("root");
+        var rootWrap = root && root.children[0];
+        var foot = rootWrap && rootWrap.querySelector(".mg-foot");
+        if (foot) rootWrap.insertBefore(faqEl, foot);
+        else if (rootWrap) rootWrap.appendChild(faqEl);
+
+        css(
+          ".mgc-faq{max-width:1100px;margin:0 auto;padding:80px 40px;border-top:1px solid #e6e4e0;}" +
+          ".mgc-faq-h{font-size:9px;font-weight:600;letter-spacing:.2em;color:#9a9a9a;text-transform:uppercase;margin-bottom:40px;}" +
+          ".mgc-faq-item{border-bottom:1px solid #e6e4e0;padding:0;}" +
+          ".mgc-faq-item:first-of-type{border-top:1px solid #e6e4e0;}" +
+          "summary.mgc-faq-q{list-style:none;cursor:pointer;padding:20px 0;font-size:13px;font-weight:500;letter-spacing:.04em;color:#0d0d0d;display:flex;justify-content:space-between;align-items:center;font-family:'Montserrat',sans-serif;}" +
+          "summary.mgc-faq-q::-webkit-details-marker{display:none;}" +
+          "summary.mgc-faq-q::after{content:'+';font-size:18px;font-weight:300;color:#9a9a9a;transition:transform .2s;}" +
+          "details.mgc-faq-item[open] summary.mgc-faq-q::after{transform:rotate(45deg);}" +
+          ".mgc-faq-a{font-size:13px;color:#555;line-height:1.8;letter-spacing:.02em;padding:0 0 20px;margin:0;font-family:'Montserrat',sans-serif;}" +
+          "@media(max-width:768px){.mgc-faq{padding:48px 24px;}}"
+        );
+      }
     }, 500); });
   }
 
