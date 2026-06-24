@@ -42,7 +42,9 @@
      §3 — FOOTER REBUILD (global — every page)
      Replace the LF builder footer with 4-column brand structure.
      ========================================================================= */
-  waitFor(".mg-foot", function (foot) {
+  waitFor(".mg-foot", function () { setTimeout(function () {
+    var foot = document.querySelector(".mg-foot");
+    if (!foot || document.querySelector(".mgf-wrap")) return;
     foot.innerHTML =
       '<div class="mgf-wrap">' +
         '<div class="mgf-cols">' +
@@ -99,7 +101,7 @@
         ".mgf-wrap{padding:48px 24px 28px;}" +
       "}"
     );
-  });
+  }, 500); });
 
   /* =========================================================================
      §2 — CONTACT REBUILD (route-gated: /contactus)
@@ -120,6 +122,9 @@
         /* Brand page layout: form left, info card right */
         ".mgc-wrap{max-width:1100px;margin:0 auto;padding:80px 40px;display:grid;" +
           "grid-template-columns:3fr 2fr;gap:72px;align-items:start;}" +
+        /* Override LF section centering — lock form to left column */
+        ".mgc-form-col,section._5{max-width:none!important;margin:0!important;width:100%!important;}" +
+        "section._5>[class*='pSyxI']{max-width:none!important;margin:0!important;padding:0!important;}" +
         ".mgc-form-col{}" +
         ".mgc-heading{font-size:9px;font-weight:600;letter-spacing:.2em;color:#0d0d0d;" +
           "text-transform:uppercase;margin-bottom:40px;}" +
