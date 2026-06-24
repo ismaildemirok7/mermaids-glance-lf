@@ -111,7 +111,7 @@
        button._47.pSyxI.HLZ5F — SEND button
      ========================================================================= */
   if (/^\/contactus\/?$/.test(path)) {
-    waitFor("input[name='first_name']", function () {
+    waitFor("input[name='first_name']", function () { setTimeout(function () {
 
       css(
         /* Replace LF title with brand heading */
@@ -196,7 +196,7 @@
       formCol.appendChild(formSection);
       wrap.appendChild(formCol);
       wrap.appendChild(infoCol);
-    });
+    }, 500); });
   }
 
   /* =========================================================================
@@ -204,7 +204,7 @@
      Hide generic LF sections; inject MANIFESTO.
      ========================================================================= */
   if (/^\/about-us\/?$/.test(path)) {
-    waitFor(".mg-foot", function () {
+    waitFor(".mg-foot", function () { setTimeout(function () {
       var main = document.getElementById("root");
       if (!main) return;
       var wrap = main.children[0];
@@ -250,7 +250,7 @@
         if (foot) wrap.insertBefore(el, foot);
         else wrap.appendChild(el);
       }
-    });
+    }, 500); });
   }
 
 })();
