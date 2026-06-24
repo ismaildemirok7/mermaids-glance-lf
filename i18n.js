@@ -21,7 +21,7 @@
   if (window.__mgI18n) return;
   window.__mgI18n = true;
 
-  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v13";
+  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v14";
 
   /* ---- language detection ------------------------------------------------- */
   var SUPPORTED = { tr: 1, de: 1, fr: 1, en: 1 };
@@ -70,7 +70,14 @@
     "SIZE GUIDE":           { tr: "BEDEN REHBERİ",       de: "GRÖSSENTABELLE",    fr: "GUIDE DES TAILLES" },
     "SIZE":                 { tr: "BEDEN",               de: "GRÖSSE",            fr: "TAILLE" },
     "COLOR":                { tr: "RENK",                de: "FARBE",             fr: "COULEUR" },
+    "Quantity":             { tr: "Adet",                de: "Menge",             fr: "Quantité" },
     "Remove":               { tr: "Kaldır",              de: "Entfernen",         fr: "Retirer" },
+
+    /* PDP native trust/info chrome (LF original-case, CSS-uppercased) */
+    "30-Day Warranty":      { tr: "30 Günlük Garanti",   de: "30 Tage Garantie",  fr: "Garantie 30 jours" },
+    "Shipping":             { tr: "Kargo",               de: "Versand",           fr: "Livraison" },
+    "Return policy":        { tr: "İade politikası",     de: "Rückgaberecht",     fr: "Politique de retour" },
+    "You may also like":    { tr: "Bunları da beğenebilirsiniz", de: "Das könnte dir auch gefallen", fr: "Vous aimerez aussi" }, // SELIN
 
     /* footer headings + links */
     "THE COMPANY":          { tr: "ŞİRKET",              de: "DAS UNTERNEHMEN",   fr: "L'ENTREPRISE" },
@@ -101,9 +108,14 @@
       fr: "Le Pouvoir de la Grâce : Cet Instant" } // SELIN
   };
 
-  /* Regex rules for dynamic strings (e.g. "3 ITEMS"). Each: [pattern, {lang:tpl}]. */
+  /* Regex rules for dynamic strings. Each: [pattern, {lang:tpl}].
+     - "3 ITEMS" → cart count (LF-native casing handled by the /i flag).
+     - "SIZE: S" / "COLOR: BLACK" → cart variant lines are ONE text node in
+       LABEL: VALUE form, so the bare "SIZE"/"COLOR" dict keys never match.     */
   var RULES = [
-    [/^(\d+)\s+ITEMS?$/, { tr: "$1 ÜRÜN", de: "$1 ARTIKEL", fr: "$1 ARTICLE$2" }]
+    [/^(\d+)\s+ITEMS?$/i, { tr: "$1 ÜRÜN", de: "$1 ARTIKEL", fr: "$1 ARTICLE$2" }],
+    [/^SIZE:\s*(.+)$/i,   { tr: "BEDEN: $1", de: "GRÖSSE: $1", fr: "TAILLE: $1" }],
+    [/^COLOR:\s*(.+)$/i,  { tr: "RENK: $1",  de: "FARBE: $1",  fr: "COULEUR: $1" }]
   ];
 
   /* Placeholder/attribute dictionary (form inputs render text via placeholder). */
@@ -121,18 +133,26 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
         if (!j) return;
-        for (var k in j) if (j.hasOwnProperty(k)) DICT[k] = j[k];
+        for (var k in j) if (j.hasOwnProperty(k)) { DICT[k] = j[k]; DICT_CI[k.toLowerCase()] = j[k]; }
         translateAll(); /* re-run with the enriched dictionary */
       })
       .catch(function () {});
   }
 
-  /* ---- translation core --------------------------------------------------- */
+  /* ---- translation core ---------------------------------------------------
+     Case-insensitive index: LF-native chrome stores text in original case and
+     uppercases via CSS `text-transform` (e.g. node value "Add to bag" renders as
+     "ADD TO BAG"). Our DICT keys are written as the *rendered* form, so an exact
+     match misses native nodes. The CI fallback bridges that; CSS re-applies the
+     visible casing to whatever translation we emit, so output case is harmless.  */
+  var DICT_CI = {};
+  for (var _k in DICT) if (DICT.hasOwnProperty(_k)) DICT_CI[_k.toLowerCase()] = DICT[_k];
+
   function lookup(raw) {
     if (LANG === "en") return null;
     var key = raw.trim();
     if (!key) return null;
-    var hit = DICT[key];
+    var hit = DICT[key] || DICT_CI[key.toLowerCase()];
     if (hit && hit[LANG]) return raw.replace(key, hit[LANG]); /* keep surrounding ws */
     for (var i = 0; i < RULES.length; i++) {
       var m = key.match(RULES[i][0]);
