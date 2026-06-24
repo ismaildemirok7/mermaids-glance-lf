@@ -21,7 +21,7 @@
   if (window.__mgI18n) return;
   window.__mgI18n = true;
 
-  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v14";
+  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v15";
 
   /* ---- language detection ------------------------------------------------- */
   var SUPPORTED = { tr: 1, de: 1, fr: 1, en: 1 };
@@ -127,15 +127,25 @@
     "Message":    { tr: "Mesaj",    de: "Nachricht",fr: "Message" }
   };
 
-  /* External content packs (Phase 2/3) merged into DICT once fetched. */
+  /* External content packs (Phase 2/3): per-ACTIVE-language files keyed by the
+     exact English source text → translated string. Format: { "English": "Çeviri" }.
+     Only the active language's pack is fetched (smaller payload). Product packs
+     (PDP) are decomposed to the description's individual text nodes + the title,
+     so the SAME text-node observer translates product copy with no PDP-specific
+     code — the render is non-reactive, but we never touch the data object.        */
+  function mergePack(j) {
+    if (!j) return;
+    for (var k in j) if (j.hasOwnProperty(k)) {
+      var entry = DICT[k] || (DICT[k] = {});
+      entry[LANG] = j[k];
+      DICT_CI[k.toLowerCase()] = entry;
+    }
+    translateAll(); /* re-run with the enriched dictionary */
+  }
   function loadPack(name) {
     fetch(CDN + "/" + name)
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) {
-        if (!j) return;
-        for (var k in j) if (j.hasOwnProperty(k)) { DICT[k] = j[k]; DICT_CI[k.toLowerCase()] = j[k]; }
-        translateAll(); /* re-run with the enriched dictionary */
-      })
+      .then(mergePack)
       .catch(function () {});
   }
 
@@ -204,33 +214,17 @@
     translateAll();
   }
 
-  /* ---- product layer (PDP) — Phase 3 stub --------------------------------
-     window.data.product carries title + descriptionHtml (LF renders from it).
-     We swap from products.<lang>.json keyed by handle, BEFORE/after LF renders.  */
-  function translateProduct() {
+  /* ---- product layer (PDP) -------------------------------------------------
+     The PDP renders window.data.product.description (HTML) into clean text nodes
+     (h3/p, inside `.mgpx-bd`) and the title into the H1 (text-transform:uppercase).
+     The render is non-reactive, so we do NOT mutate the data object. Instead the
+     product pack is keyed by the exact English text of each description text node
+     (+ the title), and the existing observer translates them. Loaded only on PDP,
+     keyed nowhere — it's just dictionary entries. Pack name uses the active lang.  */
+  function loadProductPack() {
     if (LANG === "en") return;
     if (!/^\/products\//.test(location.pathname)) return;
-    fetch(CDN + "/i18n/products." + LANG + ".json")
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (map) {
-        if (!map) return;
-        function apply() {
-          try {
-            var pr = window.data && window.data.product;
-            if (!pr) return false;
-            var t = map[pr.handle];
-            if (!t) return true; /* known-absent; stop polling */
-            if (t.title) pr.title = t.title;
-            if (t.descriptionHtml) pr.descriptionHtml = t.descriptionHtml;
-            return true;
-          } catch (e) { return false; }
-        }
-        if (apply()) return;
-        var tries = 0, iv = setInterval(function () {
-          if (apply() || ++tries > 40) clearInterval(iv);
-        }, 100);
-      })
-      .catch(function () {});
+    loadPack("i18n/products." + LANG + ".json");
   }
 
   /* ---- FOUC soft-gate ----------------------------------------------------
@@ -264,7 +258,7 @@
   var reveal = gate();
   function boot() {
     startObserver();
-    translateProduct();
+    loadProductPack();
     loadPack("i18n/content." + LANG + ".json"); /* Phase 2 long-form (404 ok for now) */
     setTimeout(reveal, 150); /* reveal shortly after first pass */
   }

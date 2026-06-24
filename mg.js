@@ -17,7 +17,7 @@
   if (window.__mgExt) return;
   window.__mgExt = true;
 
-  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v2";
+  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v15";
   var path = location.pathname;
 
   /* Wait for a selector to appear in the SPA-rendered DOM. */
@@ -40,6 +40,10 @@
 
   /* Hide the cart-plus icon (Iconoir font span) that LF renders next to the ATC button. */
   css("[class*='iconoir-cart-plus'],[class*='iconoir-cart']{display:none!important;}");
+
+  /* Checkout payment-method cards + payment-logo badges carry an 8px radius the
+     global inline reset misses (LF hash classes, checkout step only). Square them. */
+  css(".tebYR,.zsy6s,.NF7a4{border-radius:0!important;}");
 
   /* =========================================================================
      §3 — FOOTER REBUILD (global — every page)
@@ -92,7 +96,6 @@
           '<div class="mgf-head">LEGAL</div>' +
           '<a href="/privacypolicy" class="mgf-lnk">Privacy Policy</a>' +
           '<a href="/refundpolicy" class="mgf-lnk">Refund Policy</a>' +
-          '<a href="/shippingpolicy" class="mgf-lnk">Shipping Policy</a>' +
           '<a href="/termsofservice" class="mgf-lnk">Terms of Service</a>' +
         '</div>' +
         '<div class="mgf-col">' +
@@ -240,20 +243,20 @@
       /* FAQ section below the form grid */
       if (!document.querySelector(".mgc-faq")) {
         var faqs = [
-          ["How long does delivery take?",
-            "For international orders (US, UK, EU): 7–15 business days after a 2–5 day preparation period. For Türkiye: 15–21 business days due to customs clearance at our local HQ. Weekends and national holidays are not counted."],
-          ["Can I cancel my order?",
-            "You have exactly 24 hours from the moment of purchase to cancel or amend your order. After this window, your order enters our international logistics network and cannot be reversed."],
-          ["What is your return policy?",
-            "Non-intimate pieces can be returned within 14 days of delivery, provided they are unworn, unwashed, tags attached, and in original packaging. A proof of purchase is required."],
-          ["Are intimate items returnable?",
-            "Intimate bottoms (panties, thongs) and bodysuits are strictly non-returnable and non-exchangeable. This is our hygiene guarantee — every piece you receive is 100% pristine and unworn."],
-          ["What if my order arrives damaged or incorrect?",
-            "Please inspect your order upon reception. If a piece arrives defective or incorrect, contact us within 48 hours of delivery at info@mermaidsglance.com with photographic evidence. We will dispatch a flawless replacement at no cost."],
-          ["How do I track my order?",
-            "You will receive a dispatch email with your tracking number once your piece leaves our fulfillment center. A status of ‘Arrived in Destination Country’ means it has been handed to your local postal carrier — follow the same number through their system."],
-          ["What about customs duties?",
-            "International duties and customs fees are the responsibility of the customer and are non-refundable. For Türkiye, we route orders through our local HQ to handle customs on your behalf — no surprise fees."]
+          ["Siparişimi iptal edebilir veya değiştirebilir miyim?",
+            "Satın alımdan itibaren siparişinizi iptal etmek veya bilgilerinizi düzenlemek için kesin 24 saatlik bir süreniz vardır. Bu sürenin ardından küratörlük sürecimiz başlar ve lojistik ağı kilitlenir; iptal veya değişiklik artık mümkün değildir."],
+          ["Parçam elime ne zaman ulaşır?",
+            "Her siluet, sevkiyattan önce 2–5 iş günü özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat — hem Türkiye hem global (ABD, İngiltere, AB) — 7–15 iş günüdür. Hafta sonları ve resmi tatiller bu süreye dahil değildir."],
+          ["Sürpriz gümrük vergisi veya ek ücret öder miyim?",
+            "Kesinlikle hayır. Sınırların kontrolünü tamamen biz üstleniriz. Tüm uluslararası vergiler, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta hiçbir gizli ücret yoktur — yalnızca kusursuzluğu teslim alırsınız."],
+          ["İade protokolünüz nedir?",
+            "Mahrem olmayan parçalar için teslimattan itibaren 14 gün içinde iade başlatabilirsiniz. Parça kusursuz, yıkanmamış, etiketli ve orijinal sunumunda olmalıdır. Kesin Hijyen Standardı: Mahrem alt parçalarda, tangalarda ve bodysuit’lerde iade kesinlikle kabul edilmez. Bu, teninize değen parçanın kusursuz hijyenik ve yalnızca size ait olmasını güvence altına alır."],
+          ["Parça kusurlu gelirse ne olur?",
+            "Kusurlarla pazarlık etmez, kısmi iade sunmayız. Bir parça kusurlu gelirse, gecikmeden kusursuz bir parçayla değiştirilir. Teslimattan sonraki 48 saat içinde görsel kanıtla info@mermaidsglance.com adresinden bize ulaşın."],
+          ["Parça nasıl paketlenir?",
+            "Dış kargo paketi tamamen sade ve gizlidir. İçeride parçanız, imza mat siyah kutumuz ve lüks saten kesemiz içinde dinlenir. Gizliliğiniz mutlaktır."],
+          ["Doğru bedenimi nasıl seçerim?",
+            "Her parça hassas ölçülere göre üretilir. Bedeninizi tahmin etmeyin. Uyumunuzdan tam olarak emin olmak için parçanızı edinmeden önce Beden Rehberimize başvurun."]
         ];
         var faqEl = document.createElement("div");
         faqEl.className = "mgc-faq";
