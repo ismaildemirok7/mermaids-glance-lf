@@ -107,9 +107,28 @@
       '</div>' +
     '</div>';
 
+  /* Find the footer WITHOUT depending on the inline `.mg-foot` class — that class
+     is added by the inline brandColors() pass which races the SPA and is unreliable
+     on home/PDP. We self-detect: the last child of the root wrapper whose text reads
+     like a footer (legal/nav links). Once rebuilt, FOOT_HTML still matches, so this
+     stays idempotent. */
+  function findFoot() {
+    var existing = document.querySelector(".mgf-wrap");
+    if (existing) return existing.closest(".mg-foot") || existing.parentElement;
+    var root = document.getElementById("root");
+    var wrap = root && root.firstElementChild;
+    if (!wrap) return null;
+    var kids = wrap.children;
+    for (var i = kids.length - 1; i >= 0; i--) {
+      var k = kids[i];
+      if (/about us|policies|privacy|©|contact us|terms of service/i.test(k.innerText || "")) return k;
+    }
+    return null;
+  }
   function buildFooter() {
-    var foot = document.querySelector(".mg-foot");
+    var foot = findFoot();
     if (!foot || foot.querySelector(".mgf-wrap")) return;
+    foot.classList.add("mg-foot");
     foot.innerHTML = FOOT_HTML;
   }
   var _ftT;
