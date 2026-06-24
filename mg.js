@@ -218,7 +218,7 @@
           ["What if my order arrives damaged or incorrect?",
             "Please inspect your order upon reception. If a piece arrives defective or incorrect, contact us within 48 hours of delivery at info@mermaidsglance.com with photographic evidence. We will dispatch a flawless replacement at no cost."],
           ["How do I track my order?",
-            "You will receive a dispatch email with your tracking number once your piece leaves our fulfillment center. A status of "Arrived in Destination Country" means it has been handed to your local postal carrier — follow the same number through their system."],
+            "You will receive a dispatch email with your tracking number once your piece leaves our fulfillment center. A status of ‘Arrived in Destination Country’ means it has been handed to your local postal carrier — follow the same number through their system."],
           ["What about customs duties?",
             "International duties and customs fees are the responsibility of the customer and are non-refundable. For Türkiye, we route orders through our local HQ to handle customs on your behalf — no surprise fees."]
         ];
