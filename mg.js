@@ -681,11 +681,17 @@
     var items = rvRead().filter(function (x) { return x.h !== cur && x.n; });
     var host = document.querySelector(".mgrv");
     if (items.length < 1) { if (host) host.remove(); return; }
+    /* Anchor on the footer so we always sit directly ABOVE it (= below the cross-sell,
+       the last PDP section). Wait until it exists — never append loose at the end, or
+       a later footer build would land above us. */
+    var foot = document.querySelector(".mg-foot");
+    if (!foot || !foot.parentNode) return; /* observer will retry once the footer is built */
     /* idempotent + stale guard: rebuild only when the page or the item set changed */
-    if (host) {
-      if (host.getAttribute("data-for") === cur && host.getAttribute("data-n") === String(items.length)) return;
-      host.remove();
+    if (host && host.getAttribute("data-for") === cur && host.getAttribute("data-n") === String(items.length)) {
+      if (host.nextElementSibling !== foot) foot.parentNode.insertBefore(host, foot); /* self-heal position */
+      return;
     }
+    if (host) host.remove();
     var sec = document.createElement("div");
     sec.className = "mgrv";
     sec.setAttribute("data-for", cur);
@@ -701,11 +707,7 @@
           "</a>";
       }).join("") +
       "</div>";
-    /* Place directly above the footer = below the cross-sell (last PDP section). */
-    var foot = document.querySelector(".mg-foot");
-    if (foot && foot.parentNode) { foot.parentNode.insertBefore(sec, foot); return; }
-    var root = document.getElementById("root"), wrap = root && root.firstElementChild;
-    if (wrap) wrap.appendChild(sec);
+    foot.parentNode.insertBefore(sec, foot); /* directly above the footer = below the cross-sell */
   }
 
 })();
