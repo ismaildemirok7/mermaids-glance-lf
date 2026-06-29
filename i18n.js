@@ -86,6 +86,7 @@
     "INFORMATION":          { tr: "BİLGİ",               de: "INFORMATIONEN",     fr: "INFORMATIONS" },
     "Privacy Policy":       { tr: "Gizlilik Politikası", de: "Datenschutz",       fr: "Politique de confidentialité" },
     "Refund Policy":        { tr: "İade Politikası",     de: "Rückgaberecht",     fr: "Politique de remboursement" },
+    "Returns & Delivery":   { tr: "İade ve Teslimat",    de: "Rückgabe & Versand",fr: "Retours et livraison" },
     "Shipping Policy":      { tr: "Kargo Politikası",    de: "Versandrichtlinie", fr: "Politique d'expédition" },
     "Terms of Service":     { tr: "Kullanım Koşulları",  de: "AGB",               fr: "Conditions d'utilisation" },
     "About Us":             { tr: "Hakkımızda",          de: "Über uns",          fr: "À propos" },

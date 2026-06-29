@@ -95,7 +95,7 @@
         '<div class="mgf-col">' +
           '<div class="mgf-head">LEGAL</div>' +
           '<a href="/privacypolicy" class="mgf-lnk">Privacy Policy</a>' +
-          '<a href="/refundpolicy" class="mgf-lnk">Refund Policy</a>' +
+          '<a href="/refundpolicy" class="mgf-lnk">Returns &amp; Delivery</a>' +
           '<a href="/termsofservice" class="mgf-lnk">Terms of Service</a>' +
         '</div>' +
         '<div class="mgf-col">' +
@@ -134,12 +134,86 @@
     foot.classList.add("mg-foot");
     foot.innerHTML = FOOT_HTML;
   }
+  /* =========================================================================
+     §5 — POLICY PAGES  (route: /privacypolicy /refundpolicy /termsofservice)
+     These are empty LF generic_page steps — their bodies aren't writable via the
+     app token, so the pages render blank. We inject brand-voice content here, the
+     same way §2/§4 do. Driven by the footer observer below (not a new observer),
+     so it also fires on client-side SPA navigation, reading the LIVE pathname.
+     TR only for now (storefront default); EN/DE/FR packs can be layered later.
+     ========================================================================= */
+  var POL = {
+    "/privacypolicy": {
+      t: "GİZLİLİK POLİTİKASI",
+      body:
+        '<p class="mgpol-lead">Mahremiyetiniz bizim için mutlaktır — hem parçalarımızda hem verilerinizde. Bu sayfa, bilgilerinizi nasıl topladığımızı ve koruduğumuzu açıklar.</p>' +
+        '<h2>Topladığımız Bilgiler</h2><p>Siparişinizi işleme almak için adınız, iletişim bilgileriniz ve teslimat adresiniz gibi verileri toplarız. Ödeme bilgileriniz doğrudan güvenli ödeme sağlayıcımız tarafından işlenir; kart bilgileriniz tarafımızca saklanmaz.</p>' +
+        '<h2>Bilgileri Nasıl Kullanırız</h2><p>Verilerinizi yalnızca siparişinizi hazırlamak, teslim etmek, sizinle iletişim kurmak ve hizmetimizi geliştirmek için kullanırız.</p>' +
+        '<h2>Paylaşım</h2><p>Bilgilerinizi üçüncü taraflara satmayız. Yalnızca siparişinizi tamamlamak için gereken kargo ve ödeme sağlayıcılarıyla, gerekli ölçüde paylaşırız.</p>' +
+        '<h2>Çerezler</h2><p>Deneyiminizi iyileştirmek ve sitemizin performansını ölçmek için çerezler kullanırız. Çerez tercihlerinizi tarayıcı ayarlarınızdan yönetebilirsiniz.</p>' +
+        '<h2>Haklarınız</h2><p>Kişisel verilerinize erişme, bunları düzeltme veya silinmesini talep etme hakkına sahipsiniz. Bu haklarınızı kullanmak için <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresinden bize ulaşın.</p>'
+    },
+    "/refundpolicy": {
+      t: "İADE VE TESLİMAT",
+      body:
+        '<p class="mgpol-lead">Her parça, size ulaşana dek özenle hazırlanır. Aşağıda hazırlık, teslimat ve iade sürecimizi açık ve eksiksiz bulacaksınız.</p>' +
+        '<h2>Hazırlık &amp; Teslimat</h2><p>Her siluet, sevkiyattan önce 2–5 iş günü süren özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat süresi — hem Türkiye hem global (ABD, İngiltere, AB) — 7–15 iş günüdür. Hafta sonları ve resmî tatiller bu süreye dâhil değildir.</p>' +
+        '<h2>Gümrük &amp; Vergiler</h2><p>Sınırların kontrolünü tümüyle biz üstleniriz. Tüm uluslararası vergiler, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta hiçbir gizli ücret yoktur.</p>' +
+        '<h2>Sipariş Değişikliği &amp; İptal</h2><p>Satın alımdan itibaren siparişinizi iptal etmek veya bilgilerinizi düzenlemek için 24 saatlik bir süreniz vardır. Bu sürenin ardından küratörlük sürecimiz başlar ve lojistik ağı kilitlenir; iptal veya değişiklik artık mümkün değildir.</p>' +
+        '<h2>İade</h2><p>Mahrem olmayan parçalar için teslimattan itibaren 14 gün içinde iade başlatabilirsiniz. Parça kusursuz, yıkanmamış, etiketli ve orijinal sunumunda olmalıdır.</p>' +
+        '<h2>Hijyen Standardı</h2><p>Mahrem alt parçalarda, tangalarda ve bodysuit’lerde iade kabul edilmez. Bu standart, teninize değen parçanın kusursuz hijyenik ve yalnızca size ait olmasını güvence altına alır.</p>' +
+        '<h2>Kusurlu Parça</h2><p>Kusurlarla pazarlık etmez, kısmi iade sunmayız. Bir parça kusurlu ulaşırsa, gecikmeden kusursuz bir parçayla değiştirilir. Teslimattan sonraki 48 saat içinde görsel kanıtla <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresinden bize ulaşın.</p>' +
+        '<h2>İade Süreci</h2><p>Uygun bir iade için <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresinden talebinizi iletin. Onaylanan iadelerde ücret iadesi, parça tarafımıza ulaşıp incelendikten sonra orijinal ödeme yönteminize yapılır.</p>'
+    },
+    "/termsofservice": {
+      t: "KULLANIM KOŞULLARI",
+      body:
+        '<p class="mgpol-lead">Mermaid’s Glance’i kullanarak aşağıdaki koşulları kabul etmiş olursunuz.</p>' +
+        '<h2>Sitenin Kullanımı</h2><p>Bu site ve içeriği kişisel, ticari olmayan kullanımınız için sunulur. Siteyi yasalara aykırı hiçbir amaçla kullanamazsınız.</p>' +
+        '<h2>Ürünler &amp; Fiyatlandırma</h2><p>Ürünleri ve fiyatları olabildiğince doğru sunmaya özen gösteririz. Fiyatları, ürün bilgilerini ve sunumu önceden bildirimde bulunmaksızın güncelleme hakkımız saklıdır.</p>' +
+        '<h2>Sipariş Kabulü</h2><p>Her sipariş, tarafımızca onaylandığında bağlayıcı hâle gelir. Olağan dışı durumlarda bir siparişi reddetme veya iptal etme hakkımızı saklı tutarız.</p>' +
+        '<h2>Fikrî Mülkiyet</h2><p>Bu sitedeki tüm içerik — metin, görsel ve tasarım — Mermaid’s Glance’e aittir ve izinsiz kullanılamaz.</p>' +
+        '<h2>Sorumluluğun Sınırı</h2><p>Hizmetimizi mümkün olan en yüksek özenle sunarız; ancak yasaların izin verdiği ölçüde, kullanımdan doğan dolaylı zararlardan sorumlu tutulamayız.</p>' +
+        '<h2>İletişim</h2><p>Koşullarla ilgili her soru için <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresinden bize ulaşabilirsiniz.</p>'
+    }
+  };
+  css(
+    ".mgpol{max-width:760px;margin:0 auto;padding:120px 40px 120px;}" +
+    ".mgpol-kicker{font-size:9px;font-weight:600;letter-spacing:.25em;color:#7a7a7a;text-transform:uppercase;margin-bottom:32px;}" +
+    ".mgpol-title{font-size:34px;font-weight:300;letter-spacing:.04em;color:#0d0d0d;margin:0 0 56px;line-height:1.25;}" +
+    ".mgpol-lead{font-size:15px;font-weight:300;color:#0d0d0d;line-height:2;margin:0 0 48px;letter-spacing:.01em;}" +
+    ".mgpol-body h2{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#0d0d0d;margin:40px 0 14px;}" +
+    ".mgpol-body p{font-size:14px;font-weight:300;color:#444;line-height:1.95;margin:0 0 8px;letter-spacing:.01em;}" +
+    ".mgpol-body a{color:#0d0d0d;text-decoration:underline;text-underline-offset:2px;}" +
+    "@media(max-width:768px){.mgpol{padding:88px 24px 80px;}.mgpol-title{font-size:26px;}}"
+  );
+  function buildPolicy() {
+    var def = POL[location.pathname.replace(/\/+$/, "")];
+    if (!def) return;
+    if (document.querySelector(".mgpol")) return; /* idempotent */
+    var root = document.getElementById("root");
+    var wrap = root && root.children[0];
+    if (!wrap) return;
+    /* Empty shell: hide every page section except the footer (header lives on body). */
+    Array.from(wrap.children).forEach(function (el) {
+      if (!el.classList.contains("mg-foot")) el.style.display = "none";
+    });
+    var el = document.createElement("div");
+    el.className = "mgpol";
+    el.innerHTML =
+      '<div class="mgpol-kicker">MERMAID\'S GLANCE</div>' +
+      '<h1 class="mgpol-title">' + def.t + '</h1>' +
+      '<div class="mgpol-body">' + def.body + '</div>';
+    var foot = wrap.querySelector(".mg-foot");
+    if (foot) wrap.insertBefore(el, foot); else wrap.appendChild(el);
+  }
+
   var _ftT;
   new MutationObserver(function () {
     clearTimeout(_ftT);
-    _ftT = setTimeout(buildFooter, 200);
+    _ftT = setTimeout(function () { buildFooter(); buildPolicy(); }, 200);
   }).observe(document.documentElement, { childList: true, subtree: true });
-  setTimeout(buildFooter, 600);
+  setTimeout(function () { buildFooter(); buildPolicy(); }, 600);
 
   /* =========================================================================
      §2 — CONTACT REBUILD (route-gated: /contactus)
