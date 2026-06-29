@@ -51,41 +51,58 @@
   css(".tebYR,.zsy6s,.NF7a4{border-radius:0!important;}");
 
   /* =========================================================================
-     §7 — IMAGE PERFORMANCE (global, but pays off on the PDP gallery)
-     Two LF-rendered defects we cannot fix via header_scripts (the gallery is
-     SPA-rendered server markup), so we correct each <img> as it is inserted —
-     before the browser selects/loads a srcset candidate (live-verified 2026-06-29):
+     §7 — IMAGE PERFORMANCE (global; the win lands on the PDP gallery)
+     The PDP gallery is a STACKED carousel: all ~12 product slides (img.pdZHw) are
+     layered at the same in-viewport position, so the browser eagerly loads EVERY
+     photo at full res on first paint (~825 KiB on mobile, ~2 MB on desktop) even
+     though only the hero is shown. The 74px thumbnail rail (img.Jc2tx) free-rides
+     those same URLs. None of the gallery imgs carry width/height → CLS ~0.116.
+     None of this is reachable via header_scripts (SPA server markup), so we
+     correct each <img> client-side (all live-verified 2026-06-29):
 
-       1. OVER-FETCH ~825 KiB: LF stamps the HERO's sizes="(min-width:1280px)
-          50vw,100vw" onto EVERY gallery image, including the 74px thumbnail rail
-          (img.Jc2tx). The browser therefore fetches the ~1920px variant for a
-          ~74px slot. We rewrite the thumbnail rail's sizes to a small fixed px so
-          a ~256-384px candidate is chosen instead. The hero (fetchpriority=high,
-          class pdZHw) keeps its sizes — it is correct on real mobile.
+       1. CLS: stamp the uniform 712x1066 (2:3) intrinsic size so the box is
+          reserved before decode. CSS still controls the rendered size.
+       2. THUMBS: once slides are deferred the rail can no longer share a slide's
+          fetch, so give it its own small image — rewrite cdn-cgi width->256 in
+          src+srcset and shrink sizes (256 is a valid resizer width — verified).
+       3. SLIDES: defer every non-hero slide — stash its srcset/src and swap in an
+          inert data: placeholder, which cancels the eager full-res fetch. Restore
+          ALL on the first real gallery interaction (capture phase, so it beats the
+          carousel's own handler) → switching still works. The hero (fetchpriority
+          =high) is never touched, so LCP is unaffected.
 
-       2. CLS ~0.116: none of the gallery images carry width/height, so nothing
-          reserves their box until they decode. The whole catalogue is uniform
-          712x1066 portrait (2:3); stamping that intrinsic size lets the browser
-          reserve the aspect box. CSS still controls the rendered size.
-
-     Idempotent (im.__mgi guard); a persistent observer catches SPA re-renders. */
+     Idempotent (per-node guards); a persistent observer catches SPA re-renders. */
   (function () {
     var GAL = /assets\.lightfunnels\.com|images_library/;
+    var PH = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='712' height='1066'%3E%3C/svg%3E";
+    var EVT = ["pointerdown", "touchstart", "keydown", "wheel", "mousemove"];
+    var stashed = [], armed = false;
+
+    function restoreAll() {
+      for (var i = 0; i < stashed.length; i++) {
+        var im = stashed[i], ss = im.getAttribute("data-mgss"), sr = im.getAttribute("data-mgsrc");
+        if (ss) im.setAttribute("srcset", ss);
+        if (sr) im.setAttribute("src", sr);
+        im.removeAttribute("data-mgss"); im.removeAttribute("data-mgsrc");
+      }
+      stashed = [];
+      EVT.forEach(function (e) { document.removeEventListener(e, restoreAll, true); });
+    }
+    function arm() { if (armed) return; armed = true; EVT.forEach(function (e) { document.addEventListener(e, restoreAll, true); }); }
+
     function fixImg(im) {
       if (im.__mgi) return; im.__mgi = 1;
       if (!im.hasAttribute("width")) { im.setAttribute("width", "712"); im.setAttribute("height", "1066"); }
-      /* Thumbnail rail only — Jc2tx is the strip class; hero/slides keep pdZHw.
-         The rail shares the hero's sizes="100vw", so each 74px thumb resolves to
-         the SAME width=1920 URL — and because the rail is in-viewport it pulls the
-         WHOLE gallery at full res on load (~2.4MB). Mutating sizes alone is ignored
-         once a load is in flight (verified: all 16 still fetched 1920), so we rewrite
-         the cdn-cgi width in src+srcset to 256: the URL change cancels the in-flight
-         1920 and loads a ~256px variant instead. The hero is never touched. */
-      if (im.classList.contains("Jc2tx")) {
+      if (im.classList.contains("Jc2tx")) {                 /* thumbnail rail → its own small image */
         im.setAttribute("sizes", "96px");
         var ss = im.getAttribute("srcset");
-        if (ss) { var ss2 = ss.replace(/width=\d+/g, "width=256"); if (ss2 !== ss) im.setAttribute("srcset", ss2); }
+        if (ss) { var s = ss.replace(/width=\d+/g, "width=256"); if (s !== ss) im.setAttribute("srcset", s); }
         if (im.src && /\/width=\d+/.test(im.src)) { var s2 = im.src.replace(/\/width=\d+/, "/width=256"); if (s2 !== im.src) im.setAttribute("src", s2); }
+      } else if (im.classList.contains("pdZHw") && im.getAttribute("fetchpriority") !== "high") {
+        im.setAttribute("data-mgss", im.getAttribute("srcset") || "");   /* non-hero slide → defer */
+        im.setAttribute("data-mgsrc", im.getAttribute("src") || "");
+        im.removeAttribute("srcset"); im.setAttribute("src", PH);
+        stashed.push(im); arm();
       }
     }
     function scan(root) {
