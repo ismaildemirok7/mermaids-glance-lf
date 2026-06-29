@@ -21,7 +21,12 @@
   if (window.__mgI18n) return;
   window.__mgI18n = true;
 
-  var CDN = "https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@v16";
+  /* Self-derive the CDN base from this module's own <script src> so it tracks the
+     loader's @vN automatically — a hardcoded version goes stale on every bump. */
+  var CDN = (function () {
+    var t = Array.prototype.slice.call(document.scripts).filter(function (x) { return /mermaids-glance-lf@/.test(x.src); }).pop();
+    return t ? t.src.replace(/\/(mg|i18n)\.js.*$/, "") : "https://cdn.jsdelivr.net/gh/ismaildemirok7/mermaids-glance-lf@v18";
+  })();
 
   /* ---- language detection ------------------------------------------------- */
   var SUPPORTED = { tr: 1, de: 1, fr: 1, en: 1 };
