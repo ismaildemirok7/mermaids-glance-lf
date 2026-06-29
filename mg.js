@@ -51,6 +51,50 @@
   css(".tebYR,.zsy6s,.NF7a4{border-radius:0!important;}");
 
   /* =========================================================================
+     §7 — IMAGE PERFORMANCE (global, but pays off on the PDP gallery)
+     Two LF-rendered defects we cannot fix via header_scripts (the gallery is
+     SPA-rendered server markup), so we correct each <img> as it is inserted —
+     before the browser selects/loads a srcset candidate (live-verified 2026-06-29):
+
+       1. OVER-FETCH ~825 KiB: LF stamps the HERO's sizes="(min-width:1280px)
+          50vw,100vw" onto EVERY gallery image, including the 74px thumbnail rail
+          (img.Jc2tx). The browser therefore fetches the ~1920px variant for a
+          ~74px slot. We rewrite the thumbnail rail's sizes to a small fixed px so
+          a ~256-384px candidate is chosen instead. The hero (fetchpriority=high,
+          class pdZHw) keeps its sizes — it is correct on real mobile.
+
+       2. CLS ~0.116: none of the gallery images carry width/height, so nothing
+          reserves their box until they decode. The whole catalogue is uniform
+          712x1066 portrait (2:3); stamping that intrinsic size lets the browser
+          reserve the aspect box. CSS still controls the rendered size.
+
+     Idempotent (im.__mgi guard); a persistent observer catches SPA re-renders. */
+  (function () {
+    var GAL = /assets\.lightfunnels\.com|images_library/;
+    function fixImg(im) {
+      if (im.__mgi) return; im.__mgi = 1;
+      if (!im.hasAttribute("width")) { im.setAttribute("width", "712"); im.setAttribute("height", "1066"); }
+      /* Thumbnail rail only — Jc2tx is the strip class; hero/slides use pdZHw. */
+      if (im.classList.contains("Jc2tx")) im.setAttribute("sizes", "96px");
+    }
+    function scan(root) {
+      var q = (root || document).getElementsByTagName("img"), n = q.length;
+      while (n--) { var im = q[n]; if (GAL.test(im.src + im.srcset) || im.classList.contains("bvOhf")) fixImg(im); }
+    }
+    scan();
+    new MutationObserver(function (recs) {
+      for (var i = 0; i < recs.length; i++) {
+        var a = recs[i].addedNodes, k = a.length;
+        while (k--) {
+          var nd = a[k]; if (nd.nodeType !== 1) continue;
+          if (nd.tagName === "IMG") { if (GAL.test(nd.src + nd.srcset) || nd.classList.contains("bvOhf")) fixImg(nd); }
+          else if (nd.getElementsByTagName) scan(nd);
+        }
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  })();
+
+  /* =========================================================================
      §3 — FOOTER REBUILD (global — every page)
      White editorial footer — left-aligned, brand wordmark first.
 
