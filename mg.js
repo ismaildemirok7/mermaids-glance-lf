@@ -93,13 +93,15 @@
     function fixImg(im) {
       if (im.__mgi) return; im.__mgi = 1;
       if (!im.hasAttribute("width")) { im.setAttribute("width", "712"); im.setAttribute("height", "1066"); }
-      if (im.classList.contains("Jc2tx")) {                 /* thumbnail rail → its own small image */
-        im.setAttribute("sizes", "96px");
-        var ss = im.getAttribute("srcset");
-        if (ss) { var s = ss.replace(/width=\d+/g, "width=256"); if (s !== ss) im.setAttribute("srcset", s); }
-        if (im.src && /\/width=\d+/.test(im.src)) { var s2 = im.src.replace(/\/width=\d+/, "/width=256"); if (s2 !== im.src) im.setAttribute("src", s2); }
-      } else if (im.classList.contains("pdZHw") && im.getAttribute("fetchpriority") !== "high") {
-        im.setAttribute("data-mgss", im.getAttribute("srcset") || "");   /* non-hero slide → defer */
+      if (im.getAttribute("fetchpriority") === "high") return;   /* the hero / LCP element — never touch */
+      /* Defer EVERY other gallery image — the thumbnail rail (Jc2tx) AND the
+         non-active stacked slides (pdZHw) — so the LCP window belongs to the hero
+         alone (no sibling fetch steals its 4G bandwidth). Stash srcset/src, swap an
+         inert data: placeholder (cancels the eager fetch), restore ALL on the first
+         interaction. v23 deferred only slides and let the 256 thumbnails contend
+         with the hero → LCP stayed ~8.7s; deferring the rail too removes that. */
+      if (im.classList.contains("Jc2tx") || im.classList.contains("pdZHw")) {
+        im.setAttribute("data-mgss", im.getAttribute("srcset") || "");
         im.setAttribute("data-mgsrc", im.getAttribute("src") || "");
         im.removeAttribute("srcset"); im.setAttribute("src", PH);
         stashed.push(im); arm();
