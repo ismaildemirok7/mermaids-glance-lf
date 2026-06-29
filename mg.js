@@ -290,9 +290,9 @@
   var _ftT;
   new MutationObserver(function () {
     clearTimeout(_ftT);
-    _ftT = setTimeout(function () { buildFooter(); buildPolicy(); ensureSearchBtn(); }, 200);
+    _ftT = setTimeout(function () { buildFooter(); buildPolicy(); ensureSearchBtn(); buildRecent(); }, 200);
   }).observe(document.documentElement, { childList: true, subtree: true });
-  setTimeout(function () { buildFooter(); buildPolicy(); buildSearchOverlay(); ensureSearchBtn(); }, 600);
+  setTimeout(function () { buildFooter(); buildPolicy(); buildSearchOverlay(); ensureSearchBtn(); buildRecent(); }, 600);
 
   /* =========================================================================
      §2 — CONTACT REBUILD (route-gated: /contactus)
@@ -607,6 +607,94 @@
     b.innerHTML = SEARCH_SVG;
     b.addEventListener("click", openSearch);
     right.insertBefore(b, right.firstChild); /* left of the cart */
+  }
+
+  /* =========================================================================
+     §8 — RECENTLY VIEWED  (PDP only — route /products/...)
+     Remembers the last few products the visitor opened (localStorage, slug-keyed,
+     newest-first, capped) and renders an editorial strip directly ABOVE the footer
+     — i.e. below the cross-sell ("RİTÜELİNİ TAMAMLA"), which is the last content
+     section on the PDP. Lives HERE (not header_scripts) because that file is at the
+     64KB cap. TR heading, consistent with the other brand PDP sections (untranslated).
+     ========================================================================= */
+  var RV_KEY = "mg_recent", RV_MAX = 8, _rvTracked = "";
+  function rvPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
+  function rvRead() { try { return JSON.parse(localStorage.getItem(RV_KEY) || "[]") || []; } catch (e) { return []; } }
+  function rvSave(a) { try { localStorage.setItem(RV_KEY, JSON.stringify(a)); } catch (e) {} }
+  function rvHref() { return location.pathname.replace(/[?#].*$/, "").replace(/\/+$/, ""); }
+  function rvHero() {
+    var im = document.querySelector('img[fetchpriority="high"]');
+    if (im) { var s = im.getAttribute("data-mgsrc") || im.src; if (s && s.indexOf("data:") !== 0) return s; }
+    var all = document.getElementsByTagName("img");
+    for (var i = 0; i < all.length; i++) {
+      var v = all[i].getAttribute("data-mgsrc") || all[i].src;
+      if (v && v.indexOf("data:") !== 0 && /lightfunnels|images_library|\/cdn\//.test(v)) return v;
+    }
+    return "";
+  }
+  function rvName() {
+    try { var t = window.data.product.title || window.data.product.name; if (t) return t; } catch (e) {}
+    var h = document.querySelector("h1"); return h ? (h.innerText || "").trim() : "";
+  }
+  function rvPrice() {
+    var el = Array.prototype.slice.call(document.querySelectorAll("*")).find(function (e) {
+      return e.children.length === 0 && /^[$₺€]\s?\d[\d.,]*$/.test((e.innerText || "").trim());
+    });
+    return el ? (el.innerText || "").trim() : "";
+  }
+  function rvTrack() {
+    var href = rvHref(); if (!href || _rvTracked === href) return;
+    var name = rvName(); if (!name) return; /* wait until the PDP has actually rendered */
+    _rvTracked = href;
+    var list = rvRead().filter(function (x) { return x.h !== href; });
+    list.unshift({ h: href, n: name, p: rvPrice(), i: rvHero() });
+    rvSave(list.slice(0, RV_MAX));
+  }
+  css(
+    ".mgrv{max-width:1200px;margin:0 auto;padding:64px 40px 80px;border-top:1px solid #e8e6e3;}" +
+    ".mgrv-h{font-size:9px;font-weight:600;letter-spacing:.2em;color:#9a9a9a;text-transform:uppercase;margin-bottom:30px;text-align:center;}" +
+    ".mgrv-row{display:flex;gap:24px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-ms-overflow-style:none;}" +
+    ".mgrv-row::-webkit-scrollbar{display:none;}" +
+    ".mgrv-card{flex:0 0 auto;width:200px;text-decoration:none;color:#0d0d0d;}" +
+    ".mgrv-imw{width:200px;height:300px;overflow:hidden;background:#f4f2ef;}" +
+    ".mgrv-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .9s cubic-bezier(.19,1,.22,1);}" +
+    ".mgrv-card:hover .mgrv-img{transform:scale(1.05);}" +
+    ".mgrv-nm{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;line-height:1.5;margin:14px 0 5px;}" +
+    ".mgrv-pr{font-size:11px;color:#7a7a7a;letter-spacing:.04em;}" +
+    "@media(max-width:768px){.mgrv{padding:48px 24px 64px;}.mgrv-card,.mgrv-imw{width:150px;}.mgrv-imw{height:225px;}}"
+  );
+  function buildRecent() {
+    if (!rvPDP()) { var stale = document.querySelector(".mgrv"); if (stale) stale.remove(); return; }
+    rvTrack();
+    var cur = rvHref();
+    var items = rvRead().filter(function (x) { return x.h !== cur && x.n; });
+    var host = document.querySelector(".mgrv");
+    if (items.length < 1) { if (host) host.remove(); return; }
+    /* idempotent + stale guard: rebuild only when the page or the item set changed */
+    if (host) {
+      if (host.getAttribute("data-for") === cur && host.getAttribute("data-n") === String(items.length)) return;
+      host.remove();
+    }
+    var sec = document.createElement("div");
+    sec.className = "mgrv";
+    sec.setAttribute("data-for", cur);
+    sec.setAttribute("data-n", String(items.length));
+    sec.innerHTML =
+      '<div class="mgrv-h">SON BAKIŞLARINIZ</div>' +
+      '<div class="mgrv-row">' +
+      items.map(function (x) {
+        return '<a class="mgrv-card" href="' + x.h + '">' +
+          '<div class="mgrv-imw">' + (x.i ? '<img class="mgrv-img" src="' + x.i + '" alt="" loading="lazy">' : "") + "</div>" +
+          '<div class="mgrv-nm">' + esc(x.n) + "</div>" +
+          (x.p ? '<div class="mgrv-pr">' + esc(x.p) + "</div>" : "") +
+          "</a>";
+      }).join("") +
+      "</div>";
+    /* Place directly above the footer = below the cross-sell (last PDP section). */
+    var foot = document.querySelector(".mg-foot");
+    if (foot && foot.parentNode) { foot.parentNode.insertBefore(sec, foot); return; }
+    var root = document.getElementById("root"), wrap = root && root.firstElementChild;
+    if (wrap) wrap.appendChild(sec);
   }
 
 })();
