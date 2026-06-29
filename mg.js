@@ -637,16 +637,27 @@
     var h = document.querySelector("h1"); return h ? (h.innerText || "").trim() : "";
   }
   function rvPrice() {
-    var el = Array.prototype.slice.call(document.querySelectorAll("*")).find(function (e) {
+    var el = document.querySelector(".mg-pdp-price"); /* the main product price (tagged by header_scripts build) */
+    if (el && el.children.length === 0) { var t = (el.innerText || "").trim(); if (t) return t; }
+    el = Array.prototype.slice.call(document.querySelectorAll("*")).find(function (e) {
       return e.children.length === 0 && /^[$₺€]\s?\d[\d.,]*$/.test((e.innerText || "").trim());
     });
     return el ? (el.innerText || "").trim() : "";
   }
   function rvTrack() {
-    var href = rvHref(); if (!href || _rvTracked === href) return;
+    var href = rvHref(); if (!href) return;
     var name = rvName(); if (!name) return; /* wait until the PDP has actually rendered */
+    var list = rvRead();
+    if (_rvTracked === href && list[0] && list[0].h === href) {
+      /* price/image often render a beat after the title — backfill once they exist */
+      var ch = false;
+      if (!list[0].p) { var p = rvPrice(); if (p) { list[0].p = p; ch = true; } }
+      if (!list[0].i) { var im = rvHero(); if (im) { list[0].i = im; ch = true; } }
+      if (ch) rvSave(list);
+      return;
+    }
     _rvTracked = href;
-    var list = rvRead().filter(function (x) { return x.h !== href; });
+    list = list.filter(function (x) { return x.h !== href; });
     list.unshift({ h: href, n: name, p: rvPrice(), i: rvHero() });
     rvSave(list.slice(0, RV_MAX));
   }
