@@ -241,7 +241,12 @@
     if (LANG === "en") return function () {};
     var s = document.createElement("style");
     s.id = "mg-i18n-gate";
-    s.textContent = "body{visibility:hidden!important}";
+    /* Mask the EN→target TEXT swap, but let images/media paint immediately so the
+       LCP hero + product gallery are NOT blocked by the gate (big perceived-speed
+       win, esp. on slow in-app browsers — page shows imagery instead of a blank
+       screen while the first translate pass runs). visibility:hidden preserves
+       layout, so no CLS when text reveals. */
+    s.textContent = "body{visibility:hidden!important}body img,body picture,body video,body svg,body canvas{visibility:visible!important}";
     (document.head || document.documentElement).appendChild(s);
     var done = false;
     function reveal() { if (done) return; done = true; var g = document.getElementById("mg-i18n-gate"); if (g) g.remove(); }
@@ -267,7 +272,9 @@
     startObserver();
     loadProductPack();
     loadPack("i18n/content." + LANG + ".json"); /* Phase 2 long-form (404 ok for now) */
-    setTimeout(reveal, 150); /* reveal shortly after first pass */
+    /* startObserver() ran the first synchronous translateAll, so the visible chrome
+       is already translated — reveal on the next frame instead of a fixed 150ms. */
+    if (window.requestAnimationFrame) requestAnimationFrame(reveal); else setTimeout(reveal, 150);
   }
   if (document.body) boot();
   else document.addEventListener("DOMContentLoaded", boot);
