@@ -211,9 +211,9 @@
   var _ftT;
   new MutationObserver(function () {
     clearTimeout(_ftT);
-    _ftT = setTimeout(function () { buildFooter(); buildPolicy(); }, 200);
+    _ftT = setTimeout(function () { buildFooter(); buildPolicy(); ensureSearchBtn(); }, 200);
   }).observe(document.documentElement, { childList: true, subtree: true });
-  setTimeout(function () { buildFooter(); buildPolicy(); }, 600);
+  setTimeout(function () { buildFooter(); buildPolicy(); buildSearchOverlay(); ensureSearchBtn(); }, 600);
 
   /* =========================================================================
      §2 — CONTACT REBUILD (route-gated: /contactus)
@@ -328,7 +328,7 @@
           ["Parça kusurlu gelirse ne olur?",
             "Kusurlarla pazarlık etmez, kısmi iade sunmayız. Bir parça kusurlu gelirse, gecikmeden kusursuz bir parçayla değiştirilir. Teslimattan sonraki 48 saat içinde görsel kanıtla info@mermaidsglance.com adresinden bize ulaşın."],
           ["Parça nasıl paketlenir?",
-            "Dış kargo paketi tamamen sade ve gizlidir. İçeride parçanız, imza mat siyah kutumuz ve lüks saten kesemiz içinde dinlenir. Gizliliğiniz mutlaktır."],
+            "Dış kargo paketi tamamen sade ve gizlidir. İçeride parçanız, imza mat siyah kutumuzun içinde özenle dinlenir. Gizliliğiniz mutlaktır."],
           ["Doğru bedenimi nasıl seçerim?",
             "Her parça hassas ölçülere göre üretilir. Bedeninizi tahmin etmeyin. Uyumunuzdan tam olarak emin olmak için parçanızı edinmeden önce Beden Rehberimize başvurun."]
         ];
@@ -413,6 +413,121 @@
         else wrap.appendChild(el);
       }
     }, 500); });
+  }
+
+  /* =========================================================================
+     §6 — SEARCH  (global — magnifier in the header, next to the cart)
+     The header is full inline (header_scripts is at the 64KB cap), so the search
+     button + overlay live here. The product/collection index is a static JSON
+     (search-index.json, built from the LF catalog) lazy-fetched on first open.
+     Client-side filter; results are plain links → /products|collections/{slug}.
+     ========================================================================= */
+  var SEARCH_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+  var SX_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="19" y1="5" x2="5" y2="19"/><line x1="5" y1="5" x2="19" y2="19"/></svg>';
+
+  css(
+    ".mgh-search{background:none;border:none;padding:8px;cursor:pointer;color:#0d0d0d;display:flex;align-items:center;border-radius:0!important;transition:opacity .4s ease!important;}" +
+    ".mgh-search:hover{opacity:.4!important;}" +
+    "#mg-search{position:fixed;inset:0;z-index:100000;background:rgba(13,13,13,.42);opacity:0;visibility:hidden;transition:opacity .25s ease;}" +
+    "#mg-search.open{opacity:1;visibility:visible;}" +
+    ".mgs-panel{background:#fff;max-height:86vh;display:flex;flex-direction:column;transform:translateY(-14px);transition:transform .25s ease;}" +
+    "#mg-search.open .mgs-panel{transform:translateY(0);}" +
+    ".mgs-bar{display:flex;align-items:center;gap:16px;padding:26px 40px;border-bottom:1px solid #ece9e6;color:#0d0d0d;}" +
+    ".mgs-input{flex:1;border:none;outline:none;font-size:20px;font-weight:300;letter-spacing:.02em;color:#0d0d0d;font-family:'Montserrat',sans-serif;background:transparent;}" +
+    ".mgs-input::placeholder{color:#c4c0bb;}" +
+    ".mgs-close{background:none;border:none;cursor:pointer;color:#0d0d0d;padding:6px;line-height:0;}" +
+    ".mgs-close:hover{opacity:.5;}" +
+    ".mgs-results{overflow-y:auto;padding:4px 40px 36px;}" +
+    ".mgs-sec{font-size:9px;font-weight:600;letter-spacing:.2em;color:#9a9a9a;text-transform:uppercase;margin:26px 0 8px;}" +
+    ".mgs-item{display:block;padding:11px 0;font-size:13px;letter-spacing:.02em;color:#333;text-decoration:none;border-bottom:1px solid #f2f0ed;transition:color .15s;}" +
+    ".mgs-item:hover{color:#0d0d0d;}" +
+    ".mgs-msg{padding:30px 0;color:#9a9a9a;font-size:13px;letter-spacing:.02em;}" +
+    "@media(max-width:768px){.mgs-bar{padding:18px 24px;gap:12px;}.mgs-input{font-size:17px;}.mgs-results{padding:4px 24px 28px;}}"
+  );
+
+  var IDX = null, idxLoading = false;
+  function loadIndex() {
+    if (IDX || idxLoading) return;
+    idxLoading = true;
+    fetch(CDN + "/search-index.json")
+      .then(function (r) { return r.json(); })
+      .then(function (j) { IDX = j; runSearch(); })
+      .catch(function () { idxLoading = false; });
+  }
+  /* Turkish-aware fold: lower-case (tr locale) then strip the diacritics that
+     trip up substring matching ("İç" vs "ic", "Ş-" vs "s-"). */
+  function norm(s) {
+    return (s || "").toLocaleLowerCase("tr")
+      .replace(/[ıİi̇]/g, "i").replace(/[şŞ]/g, "s").replace(/[ğĞ]/g, "g")
+      .replace(/[üÜ]/g, "u").replace(/[öÖ]/g, "o").replace(/[çÇ]/g, "c");
+  }
+  function esc(s) { return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function runSearch() {
+    var box = document.getElementById("mg-search-results");
+    var inp = document.getElementById("mg-search-input");
+    if (!box || !inp) return;
+    var q = norm(inp.value.trim());
+    if (!q) { box.innerHTML = ""; return; }
+    if (!IDX) { loadIndex(); box.innerHTML = '<div class="mgs-msg">Aranıyor…</div>'; return; }
+    var toks = q.split(/\s+/);
+    function match(name) { var n = norm(name); return toks.every(function (t) { return n.indexOf(t) !== -1; }); }
+    var cols = IDX.c.filter(function (x) { return match(x[0]); }).slice(0, 6);
+    var prods = IDX.p.filter(function (x) { return match(x[0]); }).slice(0, 24);
+    var html = "";
+    if (cols.length) html += '<div class="mgs-sec">KOLEKSİYONLAR</div>' + cols.map(function (x) { return '<a class="mgs-item" href="/collections/' + x[1] + '">' + esc(x[0]) + '</a>'; }).join("");
+    if (prods.length) html += '<div class="mgs-sec">ÜRÜNLER</div>' + prods.map(function (x) { return '<a class="mgs-item" href="/products/' + x[1] + '">' + esc(x[0]) + '</a>'; }).join("");
+    box.innerHTML = html || '<div class="mgs-msg">Sonuç bulunamadı.</div>';
+  }
+  function openSearch() {
+    var o = document.getElementById("mg-search");
+    if (!o) { buildSearchOverlay(); o = document.getElementById("mg-search"); }
+    if (!o) return;
+    o.classList.add("open");
+    document.body.style.overflow = "hidden";
+    var i = document.getElementById("mg-search-input");
+    if (i) setTimeout(function () { i.focus(); }, 60);
+    loadIndex();
+  }
+  function closeSearch() {
+    var o = document.getElementById("mg-search");
+    if (!o) return;
+    o.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+  window.__mgSearch = openSearch;
+
+  function buildSearchOverlay() {
+    if (document.getElementById("mg-search")) return;
+    var o = document.createElement("div");
+    o.id = "mg-search";
+    o.innerHTML =
+      '<div class="mgs-panel">' +
+        '<div class="mgs-bar">' + SEARCH_SVG +
+          '<input id="mg-search-input" class="mgs-input" type="text" placeholder="Ürün veya koleksiyon ara…" autocomplete="off">' +
+          '<button class="mgs-close" aria-label="Kapat">' + SX_SVG + '</button>' +
+        '</div>' +
+        '<div id="mg-search-results" class="mgs-results"></div>' +
+      '</div>';
+    document.body.appendChild(o);
+    o.addEventListener("click", function (e) { if (e.target === o) closeSearch(); });
+    o.querySelector(".mgs-close").addEventListener("click", closeSearch);
+    o.querySelector("#mg-search-input").addEventListener("input", runSearch);
+    o.querySelector("#mg-search-results").addEventListener("click", function (e) {
+      if (e.target.closest(".mgs-item")) closeSearch(); /* SPA nav keeps the page; close the overlay */
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSearch(); });
+  }
+
+  function ensureSearchBtn() {
+    var right = document.querySelector("#mg-header .mgh-right");
+    if (!right || document.getElementById("mg-search-btn")) return;
+    var b = document.createElement("button");
+    b.id = "mg-search-btn";
+    b.className = "mgh-search";
+    b.setAttribute("aria-label", "Ara");
+    b.innerHTML = SEARCH_SVG;
+    b.addEventListener("click", openSearch);
+    right.insertBefore(b, right.firstChild); /* left of the cart */
   }
 
 })();
