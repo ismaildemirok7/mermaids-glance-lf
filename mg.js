@@ -74,8 +74,19 @@
     function fixImg(im) {
       if (im.__mgi) return; im.__mgi = 1;
       if (!im.hasAttribute("width")) { im.setAttribute("width", "712"); im.setAttribute("height", "1066"); }
-      /* Thumbnail rail only — Jc2tx is the strip class; hero/slides use pdZHw. */
-      if (im.classList.contains("Jc2tx")) im.setAttribute("sizes", "96px");
+      /* Thumbnail rail only — Jc2tx is the strip class; hero/slides keep pdZHw.
+         The rail shares the hero's sizes="100vw", so each 74px thumb resolves to
+         the SAME width=1920 URL — and because the rail is in-viewport it pulls the
+         WHOLE gallery at full res on load (~2.4MB). Mutating sizes alone is ignored
+         once a load is in flight (verified: all 16 still fetched 1920), so we rewrite
+         the cdn-cgi width in src+srcset to 256: the URL change cancels the in-flight
+         1920 and loads a ~256px variant instead. The hero is never touched. */
+      if (im.classList.contains("Jc2tx")) {
+        im.setAttribute("sizes", "96px");
+        var ss = im.getAttribute("srcset");
+        if (ss) { var ss2 = ss.replace(/width=\d+/g, "width=256"); if (ss2 !== ss) im.setAttribute("srcset", ss2); }
+        if (im.src && /\/width=\d+/.test(im.src)) { var s2 = im.src.replace(/\/width=\d+/, "/width=256"); if (s2 !== im.src) im.setAttribute("src", s2); }
+      }
     }
     function scan(root) {
       var q = (root || document).getElementsByTagName("img"), n = q.length;
