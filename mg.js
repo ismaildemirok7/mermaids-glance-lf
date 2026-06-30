@@ -351,7 +351,18 @@
         ".mgc-info a:hover{color:#fff;}" +
         ".mgc-hrs{font-size:12px;color:#555;margin-top:24px;letter-spacing:.04em;}" +
 
-        "@media(max-width:768px){.mgc-wrap{grid-template-columns:1fr;gap:48px;padding:48px 24px;}}"
+        /* MOBILE FIX: LF renders the form's inner layout divs with FIXED px
+           widths (…_8=800px, _16/_15=716px) and the inputs carry min-width:100%.
+           As grid items default to min-width:auto, that fixed content blows the
+           column past the viewport → the whole form spills off-screen on phones.
+           Let every form element shrink (min-width:0) and cap it to its
+           container (max-width:100%). Verified at 390px: zero overflow. */
+        ".mgc-form-col{min-width:0!important;max-width:100%!important;}" +
+        ".mgc-form-col *{max-width:100%!important;min-width:0!important;box-sizing:border-box!important;}" +
+        "input[name='first_name'],input[name='last_name'],input[name='email']," +
+        "input[name='subject'],textarea[name='message']{width:100%!important;min-width:0!important;}" +
+
+        "@media(max-width:768px){.mgc-wrap{grid-template-columns:1fr;gap:48px;padding:48px 24px;max-width:100%!important;}}"
       );
 
       if (document.querySelector(".mgc-wrap")) return; /* idempotent */
