@@ -25,6 +25,12 @@
   })();
   var path = location.pathname;
 
+  /* Order-tracking Worker endpoint (§9). Set this to the URL printed by
+     `wrangler deploy` (e.g. https://mg-tracking.<sub>.workers.dev). While it is
+     empty the tracking page runs in DEMO mode so the UI can be verified before
+     the Worker is live. */
+  var TRACK_API = "https://mg-tracking.mermaidsglance.workers.dev";
+
   /* Wait for a selector to appear in the SPA-rendered DOM. */
   function waitFor(sel, fn, maxMs) {
     var el = document.querySelector(sel);
@@ -172,6 +178,7 @@
         '</div>' +
         '<div class="mgf-col">' +
           '<div class="mgf-head">INFORMATION</div>' +
+          '<a href="/siparis-takibi" class="mgf-lnk">Sipariş Takibi</a>' +
           '<a href="/about-us" class="mgf-lnk">About Us</a>' +
           '<a href="/contactus" class="mgf-lnk">FAQ</a>' +
           '<a href="https://www.instagram.com/mermaidsglanceofficial/" target="_blank" rel="noopener" class="mgf-lnk">Instagram</a>' +
@@ -283,9 +290,9 @@
   var _ftT;
   new MutationObserver(function () {
     clearTimeout(_ftT);
-    _ftT = setTimeout(function () { buildFooter(); buildPolicy(); ensureSearchBtn(); buildRecent(); }, 200);
+    _ftT = setTimeout(function () { buildFooter(); buildPolicy(); buildTracking(); ensureSearchBtn(); buildRecent(); }, 200);
   }).observe(document.documentElement, { childList: true, subtree: true });
-  setTimeout(function () { buildFooter(); buildPolicy(); buildSearchOverlay(); ensureSearchBtn(); buildRecent(); }, 600);
+  setTimeout(function () { buildFooter(); buildPolicy(); buildTracking(); buildSearchOverlay(); ensureSearchBtn(); buildRecent(); }, 600);
 
   /* =========================================================================
      §2 — CONTACT REBUILD (route-gated: /contactus)
@@ -701,6 +708,173 @@
       }).join("") +
       "</div>";
     foot.parentNode.insertBefore(sec, foot); /* directly above the footer = below the cross-sell */
+  }
+
+  /* =========================================================================
+     §9 — ORDER TRACKING  (route-gated: /siparis-takibi)
+     A post-purchase trust page. The customer pastes the tracking number from
+     their shipping email; we fetch the masked timeline from the tracking Worker
+     (TRACK_API) — which builds it from 17track's NORMALIZED stage enum only, so
+     no origin / carrier / country text ever reaches the browser. Until TRACK_API
+     is set, a DEMO payload renders so the UI can be verified.
+
+     Driven by the shared footer observer (so it also fires on SPA navigation),
+     same shell-hide approach as §5 policy pages. TR only (storefront default).
+     ========================================================================= */
+  css(
+    ".mgtr{max-width:720px;margin:0 auto;padding:120px 40px 120px;}" +
+    ".mgtr-kicker{font-size:9px;font-weight:600;letter-spacing:.25em;color:#7a7a7a;text-transform:uppercase;margin-bottom:32px;}" +
+    ".mgtr-title{font-size:34px;font-weight:300;letter-spacing:.04em;color:#0d0d0d;margin:0 0 28px;line-height:1.25;}" +
+    ".mgtr-lead{font-size:15px;font-weight:300;color:#444;line-height:2;margin:0 0 40px;letter-spacing:.01em;}" +
+    ".mgtr-form{display:flex;gap:0;border-bottom:1px solid #0d0d0d;}" +
+    ".mgtr-input{flex:1;border:none;outline:none;background:transparent;font-family:'Montserrat',sans-serif;" +
+      "font-size:15px;font-weight:300;letter-spacing:.06em;color:#0d0d0d;padding:14px 0;}" +
+    ".mgtr-input::placeholder{color:#c4c0bb;letter-spacing:.04em;}" +
+    ".mgtr-btn{background:none;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;" +
+      "font-size:11px;font-weight:600;letter-spacing:.18em;color:#0d0d0d;text-transform:uppercase;padding:0 0 0 20px;transition:opacity .2s;}" +
+    ".mgtr-btn:hover{opacity:.5;}" +
+    ".mgtr-btn[disabled]{opacity:.35;cursor:default;}" +
+    ".mgtr-hint{font-size:12px;color:#9a9a9a;letter-spacing:.02em;margin-top:14px;line-height:1.7;}" +
+    ".mgtr-result{margin-top:64px;}" +
+    ".mgtr-msg{font-size:14px;font-weight:300;color:#555;line-height:1.9;letter-spacing:.01em;}" +
+    ".mgtr-status-h{font-size:22px;font-weight:300;letter-spacing:.03em;color:#0d0d0d;margin:0 0 12px;}" +
+    ".mgtr-status-s{font-size:14px;font-weight:300;color:#555;line-height:1.95;letter-spacing:.01em;margin:0 0 8px;}" +
+    ".mgtr-est{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0d0d0d;margin:28px 0 0;}" +
+    ".mgtr-line{margin:48px 0 0;padding:0;list-style:none;}" +
+    ".mgtr-step{position:relative;padding:0 0 34px 34px;}" +
+    ".mgtr-step:before{content:'';position:absolute;left:5px;top:14px;bottom:-6px;width:1px;background:#e2dfdb;}" +
+    ".mgtr-step:last-child:before{display:none;}" +
+    ".mgtr-dot{position:absolute;left:0;top:4px;width:11px;height:11px;border:1px solid #cfcbc6;background:#fff;border-radius:0;}" +
+    ".mgtr-step.done .mgtr-dot{background:#0d0d0d;border-color:#0d0d0d;}" +
+    ".mgtr-step.done:before{background:#0d0d0d;}" +
+    ".mgtr-step.active .mgtr-dot{border-color:#0d0d0d;box-shadow:0 0 0 4px rgba(13,13,13,.08);}" +
+    ".mgtr-step-label{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#bdbab6;line-height:1.4;}" +
+    ".mgtr-step.done .mgtr-step-label,.mgtr-step.active .mgtr-step-label{color:#0d0d0d;}" +
+    ".mgtr-step-loc{font-size:12px;font-weight:300;color:#9a9a9a;letter-spacing:.02em;margin-top:5px;}" +
+    ".mgtr-step-date{font-size:11px;color:#bdbab6;letter-spacing:.04em;margin-top:4px;}" +
+    ".mgtr-support{margin-top:56px;padding-top:28px;border-top:1px solid #e8e6e3;font-size:13px;font-weight:300;color:#777;letter-spacing:.01em;line-height:1.9;}" +
+    ".mgtr-support a{color:#0d0d0d;text-decoration:underline;text-underline-offset:2px;}" +
+    "@media(max-width:768px){.mgtr{padding:88px 24px 80px;}.mgtr-title{font-size:26px;}.mgtr-status-h{font-size:19px;}}"
+  );
+
+  function isTrackRoute() { return /^\/siparis-takibi\/?$/.test(location.pathname); }
+
+  function trFmtDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d)) return "";
+    try { return d.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" }); }
+    catch (e) { return d.toISOString().slice(0, 10); }
+  }
+  function trEstimate(est) {
+    if (!est) return "";
+    if (est.from && est.to) return "Tahmini teslimat · " + trFmtDate(est.from) + " – " + trFmtDate(est.to);
+    if (est.on) return "Tahmini teslimat · " + trFmtDate(est.on);
+    return "";
+  }
+
+  /* Demo payload — only used while TRACK_API is unset, so the page is reviewable
+     before the Worker is deployed. Mirrors the Worker's output shape exactly. */
+  function trDemo(number) {
+    var today = Date.now();
+    function ago(d) { return new Date(today - d * 864e5).toISOString(); }
+    return {
+      ok: true, number: number, stage: "transit", delivered: false,
+      headline: "Parçanız yolda",
+      sub: "Siparişiniz size doğru ilerliyor. Tahmini teslimat penceresi içindesiniz.",
+      estimate: { from: new Date(today + 3 * 864e5).toISOString(), to: new Date(today + 7 * 864e5).toISOString() },
+      updatedAt: ago(1),
+      steps: [
+        { key: "prep", label: "Hazırlanıyor", location: "Mermaid's Glance Lojistik Merkezi", date: ago(6), done: true, active: false },
+        { key: "shipped", label: "Sevk Edildi", location: "Uluslararası Sevkiyat Birimi · Avrupa", date: ago(5), done: true, active: false },
+        { key: "transit", label: "Yolda", location: "Dağıtım Hattı", date: ago(1), done: false, active: true },
+        { key: "customs", label: "Yurda Giriş", location: "Türkiye Dağıtım Merkezi · İstanbul", date: null, done: false, active: false },
+        { key: "delivery", label: "Dağıtımda", location: "Yerel Teslimat Şubesi", date: null, done: false, active: false },
+        { key: "delivered", label: "Teslim Edildi", location: "Teslim Adresi", date: null, done: false, active: false }
+      ]
+    };
+  }
+
+  var SUPPORT_HTML =
+    '<div class="mgtr-support">Beklediğinizden uzun mu sürdü, ya da bir sorunuz mu var? ' +
+    'Kişisel olarak ilgileniriz — <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a></div>';
+
+  function trRender(box, data) {
+    if (!data || !data.ok) {
+      box.innerHTML = '<p class="mgtr-msg">' + esc((data && data.message) || "Takip bilgisine ulaşılamadı.") + "</p>" + SUPPORT_HTML;
+      return;
+    }
+    var est = trEstimate(data.estimate);
+    var steps = (data.steps || []).map(function (s) {
+      var cls = "mgtr-step" + (s.done ? " done" : "") + (s.active ? " active" : "");
+      return '<li class="' + cls + '">' +
+        '<span class="mgtr-dot"></span>' +
+        '<div class="mgtr-step-label">' + esc(s.label) + "</div>" +
+        '<div class="mgtr-step-loc">' + esc(s.location || "") + "</div>" +
+        (s.date ? '<div class="mgtr-step-date">' + esc(trFmtDate(s.date)) + "</div>" : "") +
+        "</li>";
+    }).join("");
+    box.innerHTML =
+      '<div class="mgtr-status-h">' + esc(data.headline || "") + "</div>" +
+      '<div class="mgtr-status-s">' + esc(data.sub || "") + "</div>" +
+      (est ? '<div class="mgtr-est">' + esc(est) + "</div>" : "") +
+      '<ul class="mgtr-line">' + steps + "</ul>" +
+      SUPPORT_HTML;
+  }
+
+  function trSubmit() {
+    var inp = document.getElementById("mgtr-input");
+    var btn = document.getElementById("mgtr-btn");
+    var box = document.getElementById("mgtr-result");
+    if (!inp || !box) return;
+    var num = (inp.value || "").trim();
+    if (!num) { inp.focus(); return; }
+    box.innerHTML = '<p class="mgtr-msg">Aranıyor…</p>';
+    if (btn) btn.setAttribute("disabled", "disabled");
+    function done() { if (btn) btn.removeAttribute("disabled"); }
+
+    if (!TRACK_API) { setTimeout(function () { trRender(box, trDemo(num.toUpperCase())); done(); }, 450); return; }
+
+    fetch(TRACK_API + "?number=" + encodeURIComponent(num), { method: "GET" })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { trRender(box, j); done(); })
+      .catch(function () {
+        trRender(box, { ok: false, message: "Takip bilgisine şu anda ulaşılamıyor. Lütfen birazdan tekrar deneyin." });
+        done();
+      });
+  }
+
+  function buildTracking() {
+    if (!isTrackRoute()) return;
+    if (document.querySelector(".mgtr")) return; /* idempotent */
+    var root = document.getElementById("root");
+    var wrap = root && root.children[0];
+    if (!wrap) return;
+    /* Empty shell: hide every page section except the footer (header is on body). */
+    Array.from(wrap.children).forEach(function (el) {
+      if (!el.classList.contains("mg-foot")) el.style.display = "none";
+    });
+    var el = document.createElement("div");
+    el.className = "mgtr";
+    el.innerHTML =
+      '<div class="mgtr-kicker">MERMAID\'S GLANCE</div>' +
+      '<h1 class="mgtr-title">SİPARİŞ TAKİBİ</h1>' +
+      '<p class="mgtr-lead">Siparişinizin yolculuğunu izleyin. Takip numaranızı girin; parçanızın size ulaşana dek geçtiği aşamaları burada görürsünüz.</p>' +
+      '<div class="mgtr-form">' +
+        '<input id="mgtr-input" class="mgtr-input" type="text" placeholder="Takip numaranız" autocomplete="off" spellcheck="false">' +
+        '<button id="mgtr-btn" class="mgtr-btn" type="button">Takip Et</button>' +
+      '</div>' +
+      '<div class="mgtr-hint">Takip numaranızı sipariş onay ve kargo bildirim e-postanızda bulabilirsiniz.</div>' +
+      '<div id="mgtr-result" class="mgtr-result"></div>';
+    var foot = wrap.querySelector(".mg-foot");
+    if (foot) wrap.insertBefore(el, foot); else wrap.appendChild(el);
+
+    el.querySelector("#mgtr-btn").addEventListener("click", trSubmit);
+    el.querySelector("#mgtr-input").addEventListener("keydown", function (e) { if (e.key === "Enter") trSubmit(); });
+
+    /* Deep-link support: /siparis-takibi?number=XXXX auto-runs the lookup. */
+    var pre = new URLSearchParams(location.search).get("number");
+    if (pre) { el.querySelector("#mgtr-input").value = pre; trSubmit(); }
   }
 
 })();
