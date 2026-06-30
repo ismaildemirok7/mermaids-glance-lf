@@ -878,7 +878,15 @@
       '<div class="mgtr-hint">Takip numaranızı sipariş onay ve kargo bildirim e-postanızda bulabilirsiniz.</div>' +
       '<div id="mgtr-result" class="mgtr-result"></div>';
     var foot = wrap.querySelector(".mg-foot");
-    if (foot) wrap.insertBefore(el, foot); else wrap.appendChild(el);
+    if (!foot) {
+      /* Blank generic LF page: no native footer section exists for §3 to dress,
+         so build one here from FOOT_HTML (already styled + idempotent). */
+      foot = document.createElement("footer");
+      foot.className = "mg-foot";
+      foot.innerHTML = FOOT_HTML;
+      wrap.appendChild(foot);
+    }
+    wrap.insertBefore(el, foot);
 
     el.querySelector("#mgtr-btn").addEventListener("click", trSubmit);
     el.querySelector("#mgtr-input").addEventListener("keydown", function (e) { if (e.key === "Enter") trSubmit(); });
