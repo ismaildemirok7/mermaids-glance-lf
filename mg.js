@@ -92,20 +92,13 @@
 
     function fixImg(im) {
       if (im.__mgi) return; im.__mgi = 1;
+      /* CLS only: reserve the gallery's 2:3 box so late images don't shift layout.
+         The defer-to-placeholder experiment (v23/v24) was REMOVED — measured net
+         negative on LCP: the SSR preload scanner fetches the slides before this JS
+         runs, so swapping placeholders cannot prevent the eager fetch and the
+         cancelled/contending streams pushed LCP to 8-9s. User also wants every
+         gallery image visible. Keep only the harmless width/height reservation. */
       if (!im.hasAttribute("width")) { im.setAttribute("width", "712"); im.setAttribute("height", "1066"); }
-      if (im.getAttribute("fetchpriority") === "high") return;   /* the hero / LCP element — never touch */
-      /* Defer EVERY other gallery image — the thumbnail rail (Jc2tx) AND the
-         non-active stacked slides (pdZHw) — so the LCP window belongs to the hero
-         alone (no sibling fetch steals its 4G bandwidth). Stash srcset/src, swap an
-         inert data: placeholder (cancels the eager fetch), restore ALL on the first
-         interaction. v23 deferred only slides and let the 256 thumbnails contend
-         with the hero → LCP stayed ~8.7s; deferring the rail too removes that. */
-      if (im.classList.contains("Jc2tx") || im.classList.contains("pdZHw")) {
-        im.setAttribute("data-mgss", im.getAttribute("srcset") || "");
-        im.setAttribute("data-mgsrc", im.getAttribute("src") || "");
-        im.removeAttribute("srcset"); im.setAttribute("src", PH);
-        stashed.push(im); arm();
-      }
     }
     function scan(root) {
       var q = (root || document).getElementsByTagName("img"), n = q.length;
