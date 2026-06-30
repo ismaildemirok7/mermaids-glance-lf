@@ -656,7 +656,7 @@
   }
   css(
     ".mgrv{max-width:1200px;margin:0 auto;padding:64px 40px 80px;border-top:1px solid #e8e6e3;}" +
-    ".mgrv-h{font-size:9px;font-weight:600;letter-spacing:.2em;color:#9a9a9a;text-transform:uppercase;margin-bottom:30px;text-align:center;}" +
+    ".mgrv-h{font-size:11px;font-weight:600;letter-spacing:.2em;color:#0d0d0d;text-transform:uppercase;margin-bottom:30px;text-align:left;}" +
     ".mgrv-row{display:flex;gap:24px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-ms-overflow-style:none;}" +
     ".mgrv-row::-webkit-scrollbar{display:none;}" +
     ".mgrv-card{flex:0 0 auto;width:200px;text-decoration:none;color:#0d0d0d;}" +
@@ -690,7 +690,7 @@
     sec.setAttribute("data-for", cur);
     sec.setAttribute("data-n", String(items.length));
     sec.innerHTML =
-      '<div class="mgrv-h">SON BAKIŞLARINIZ</div>' +
+      '<div class="mgrv-h">SON BAKTIKLARIN</div>' +
       '<div class="mgrv-row">' +
       items.map(function (x) {
         return '<a class="mgrv-card" href="' + x.h + '">' +
