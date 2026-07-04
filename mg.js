@@ -633,13 +633,16 @@
   function rvRead() { try { return JSON.parse(localStorage.getItem(RV_KEY) || "[]") || []; } catch (e) { return []; } }
   function rvSave(a) { try { localStorage.setItem(RV_KEY, JSON.stringify(a)); } catch (e) {} }
   function rvHref() { return location.pathname.replace(/[?#].*$/, "").replace(/\/+$/, ""); }
+  /* The strip renders 200px-wide cards (150px mobile) — never carry the hero's
+     width=1920 resizer URL into it. 384 ≈ 2x retina for the 200px slot. */
+  function rvSmall(u) { return u ? u.replace(/\/cdn-cgi\/image\/width=\d+/, "/cdn-cgi/image/width=384") : u; }
   function rvHero() {
     var im = document.querySelector('img[fetchpriority="high"]');
-    if (im) { var s = im.getAttribute("data-mgsrc") || im.src; if (s && s.indexOf("data:") !== 0) return s; }
+    if (im) { var s = im.getAttribute("data-mgsrc") || im.src; if (s && s.indexOf("data:") !== 0) return rvSmall(s); }
     var all = document.getElementsByTagName("img");
     for (var i = 0; i < all.length; i++) {
       var v = all[i].getAttribute("data-mgsrc") || all[i].src;
-      if (v && v.indexOf("data:") !== 0 && /lightfunnels|images_library|\/cdn\//.test(v)) return v;
+      if (v && v.indexOf("data:") !== 0 && /lightfunnels|images_library|\/cdn\//.test(v)) return rvSmall(v);
     }
     return "";
   }
@@ -712,7 +715,7 @@
       '<div class="mgrv-row">' +
       items.map(function (x) {
         return '<a class="mgrv-card" href="' + x.h + '">' +
-          '<div class="mgrv-imw">' + (x.i ? '<img class="mgrv-img" src="' + x.i + '" alt="" loading="lazy">' : "") + "</div>" +
+          '<div class="mgrv-imw">' + (x.i ? '<img class="mgrv-img" src="' + rvSmall(x.i) + '" alt="" loading="lazy">' : "") + "</div>" +
           '<div class="mgrv-nm">' + esc(x.n) + "</div>" +
           (x.p ? '<div class="mgrv-pr">' + esc(x.p) + "</div>" : "") +
           "</a>";
@@ -895,5 +898,93 @@
     var pre = new URLSearchParams(location.search).get("number");
     if (pre) { el.querySelector("#mgtr-input").value = pre; trSubmit(); }
   }
+
+  /* =========================================================================
+     §10 — MATERIAL-ICONS LIGATURE FALLBACK (global)
+     LF markup uses <span class="material-icons">question_mark</span> and relies
+     on the Material Icons ligature font — which this funnel never loads (and
+     the Montserrat reset would override anyway). The raw ligature NAME renders
+     as visible junk text: "question_mark" inside the checkout phone field,
+     "arrow_forward" next to "Tümünü Keşfet" on home. Map known names to plain
+     unicode; hide unknown ones. Skipped entirely if the real font ever loads.
+     ========================================================================= */
+  (function () {
+    var MAP = {
+      question_mark: "?", help: "?", help_outline: "?",
+      arrow_forward: "→", arrow_back: "←", arrow_right_alt: "→",
+      chevron_right: "›", chevron_left: "‹",
+      keyboard_arrow_down: "⌄", keyboard_arrow_up: "⌃",
+      keyboard_arrow_right: "›", keyboard_arrow_left: "‹",
+      expand_more: "⌄", expand_less: "⌃", east: "→", west: "←",
+      close: "✕", check: "✓", done: "✓", add: "+", remove: "−"
+    };
+    function fontLive() {
+      try { return document.fonts && document.fonts.check('16px "Material Icons"'); } catch (e) { return false; }
+    }
+    function fix() {
+      if (fontLive()) return;
+      var els = document.querySelectorAll(".material-icons,.material-icons-outlined,.material-symbols-outlined");
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i]; if (el.__mgLig) continue;
+        var t = (el.textContent || "").trim();
+        if (!/^[a-z0-9_]+$/.test(t)) continue; /* already a real glyph/char */
+        el.__mgLig = 1;
+        if (MAP[t]) { el.textContent = MAP[t]; el.style.fontFamily = "inherit"; }
+        else el.style.display = "none"; /* unknown name — hide the junk text */
+      }
+    }
+    fix();
+    var ligT; new MutationObserver(function () { clearTimeout(ligT); ligT = setTimeout(fix, 200); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+  })();
+
+  /* =========================================================================
+     §11 — TEMPLATE-JUNK SECTION HIDER (global)
+     The LF theme shipped with ARABIC placeholder sections ("كن أنيقا" /
+     "احصل على مظهر جديد يليق بك") that still render above the home footer.
+     Step content is not writable via the app-token API, so hide any SECTION
+     whose visible text is Arabic-dominant — nothing brand-side is Arabic.
+     ========================================================================= */
+  (function () {
+    function sweep() {
+      var secs = document.querySelectorAll("section");
+      for (var i = 0; i < secs.length; i++) {
+        var s = secs[i]; if (s.__mgAr) continue;
+        var t = (s.innerText || "").trim(); if (t.length < 2) continue;
+        var ar = (t.match(/[؀-ۿ]/g) || []).length;
+        if (ar >= 8 && ar > t.replace(/\s/g, "").length * 0.3) {
+          s.style.cssText = "display:none!important"; s.__mgAr = 1;
+        }
+      }
+    }
+    sweep();
+    var arT; new MutationObserver(function () { clearTimeout(arT); arT = setTimeout(sweep, 300); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+  })();
+
+  /* =========================================================================
+     §12 — ENGLISH PRODUCT TITLES UNDER lang=tr (dotted-İ fix, global)
+     The document is lang=tr (i18n sets it), so CSS text-transform:uppercase
+     maps i→İ and English titles render "WHİTE / EMBROİDERY". Stamp lang="en"
+     on leaf elements that look like English catalog titles (contain the brand
+     "NAME – Description" en-dash and no Turkish letters) so the case mapping
+     uses English rules. Turkish copy always contains ç/ğ/ş/ı/ö/ü → untouched.
+     ========================================================================= */
+  (function () {
+    var TR = /[çğışöüÇĞİŞÖÜ]/;
+    function stamp() {
+      var els = document.querySelectorAll("h1,h2,h3,a,p,div,span");
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        if (el.__mgLang || el.children.length > 0) continue;
+        var t = el.textContent || "";
+        if (t.length < 8 || t.indexOf("–") < 0 || TR.test(t)) continue;
+        el.__mgLang = 1; el.setAttribute("lang", "en");
+      }
+    }
+    stamp();
+    var lgT; new MutationObserver(function () { clearTimeout(lgT); lgT = setTimeout(stamp, 300); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+  })();
 
 })();

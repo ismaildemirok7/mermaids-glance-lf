@@ -79,6 +79,12 @@
     "Quantity":             { tr: "Adet",                de: "Menge",             fr: "Quantité" },
     "Remove":               { tr: "Kaldır",              de: "Entfernen",         fr: "Retirer" },
 
+    /* checkout — merchant-configured payment method name (LF renders it verbatim; TR
+       shoppers otherwise hit an English label at the most sensitive step) */
+    "Debit/Credit Card":    { tr: "Banka / Kredi Kartı", de: "Debit-/Kreditkarte", fr: "Carte bancaire" },
+    /* hamburger-menu best-sellers entry (label is TR-first by brand default) */
+    "EN ÇOK ARZULANANLAR":  { tr: "EN ÇOK ARZULANANLAR", de: "BESTSELLER",         fr: "LES PLUS DÉSIRÉS" },
+
     /* PDP native trust/info chrome (LF original-case, CSS-uppercased) */
     "30-Day Warranty":      { tr: "30 Günlük Garanti",   de: "30 Tage Garantie",  fr: "Garantie 30 jours" },
     "Shipping":             { tr: "Kargo",               de: "Versand",           fr: "Livraison" },
@@ -241,12 +247,7 @@
     if (LANG === "en") return function () {};
     var s = document.createElement("style");
     s.id = "mg-i18n-gate";
-    /* Mask the EN→target TEXT swap, but let images/media paint immediately so the
-       LCP hero + product gallery are NOT blocked by the gate (big perceived-speed
-       win, esp. on slow in-app browsers — page shows imagery instead of a blank
-       screen while the first translate pass runs). visibility:hidden preserves
-       layout, so no CLS when text reveals. */
-    s.textContent = "body{visibility:hidden!important}body img,body picture,body video,body svg,body canvas{visibility:visible!important}";
+    s.textContent = "body{visibility:hidden!important}";
     (document.head || document.documentElement).appendChild(s);
     var done = false;
     function reveal() { if (done) return; done = true; var g = document.getElementById("mg-i18n-gate"); if (g) g.remove(); }
@@ -272,9 +273,7 @@
     startObserver();
     loadProductPack();
     loadPack("i18n/content." + LANG + ".json"); /* Phase 2 long-form (404 ok for now) */
-    /* startObserver() ran the first synchronous translateAll, so the visible chrome
-       is already translated — reveal on the next frame instead of a fixed 150ms. */
-    if (window.requestAnimationFrame) requestAnimationFrame(reveal); else setTimeout(reveal, 150);
+    setTimeout(reveal, 150); /* reveal shortly after first pass */
   }
   if (document.body) boot();
   else document.addEventListener("DOMContentLoaded", boot);
