@@ -10,8 +10,9 @@
    all images live HERE, with no size cap.
 
    Hosting: this repo is served via jsDelivr.
-     https://cdn.jsdelivr.net/gh/mermaidsglance-lf/mermaids-glance-lf@vN/mg.js
-   Deploy: git push + bump the tag (vN) AND the loader's @vN to bust the CDN cache.
+     https://cdn.jsdelivr.net/gh/ismaildemirok7/mermaids-glance-lf@<commit-sha>/mg.js
+   Deploy: push to the CDN repo, update the pinned SHA in the loader stub inside
+   header-scripts.html, then `node apply-hs.mjs` (the new pin busts the CDN cache).
    ============================================================================= */
 (function () {
   if (window.__mgExt) return;
@@ -985,6 +986,109 @@
     stamp();
     var lgT; new MutationObserver(function () { clearTimeout(lgT); lgT = setTimeout(stamp, 300); })
       .observe(document.documentElement, { childList: true, subtree: true });
+  })();
+
+  /* =========================================================================
+     §13 — KLAVIYO ONSITE TRACKING (global)
+     Ships here instead of inline: header_scripts headroom is ~4 bytes and this
+     is not render-critical. Sends the client-side events that drive the
+     abandonment flows (see klaviyo/README.md):
+       • Active on Site   — automatic once klaviyo.js loads
+       • Viewed Product   — on PDP, from window.data.product
+       • Started Checkout — on checkout route, once a valid email is present
+     Placed Order / Fulfilled stay server-side (events-worker) — a browser
+     event can be blocked/closed and must not be the source of truth.
+     Only the public 6-char company_id lives here; NEVER the pk_ key.
+     ========================================================================= */
+  (function () {
+    var COMPANY_ID = "WwEqh4"; /* public Klaviyo site id */
+    if (!COMPANY_ID || COMPANY_ID === "COMPANY_ID" || window.__mgKlv) return;
+    window.__mgKlv = 1;
+
+    /* Load Klaviyo onsite JS async (handles Active on Site by itself). */
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=" + COMPANY_ID;
+    document.head.appendChild(s);
+
+    var k = (window.klaviyo = window.klaviyo || []);
+    var money = function (v) { var n = parseFloat(v); return isNaN(n) ? undefined : n; };
+
+    /* ---- Viewed Product (PDP) --------------------------------------------
+       window.data.product is LF's product model on a product route (verified). */
+    var lastViewedId = null;
+    function trackViewedProduct() {
+      var p = window.data && window.data.product;
+      if (!p || !p.id || String(p.id) === lastViewedId) return;
+      lastViewedId = String(p.id);
+      var item = {
+        ProductName: p.title || p.name,
+        ProductID:   String(p.id),
+        URL:         location.href,
+        ImageURL:    (p.image && (p.image.src || p.image.url)) ||
+                     (p.images && p.images[0] && (p.images[0].src || p.images[0].url)),
+        Price:       money(p.price)
+      };
+      k.push(["track", "Viewed Product", item]);
+      k.push(["trackViewedItem", { Title: item.ProductName, ItemId: item.ProductID,
+        Url: item.URL, ImageUrl: item.ImageURL, Metadata: { Price: item.Price } }]);
+    }
+
+    /* ---- Identify + Started Checkout --------------------------------------
+       LF is a SPA with no purchase-intent hook we can trust, so we watch for a
+       valid email in any checkout-context field and fire once per route entry. */
+    var lastEmail = null, checkoutSent = false;
+    var reMail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function onCheckout() {
+      return /checkout|payment|odeme|ödeme/i.test(location.pathname + location.search) ||
+             !!document.querySelector('[name="payment"],[data-checkout],form[action*="checkout"]');
+    }
+
+    function cartItems() {
+      /* Prefer LF's server cart if exposed; fall back to the drawer's localStorage mirror. */
+      var c = (window.data && (window.data.cart || window.data.checkout)) || null;
+      var items = (c && (c.items || c.line_items)) || null;
+      if (!items) { try { items = JSON.parse(localStorage.getItem("mg_cart") || "null"); } catch (e) {} }
+      return Array.isArray(items) ? items : [];
+    }
+
+    function sweep() {
+      var inp = document.querySelector('input[type="email"],input[name*="mail" i]');
+      var email = inp && inp.value && inp.value.trim();
+      if (email && reMail.test(email) && email !== lastEmail) {
+        lastEmail = email;
+        k.push(["identify", { $email: email }]);
+      }
+      if (lastEmail && onCheckout() && !checkoutSent) {
+        var items = cartItems();
+        var total = items.reduce(function (t, i) {
+          return t + (money(i.price) || 0) * (i.quantity || i.qty || 1); }, 0);
+        k.push(["track", "Started Checkout", {
+          $email: lastEmail,
+          $value: total || undefined,
+          ItemNames: items.map(function (i) { return i.title || i.name; }),
+          Items: items.map(function (i) {
+            return { ProductName: i.title || i.name, Quantity: i.quantity || i.qty || 1,
+                     ItemPrice: money(i.price), ProductID: String(i.id || i.product_id || "") }; })
+        }]);
+        checkoutSent = true;
+      }
+    }
+
+    /* Fire on load + on SPA route/DOM changes (debounced — the LF SPA churns). */
+    function boot() { trackViewedProduct(); sweep(); }
+    if (document.readyState !== "loading") boot();
+    else document.addEventListener("DOMContentLoaded", boot);
+
+    var lastPath = location.pathname, kvT;
+    new MutationObserver(function () {
+      clearTimeout(kvT);
+      kvT = setTimeout(function () {
+        if (location.pathname !== lastPath) { lastPath = location.pathname; checkoutSent = false; lastViewedId = null; trackViewedProduct(); }
+        sweep();
+      }, 250);
+    }).observe(document.documentElement, { childList: true, subtree: true });
   })();
 
 })();

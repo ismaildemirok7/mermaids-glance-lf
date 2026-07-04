@@ -11,11 +11,12 @@
    translate post-render by exact text-node match. Product title + description are
    handled by a separate route-gated layer on the PDP.
 
-   See I18N-SPEC.md. Phase 1 = engine + short UI dictionary (below).
+   Phase 1 (live) = engine + short UI dictionary (below).
    Long-form content (manifesto, FAQ Q&A) → i18n-content.<lang>.json (Phase 2).
    Product copy → products.<lang>.json (Phase 3, PDP only).
 
-   Hosting: jsDelivr, same repo/tag as mg.js. Bump the tag to bust CDN cache.
+   Hosting: jsDelivr, same repo/pin as mg.js — deploy by pushing to the CDN repo
+   and updating the pinned SHA in header-scripts.html's loader stub.
    ============================================================================= */
 (function () {
   if (window.__mgI18n) return;
