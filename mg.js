@@ -1236,6 +1236,29 @@
     setInterval(watchPanel, 800);
   })();
 
+  /* Shared by §15/§16: LF prints a compare-at price even when it equals the
+     real price — a struck duplicate right under every line item. text-
+     decoration is NOT inherited (it paints through children), so the decorated
+     node may be a wrapper, not the text leaf. */
+  function hideDupStruck() {
+    [].slice.call(document.querySelectorAll("del,s,strike,span,div,p")).forEach(function (d) {
+      var tx = (d.innerText || "").trim();
+      if (!tx || tx.length > 24 || !/[₺$€]/.test(tx)) return;
+      var tag = d.tagName;
+      var struck = tag === "DEL" || tag === "S" || tag === "STRIKE" ||
+                   /line-through/.test(getComputedStyle(d).textDecoration || "");
+      if (!struck) return;
+      var scope = (d.parentElement && d.parentElement.parentElement) || d.parentElement;
+      if (scope && (scope.innerText || "").split(tx).length > 2) d.style.display = "none";
+    });
+  }
+  /* Shared by §15/§16: an all-zero Discount/İndirim row says nothing — hide it. */
+  function hideZeroDiscount() {
+    [].slice.call(document.querySelectorAll("div")).forEach(function (e) {
+      if (/^(discount|indirim|İndirim)\s*[₺$€]?\s?0[.,]00$/i.test((e.innerText || "").replace(/\s+/g, " ").trim())) e.style.display = "none";
+    });
+  }
+
   /* =========================================================================
      §15 — THANK-YOU PAGE BRAND PASS (route: thank_you step /h6D5J2Q1Y)
      LF's native thank-you is generic and off-brand ("Siparişin için teşekkür
@@ -1293,6 +1316,9 @@
         else if (/^sipariş özeti$/i.test(t) || /^order summary$/i.test(t)) { el.classList.add("mg-ty-eyebrow"); }
       }
 
+      hideDupStruck();
+      hideZeroDiscount();
+
       /* CTA block under the sub line (once) */
       if (!document.getElementById("mg-ty-cta")) {
         var sub = document.querySelector(".mg-ty-sub") || document.querySelector(".mg-ty-h1");
@@ -1345,23 +1371,8 @@
         else if (/^(Coupon|Subtotal|Discount|Shipping fee|Shipping|Kupon|Ara Toplam|İndirim|Kargo)$/i.test(tx)) e.classList.add("mg-co-lbl");
         else if (/^(Total|Toplam)$/i.test(tx)) e.classList.add("mg-co-tot");
       });
-      /* hide a zero-value Discount row in the order summary */
-      [].slice.call(document.querySelectorAll("div")).forEach(function (e) {
-        if (/^(discount|indirim|İndirim)\s*[₺$€]?\s?0[.,]00$/i.test((e.innerText || "").replace(/\s+/g, " ").trim())) e.style.display = "none";
-      });
-      /* pointless strikethrough: LF shows compare-at even when equal to the
-         price. text-decoration is NOT inherited — it paints through children —
-         so the decorated node may be a wrapper, not the text leaf. */
-      [].slice.call(document.querySelectorAll("del,s,strike,span,div,p")).forEach(function (d) {
-        var tx = (d.innerText || "").trim();
-        if (!tx || tx.length > 24 || !/[₺$€]/.test(tx)) return;
-        var tag = d.tagName;
-        var struck = tag === "DEL" || tag === "S" || tag === "STRIKE" ||
-                     /line-through/.test(getComputedStyle(d).textDecoration || "");
-        if (!struck) return;
-        var scope = (d.parentElement && d.parentElement.parentElement) || d.parentElement;
-        if (scope && (scope.innerText || "").split(tx).length > 2) d.style.display = "none";
-      });
+      hideZeroDiscount();
+      hideDupStruck();
       /* relabel any residual english/express CTA to the brand imperative */
       [].slice.call(document.querySelectorAll("button")).forEach(function (b) {
         if (/^\s*(pay now|şimdi öde)\s*$/.test(trNorm(b.innerText))) {
