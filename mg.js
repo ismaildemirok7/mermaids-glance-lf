@@ -1041,8 +1041,12 @@
     var reMail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     function onCheckout() {
-      return /checkout|payment|odeme|ödeme/i.test(location.pathname + location.search) ||
-             !!document.querySelector('[name="payment"],[data-checkout],form[action*="checkout"]');
+      /* LF checkout slugs are opaque hashes (/m2xI2CayP) and the DOM exposes no
+         [name="payment"] hook — both old heuristics silently missed the live
+         checkout (verified 2026-07-05: Started Checkout never fired). LF's own
+         SPA state is the reliable signal. */
+      return !!(window.data && window.data.step_type === "checkout_page") ||
+             /checkout|payment|odeme|ödeme/i.test(location.pathname + location.search);
     }
 
     function cartItems() {
@@ -1062,15 +1066,16 @@
       }
       if (lastEmail && onCheckout() && !checkoutSent) {
         var items = cartItems();
+        /* drawer-mirror items carry the numeric price as `pn`, not `price` */
         var total = items.reduce(function (t, i) {
-          return t + (money(i.price) || 0) * (i.quantity || i.qty || 1); }, 0);
+          return t + (money(i.price != null ? i.price : i.pn) || 0) * (i.quantity || i.qty || 1); }, 0);
         k.push(["track", "Started Checkout", {
           $email: lastEmail,
           $value: total || undefined,
           ItemNames: items.map(function (i) { return i.title || i.name; }),
           Items: items.map(function (i) {
             return { ProductName: i.title || i.name, Quantity: i.quantity || i.qty || 1,
-                     ItemPrice: money(i.price), ProductID: String(i.id || i.product_id || "") }; })
+                     ItemPrice: money(i.price != null ? i.price : i.pn), ProductID: String(i.id || i.product_id || "") }; })
         }]);
         checkoutSent = true;
       }
@@ -1089,6 +1094,296 @@
         sweep();
       }, 250);
     }).observe(document.documentElement, { childList: true, subtree: true });
+  })();
+
+  /* =========================================================================
+     §14 — CHECKOUT CART SYNC (route: checkout step)
+     LF builds the server checkout from the cart cookie ONLY on a full page
+     entry. The drawer's qty/remove steppers write that cookie (v26 single
+     writer), so an edit made while ALREADY on the checkout never reaches the
+     order — the customer pays the stale amount (reproduced live 2026-07-05:
+     drawer 10→8, summary stayed at 10). Fix: when a drawer edit happens on the
+     checkout step, force a reload as soon as the drawer closes.
+     A reload wipes everything the customer already typed (verified live), so
+     the typed contact/address fields are continuously snapshotted to
+     sessionStorage and restored after any checkout (re)load. Card fields live
+     in Stripe iframes — unreachable by design, never touched. */
+  (function () {
+    var SNAP_KEY = "mgCoFields";
+    function onCo() { return !!(window.data && window.data.step_type === "checkout_page"); }
+
+    /* ---- field snapshot / restore -------------------------------------- */
+    function formEls() {
+      return Array.prototype.slice.call(document.querySelectorAll("input,select,textarea")).filter(function (el) {
+        if (el.closest("#mgcd-pn,#mg-header,#mg-sticky-atc")) return false;
+        var t = (el.type || "").toLowerCase();
+        return t !== "hidden" && t !== "submit" && t !== "button" && t !== "password" && t !== "file";
+      });
+    }
+    function keyOf(el, i) {
+      return (el.name || el.placeholder || el.getAttribute("aria-label") || el.type || "f") + "#" + i;
+    }
+    function snap() {
+      if (!onCo()) return;
+      var out = {};
+      formEls().forEach(function (el, i) {
+        if (el.type === "checkbox" || el.type === "radio") { out[keyOf(el, i)] = el.checked ? "1" : "0"; }
+        else if (el.value) { out[keyOf(el, i)] = el.value; }
+      });
+      try { sessionStorage.setItem(SNAP_KEY, JSON.stringify(out)); } catch (e) {}
+    }
+    /* React-controlled inputs ignore plain .value writes — go through the
+       native setter, then fire input/change so LF's state adopts the value. */
+    function setVal(el, v) {
+      var proto = el.tagName === "SELECT" ? window.HTMLSelectElement
+                : el.tagName === "TEXTAREA" ? window.HTMLTextAreaElement : window.HTMLInputElement;
+      try {
+        var d = Object.getOwnPropertyDescriptor(proto.prototype, "value");
+        if (d && d.set) d.set.call(el, v); else el.value = v;
+      } catch (e) { el.value = v; }
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    function restore() {
+      if (!onCo()) return;
+      var saved = null;
+      try { saved = JSON.parse(sessionStorage.getItem(SNAP_KEY) || "null"); } catch (e) {}
+      if (!saved) return;
+      formEls().forEach(function (el, i) {
+        var v = saved[keyOf(el, i)];
+        if (v == null) return;
+        if (el.type === "checkbox" || el.type === "radio") return; /* leave LF defaults alone */
+        if (!el.value && v) setVal(el, v); /* only fill EMPTY fields — never fight the user */
+      });
+    }
+    /* LF hydrates late; retry a few times, filling only still-empty fields. */
+    var rTries = 0;
+    var rT = setInterval(function () {
+      if (onCo()) restore();
+      if (++rTries > 6) clearInterval(rT);
+    }, 700);
+
+    /* continuous snapshot while typing on checkout (any later reload restores) */
+    var sT;
+    document.addEventListener("input", function () { clearTimeout(sT); sT = setTimeout(snap, 300); }, true);
+    document.addEventListener("change", function () { clearTimeout(sT); sT = setTimeout(snap, 300); }, true);
+
+    /* ---- dirty tracking + reload on drawer close ------------------------ */
+    var dirty = false;
+    function wrap(name) {
+      var orig = window[name];
+      if (typeof orig !== "function" || orig.__mgW) return !!(orig && orig.__mgW);
+      var w = function () { var r = orig.apply(this, arguments); if (onCo()) dirty = true; return r; };
+      w.__mgW = 1; window[name] = w; return true;
+    }
+    var wTries = 0;
+    var wT = setInterval(function () {
+      var a = wrap("__mgQty"), b = wrap("__mgRm");
+      if ((a && b) || ++wTries > 40) clearInterval(wT);
+    }, 250);
+
+    function veil() {
+      var d = document.createElement("div");
+      d.style.cssText = "position:fixed;inset:0;background:#fafafa;z-index:100005;display:flex;align-items:center;justify-content:center;font:600 9px Montserrat,sans-serif;letter-spacing:.24em;color:#0d0d0d";
+      d.textContent = "ÇANTA GÜNCELLENİYOR";
+      document.body.appendChild(d);
+    }
+    function resync() {
+      dirty = false;
+      try { snap(); } catch (e) {}
+      veil();
+      location.reload();
+    }
+    /* the drawer panel is built lazily on first open — watch for it, then
+       watch its open-class; closing with pending edits triggers the resync */
+    function watchPanel() {
+      var pn = document.getElementById("mgcd-pn");
+      if (!pn || pn.__mgW14) return; pn.__mgW14 = 1;
+      var was = pn.classList.contains("open");
+      new MutationObserver(function () {
+        var is = pn.classList.contains("open");
+        if (was && !is && dirty && onCo()) resync();
+        was = is;
+      }).observe(pn, { attributes: true, attributeFilter: ["class"] });
+    }
+    setInterval(watchPanel, 800);
+  })();
+
+  /* =========================================================================
+     §15 — THANK-YOU PAGE BRAND PASS (route: thank_you step /h6D5J2Q1Y)
+     LF's native thank-you is generic and off-brand ("Siparişin için teşekkür
+     ederiz!" — exclamation, gratitude formula). Eylül's spec: confirm, state
+     ownership, hand the customer the next step. Also the ONLY reliable place
+     to clear the drawer mirror after a purchase — the step slug is an opaque
+     hash the inline /thank|.../ regex can never match.
+     ========================================================================= */
+  (function () {
+    function onTy() {
+      return !!(window.data && window.data.step_type === "thank_you_page") ||
+             /^\/h6D5J2Q1Y(\/|$)/.test(location.pathname);
+    }
+    css(".mg-ty-eyebrow{font-size:9px!important;font-weight:600!important;letter-spacing:.24em!important;text-transform:uppercase!important;color:#7a7a7a!important;font-family:'Montserrat',sans-serif!important;}"
+      + ".mg-ty-h1{font-size:22px!important;font-weight:600!important;letter-spacing:.06em!important;color:#0d0d0d!important;font-family:'Montserrat',sans-serif!important;text-transform:none!important;}"
+      + ".mg-ty-sub{font-size:11px!important;font-weight:400!important;letter-spacing:.04em!important;line-height:1.8!important;color:#4a4a4a!important;font-family:'Montserrat',sans-serif!important;}"
+      + ".mg-ty-cta{display:flex;gap:12px;justify-content:center;margin:26px auto 6px;flex-wrap:wrap;}"
+      + ".mg-ty-btn{display:inline-block;padding:15px 26px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;text-decoration:none;border-radius:0!important;transition:opacity .3s ease;}"
+      + ".mg-ty-btn:hover{opacity:.7;}"
+      + ".mg-ty-btn.pri{background:#0d0d0d;color:#fff;border:1px solid #0d0d0d;}"
+      + ".mg-ty-btn.sec{background:transparent;color:#0d0d0d;border:1px solid #0d0d0d;}"
+      + "html.mg-ty svg circle,html.mg-ty svg path{stroke:#0d0d0d;}");
+
+    var cleared = false;
+    function pass() {
+      var on = onTy();
+      document.documentElement.classList.toggle("mg-ty", on);
+      if (!on) { cleared = false; return; }
+
+      /* order is done — kill the phantom bag (mirror + cookie + badge) and the
+         checkout field snapshot; do it once per route entry */
+      if (!cleared) {
+        cleared = true;
+        try { window.__mgClearServer && window.__mgClearServer(); } catch (e) {}
+        try { sessionStorage.removeItem("mgCoFields"); } catch (e) {}
+        try { window.__mgSyncCount && window.__mgSyncCount(); } catch (e) {}
+      }
+
+      /* cross-tenant SSR leak seen live 2026-07-04 (foreign-tenant Arabic title) */
+      if (!/mermaid/i.test(document.title)) document.title = "Mermaid's Glance";
+
+      /* copy swaps (idempotent — each replacement no longer matches its source) */
+      var leafs = document.querySelectorAll("h1,h2,h3,p,span,div");
+      for (var i = 0; i < leafs.length; i++) {
+        var el = leafs[i];
+        if (el.children.length || el.closest("#mg-header,#mgcd-pn,.mgf-wrap,.mg-foot")) continue;
+        var t = (el.innerText || "").trim();
+        if (!t) continue;
+        if (/^siparişiniz onaylandı\.?$/i.test(t)) { el.textContent = "SİPARİŞ ONAYLANDI"; el.classList.add("mg-ty-eyebrow"); }
+        else if (/^(siparişin için teşekkür ederiz|thank you for your (order|purchase))[.!]?$/i.test(t)) { el.textContent = "Artık senin."; el.classList.add("mg-ty-h1"); }
+        else if (/^siparişin gönderildiğinde sana bir kargo onayı göndereceğiz\.?$/i.test(t) || /^when your order (is|has) shipped/i.test(t)) {
+          el.textContent = "Silüetin özenle hazırlanıyor. Gönderildiği an kargo onayı sana ulaşır.";
+          el.classList.add("mg-ty-sub");
+        }
+        else if (/^sipariş özeti$/i.test(t) || /^order summary$/i.test(t)) { el.classList.add("mg-ty-eyebrow"); }
+      }
+
+      /* CTA block under the sub line (once) */
+      if (!document.getElementById("mg-ty-cta")) {
+        var sub = document.querySelector(".mg-ty-sub") || document.querySelector(".mg-ty-h1");
+        if (sub) {
+          var box = document.createElement("div");
+          box.id = "mg-ty-cta"; box.className = "mg-ty-cta";
+          box.innerHTML = '<a class="mg-ty-btn pri" href="/siparis-takibi">SİPARİŞİNİ TAKİP ET</a>'
+                        + '<a class="mg-ty-btn sec" href="/">KOLEKSİYONA DÖN</a>';
+          (sub.parentElement || sub).appendChild(box);
+        }
+      }
+    }
+    var t; new MutationObserver(function () { clearTimeout(t); t = setTimeout(pass, 300); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+    setTimeout(pass, 400); pass();
+  })();
+
+  /* =========================================================================
+     §16 — CHECKOUT BRAND PASS (route: checkout step)
+     Moved here from header_scripts (2026-07-05). The inline version detected
+     the checkout by ENGLISH button text ("pay now") — LF now renders the
+     checkout natively in Turkish, so it never activated: nav/search were back
+     on the payment page, junk labels unhidden. step_type is language-proof.
+     Also frees ~2.5KB of inline headroom (was 4 bytes).
+     ========================================================================= */
+  (function () {
+    if (window.__mgCheckout16) return; window.__mgCheckout16 = true;
+    var HIDE_TEXT = /free\s*ship|ücretsiz\s*kargo|duties|customs|other\s*payment|diğer\s*ödeme|keyboard_arrow/i;
+    css(".mg-co #mg-header .mgh-center,.mg-co #mg-header .mgh-right{display:none!important;}"
+      + ".mg-co-h{font-size:12px!important;font-weight:600!important;letter-spacing:.2em!important;text-transform:uppercase!important;color:#0d0d0d!important;font-family:'Montserrat',sans-serif!important;}"
+      + ".mg-co-lbl{font-size:9px!important;font-weight:600!important;letter-spacing:.18em!important;text-transform:uppercase!important;color:#7a7a7a!important;font-family:'Montserrat',sans-serif!important;}"
+      + ".mg-co-tot{font-size:11px!important;font-weight:600!important;letter-spacing:.2em!important;text-transform:uppercase!important;color:#0d0d0d!important;font-family:'Montserrat',sans-serif!important;}"
+      + ".mg-co-secure{display:flex;align-items:center;justify-content:center;gap:7px;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#9a9a9a;margin:14px 0 4px;font-family:'Montserrat',sans-serif;}");
+    function isCheckout() { return !!(window.data && window.data.step_type === "checkout_page"); }
+    function brandPass() {
+      var on = isCheckout();
+      document.documentElement.classList.toggle("mg-co", on);
+      if (!on) return;
+      document.title = document.title.replace(/aether/ig, "Mermaid's Glance");
+      [].slice.call(document.querySelectorAll("p,span,div")).forEach(function (e) {
+        if (e.children.length) return; var tx = (e.innerText || "").trim();
+        if (/^or$/i.test(tx) || /^question_mark$/i.test(tx)) { e.style.display = "none"; return; }
+        if (/^(Contact|Delivery Address|Payment Method|Billing Address|Shipping Method|Order Summary|Shipping|İletişim|Teslimat Adresi|Ödeme Yöntemi|Fatura Adresi|Gönderim Yöntemi|Sipariş Özeti)$/i.test(tx)) e.classList.add("mg-co-h");
+        else if (/^(Coupon|Subtotal|Discount|Shipping fee|Shipping|Kupon|Ara Toplam|İndirim|Kargo)$/i.test(tx)) e.classList.add("mg-co-lbl");
+        else if (/^(Total|Toplam)$/i.test(tx)) e.classList.add("mg-co-tot");
+      });
+      /* hide a zero-value Discount row in the order summary */
+      [].slice.call(document.querySelectorAll("div")).forEach(function (e) {
+        if (/^(discount|indirim|İndirim)\s*[₺$€]?\s?0[.,]00$/i.test((e.innerText || "").replace(/\s+/g, " ").trim())) e.style.display = "none";
+      });
+      /* pointless strikethrough: LF shows compare-at even when equal to price */
+      [].slice.call(document.querySelectorAll("del,s,strike")).forEach(function (d) {
+        var sib = d.parentElement && (d.parentElement.innerText || "").replace(d.innerText || "", "");
+        if (sib && d.innerText && sib.indexOf(d.innerText.trim()) !== -1) d.style.display = "none";
+      });
+      /* relabel any residual english/express CTA to the brand imperative */
+      [].slice.call(document.querySelectorAll("button")).forEach(function (b) {
+        if (/^\s*(pay\s*now|şimdi\s*öde)\s*$/i.test(b.innerText || "")) {
+          var w = document.createTreeWalker(b, NodeFilter.SHOW_TEXT, null, false), n;
+          while ((n = w.nextNode())) { if (/pay\s*now|şimdi\s*öde/i.test(n.nodeValue)) { n.nodeValue = n.nodeValue.replace(/pay\s*now|şimdi\s*öde/i, "SİPARİŞİ TAMAMLA"); break; } }
+        }
+      });
+      /* trust line above the pay button — text only, no emoji (brand rule) */
+      if (!document.querySelector(".mg-co-secure")) {
+        var pay = null, bb = document.querySelectorAll("button");
+        for (var k = 0; k < bb.length; k++) { if (/^\s*(pay now|place order|complete order|siparişi tamamla|şimdi öde)\s*$/i.test(bb[k].innerText || "")) { pay = bb[k]; break; } }
+        if (pay && pay.parentNode) { var sec = document.createElement("div"); sec.className = "mg-co-secure"; sec.textContent = "GÜVENLİ VE ŞİFRELİ ÖDEME"; pay.parentNode.insertBefore(sec, pay.nextSibling); }
+      }
+      /* Mobile: LF renders the order summary twice (top mobile-native + bottom
+         desktop column). Restore first (no tag build-up), then on narrow
+         screens keep the topmost and hide the lower duplicate. */
+      [].slice.call(document.querySelectorAll("[data-mgdup]")).forEach(function (c) { c.style.display = ""; c.removeAttribute("data-mgdup"); });
+      if (window.innerWidth <= 760) {
+        var subs = [].slice.call(document.querySelectorAll("*")).filter(function (e) { return e.children.length === 0 && /^(subtotal|ara toplam)$/i.test((e.innerText || "").trim()) && e.offsetParent !== null; });
+        function sumCard(sub) { var e = sub; for (var i = 0; i < 8; i++) { if (!e.parentElement) break; e = e.parentElement; var t = (e.innerText || "").toLowerCase(); if (/subtotal|ara toplam/.test(t) && /total|toplam/.test(t) && e.getBoundingClientRect().height < 700) return e; } return sub; }
+        var cards = subs.map(sumCard);
+        cards = cards.filter(function (c, i) { return cards.indexOf(c) === i && !cards.some(function (o, j) { return j !== i && o !== c && o.contains(c); }); });
+        if (cards.length >= 2) {
+          cards.sort(function (a, b) { return a.getBoundingClientRect().top - b.getBoundingClientRect().top; });
+          for (var m = 1; m < cards.length; m++) { cards[m].setAttribute("data-mgdup", "1"); cards[m].style.display = "none"; }
+        }
+      }
+    }
+    function hideEl(el) {
+      if (!el || el.closest("#mg-header") || el.closest("#mgcd-pn") || el.closest("#mg-sticky-atc")) return;
+      el.style.cssText = "display:none!important";
+    }
+    function clean() {
+      /* NOT checkout-gated: the inline original swept every page (free-shipping
+         badges, duty labels, ligature junk appear outside checkout too). */
+      document.querySelectorAll('header:not(#mg-header),[class*="checkout-header"],[class*="checkoutHeader"],[class*="order-header"],[class*="storeName"],[class*="store-name"],[class*="brand-logo"]:not(#mg-header *)').forEach(function (el) { hideEl(el); });
+      document.querySelectorAll("button,a").forEach(function (el) {
+        if (!el.closest("#mg-header") && !el.closest("#mgcd-pn") && /other\s*payment|diğer\s*ödeme/i.test(el.innerText || "")) hideEl(el.closest("div,section") || el);
+      });
+      document.querySelectorAll("div,section,p").forEach(function (el) {
+        var t = el.children.length === 0 ? (el.innerText || "").trim() : "";
+        if (!t) return;
+        if (/^(express\s*checkout|hızlı\s*ödeme)$/i.test(t)) hideEl(el.parentElement || el);
+      });
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+      var node;
+      while ((node = walker.nextNode())) {
+        var txt = node.nodeValue || "";
+        if (HIDE_TEXT.test(txt)) {
+          var p = node.parentElement;
+          if (p && !p.closest("#mg-header") && !p.closest("#mgcd-pn") && !p.closest("#mg-sticky-atc")) {
+            var el = p;
+            while (el && el.parentElement && getComputedStyle(el).display === "inline") el = el.parentElement;
+            hideEl(el);
+          }
+        }
+      }
+    }
+    function run() { clean(); brandPass(); }
+    var t16; new MutationObserver(function () { clearTimeout(t16); t16 = setTimeout(run, 300); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+    var rt16; window.addEventListener("resize", function () { clearTimeout(rt16); rt16 = setTimeout(brandPass, 200); });
+    setTimeout(run, 600); brandPass();
   })();
 
 })();
