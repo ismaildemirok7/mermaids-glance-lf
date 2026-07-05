@@ -1294,7 +1294,13 @@
   (function () {
     if (window.__mgCheckout16) return; window.__mgCheckout16 = true;
     var HIDE_TEXT = /free\s*ship|ücretsiz\s*kargo|duties|customs|other\s*payment|diğer\s*ödeme|keyboard_arrow/i;
-    css(".mg-co #mg-header .mgh-center,.mg-co #mg-header .mgh-right{display:none!important;}"
+    /* JS /i never matches İ↔i (Turkish dotted capital) — fold both to plain i
+       before testing button labels like "SİPARİŞİ TAMAMLA". */
+    function trNorm(s) { return (s || "").replace(/İ/g, "i").replace(/I/g, "i").toLowerCase(); }
+    var PAY_RE = /^\s*(pay now|place order|complete order|siparişi tamamla|şimdi öde)\s*$/;
+    /* nav/search/burger leave the payment page; the BAG stays — customers must
+       be able to fix quantities here (§14 makes those edits actually stick) */
+    css(".mg-co #mg-header .mgh-center,.mg-co #mg-header .mgh-burger,.mg-co #mg-header .mgh-search{display:none!important;}"
       + ".mg-co-h{font-size:12px!important;font-weight:600!important;letter-spacing:.2em!important;text-transform:uppercase!important;color:#0d0d0d!important;font-family:'Montserrat',sans-serif!important;}"
       + ".mg-co-lbl{font-size:9px!important;font-weight:600!important;letter-spacing:.18em!important;text-transform:uppercase!important;color:#7a7a7a!important;font-family:'Montserrat',sans-serif!important;}"
       + ".mg-co-tot{font-size:11px!important;font-weight:600!important;letter-spacing:.2em!important;text-transform:uppercase!important;color:#0d0d0d!important;font-family:'Montserrat',sans-serif!important;}"
@@ -1316,22 +1322,30 @@
       [].slice.call(document.querySelectorAll("div")).forEach(function (e) {
         if (/^(discount|indirim|İndirim)\s*[₺$€]?\s?0[.,]00$/i.test((e.innerText || "").replace(/\s+/g, " ").trim())) e.style.display = "none";
       });
-      /* pointless strikethrough: LF shows compare-at even when equal to price */
-      [].slice.call(document.querySelectorAll("del,s,strike")).forEach(function (d) {
-        var sib = d.parentElement && (d.parentElement.innerText || "").replace(d.innerText || "", "");
-        if (sib && d.innerText && sib.indexOf(d.innerText.trim()) !== -1) d.style.display = "none";
+      /* pointless strikethrough: LF shows compare-at even when equal to the
+         price (styled line-through spans, not <del> elements — checked live) */
+      [].slice.call(document.querySelectorAll("del,s,strike,span,div,p")).forEach(function (d) {
+        if (d.children.length) return;
+        var tx = (d.innerText || "").trim();
+        if (!tx || !/[₺$€]/.test(tx)) return;
+        var tag = d.tagName;
+        var struck = tag === "DEL" || tag === "S" || tag === "STRIKE" ||
+                     /line-through/.test(getComputedStyle(d).textDecoration || "");
+        if (!struck) return;
+        var scope = (d.parentElement && d.parentElement.parentElement) || d.parentElement;
+        if (scope && (scope.innerText || "").split(tx).length > 2) d.style.display = "none";
       });
       /* relabel any residual english/express CTA to the brand imperative */
       [].slice.call(document.querySelectorAll("button")).forEach(function (b) {
-        if (/^\s*(pay\s*now|şimdi\s*öde)\s*$/i.test(b.innerText || "")) {
+        if (/^\s*(pay now|şimdi öde)\s*$/.test(trNorm(b.innerText))) {
           var w = document.createTreeWalker(b, NodeFilter.SHOW_TEXT, null, false), n;
-          while ((n = w.nextNode())) { if (/pay\s*now|şimdi\s*öde/i.test(n.nodeValue)) { n.nodeValue = n.nodeValue.replace(/pay\s*now|şimdi\s*öde/i, "SİPARİŞİ TAMAMLA"); break; } }
+          while ((n = w.nextNode())) { if (/pay now|şimdi öde/.test(trNorm(n.nodeValue))) { n.nodeValue = "SİPARİŞİ TAMAMLA"; break; } }
         }
       });
       /* trust line above the pay button — text only, no emoji (brand rule) */
       if (!document.querySelector(".mg-co-secure")) {
         var pay = null, bb = document.querySelectorAll("button");
-        for (var k = 0; k < bb.length; k++) { if (/^\s*(pay now|place order|complete order|siparişi tamamla|şimdi öde)\s*$/i.test(bb[k].innerText || "")) { pay = bb[k]; break; } }
+        for (var k = 0; k < bb.length; k++) { if (PAY_RE.test(trNorm(bb[k].innerText))) { pay = bb[k]; break; } }
         if (pay && pay.parentNode) { var sec = document.createElement("div"); sec.className = "mg-co-secure"; sec.textContent = "GÜVENLİ VE ŞİFRELİ ÖDEME"; pay.parentNode.insertBefore(sec, pay.nextSibling); }
       }
       /* Mobile: LF renders the order summary twice (top mobile-native + bottom
