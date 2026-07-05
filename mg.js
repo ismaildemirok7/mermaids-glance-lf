@@ -1188,12 +1188,39 @@
       d.textContent = "ÇANTA GÜNCELLENİYOR";
       document.body.appendChild(d);
     }
+    /* Once LF has a ?checkout=<token> session (created the moment an email is
+       typed), a plain reload rebuilds the summary from that SERVER record and
+       even re-stomps the cart cookie from it (observed live: cookie 7 → back
+       to 8 on the token page). So: re-assert the cookie from the drawer mirror
+       (the user's intent), then leave the token behind — a bare-path entry
+       makes LF rebuild from the cookie and mint a fresh, correct session. */
+    function writeCookieFromMirror() {
+      try {
+        var items = JSON.parse(localStorage.getItem("mg_cart") || "[]");
+        var m = document.cookie.match(/(?:^|;\s*)(lf_\d+_cart)=/);
+        if (!m) return;
+        var body = items.filter(function (it) { return it.vid; }).map(function (it) {
+          return { variants: [{ id: it.vid, quantity: it.qty || 1 }], price_bundle: null };
+        });
+        if (!body.length && items.length) return; /* no vids captured — don't wipe a non-empty cart */
+        document.cookie = m[1] + "=" + encodeURIComponent(JSON.stringify({ body: body })) + "; path=/";
+      } catch (e) {}
+    }
     function resync() {
       dirty = false;
       try { snap(); } catch (e) {}
+      writeCookieFromMirror();
       veil();
-      location.reload();
+      location.replace(location.pathname);
     }
+    /* drawer CTA pressed while already on checkout: it navigates to the bare
+       checkout path itself — just make sure the cookie carries the mirror
+       state (LF may have stomped it from a stale token session) */
+    document.addEventListener("click", function (e) {
+      var b = e.target && e.target.closest && e.target.closest(".mgc-btn");
+      if (b && onCo()) { try { snap(); } catch (er) {} writeCookieFromMirror(); }
+    }, true);
+
     /* the drawer panel is built lazily on first open — watch for it, then
        watch its open-class; closing with pending edits triggers the resync */
     function watchPanel() {
@@ -1323,11 +1350,11 @@
         if (/^(discount|indirim|İndirim)\s*[₺$€]?\s?0[.,]00$/i.test((e.innerText || "").replace(/\s+/g, " ").trim())) e.style.display = "none";
       });
       /* pointless strikethrough: LF shows compare-at even when equal to the
-         price (styled line-through spans, not <del> elements — checked live) */
+         price. text-decoration is NOT inherited — it paints through children —
+         so the decorated node may be a wrapper, not the text leaf. */
       [].slice.call(document.querySelectorAll("del,s,strike,span,div,p")).forEach(function (d) {
-        if (d.children.length) return;
         var tx = (d.innerText || "").trim();
-        if (!tx || !/[₺$€]/.test(tx)) return;
+        if (!tx || tx.length > 24 || !/[₺$€]/.test(tx)) return;
         var tag = d.tagName;
         var struck = tag === "DEL" || tag === "S" || tag === "STRIKE" ||
                      /line-through/.test(getComputedStyle(d).textDecoration || "");
