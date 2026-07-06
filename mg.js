@@ -995,6 +995,7 @@
      abandonment flows (see klaviyo/README.md):
        • Active on Site   — automatic once klaviyo.js loads
        • Viewed Product   — on PDP, from window.data.product
+       • Added to Cart    — chained on the inline /lfevents add_to_cart intercept
        • Started Checkout — on checkout route, once a valid email is present
      Placed Order / Fulfilled stay server-side (events-worker) — a browser
      event can be blocked/closed and must not be the source of truth.
@@ -1094,6 +1095,51 @@
         sweep();
       }, 250);
     }).observe(document.documentElement, { childList: true, subtree: true });
+
+    /* ---- Added to Cart ---------------------------------------------------
+       The inline drawer (header-scripts.html) already intercepts LF's
+       /lfevents add_to_cart calls and writes the freshly-added line into the
+       mg_cart mirror (v26 single writer). mg.js loads AFTER that inline
+       wrapper, so wrapping window.fetch here chains on top of it: by the time
+       this runs, the inline handler has synchronously updated the mirror, so
+       the item that was just added is the mirror's tail. We only READ and fire
+       Klaviyo — never touch the cart. Prefer window.data.product for the added
+       item's identity (ATC happens on the PDP where it is populated); fall back
+       to the mirror tail. USD only: the mirror carries the numeric price as
+       `pn`. Placed Order stays server-side (events-worker) — never here. */
+    (function () {
+      var of = window.fetch;
+      if (typeof of !== "function") return;
+      window.fetch = function (url, opts) {
+        var pr = of.apply(this, arguments);
+        try {
+          var u = (typeof url === "string") ? url : (url && url.url);
+          if (u && u.indexOf("/lfevents") > -1 && opts && opts.body) {
+            var bd = JSON.parse(opts.body);
+            var isAdd = bd && bd.events && bd.events.some(function (e) { return e && e.type === "add_to_cart"; });
+            if (isAdd) {
+              var items = []; try { items = JSON.parse(localStorage.getItem("mg_cart") || "[]") || []; } catch (e) {}
+              var tail = items[items.length - 1] || {};
+              var p = window.data && window.data.product;
+              var addName  = (p && (p.title || p.name)) || tail.name;
+              var addId    = (p && p.id != null) ? String(p.id) : String(tail.vid || tail.uid || "");
+              var addPrice = money(p && p.price); if (addPrice == null) addPrice = money(tail.pn);
+              var count = items.reduce(function (t, x) { return t + (x.qty || 1); }, 0);
+              k.push(["track", "Added to Cart", {
+                $value: addPrice,
+                AddedItemProductName: addName,
+                AddedItemProductID: addId,
+                AddedItemPrice: addPrice,
+                AddedItemQuantity: tail.qty || 1,
+                ItemNames: items.map(function (x) { return x.name; }),
+                CartItemCount: count
+              }]);
+            }
+          }
+        } catch (e) {}
+        return pr;
+      };
+    })();
   })();
 
   /* =========================================================================
