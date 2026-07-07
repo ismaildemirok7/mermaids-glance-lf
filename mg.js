@@ -1012,7 +1012,13 @@
     s.src = "https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=" + COMPANY_ID;
     document.head.appendChild(s);
 
-    var k = (window.klaviyo = window.klaviyo || []);
+    /* Write to _learnq, NOT window.klaviyo: the live klaviyo.js build drains the
+       legacy _learnq queue (and _klOnsite) but leaves window.klaviyo's native
+       Array push untouched, so events pushed there never flush (verified
+       2026-07-06, klaviyo/README.md §CANLI DURUM). The ["identify",…] /
+       ["track",name,props] / ["trackViewedItem",…] formats below are the
+       _learnq API verbatim — do not change the call shapes. */
+    var k = (window._learnq = window._learnq || []);
     var money = function (v) { var n = parseFloat(v); return isNaN(n) ? undefined : n; };
 
     /* ---- Viewed Product (PDP) --------------------------------------------
@@ -1073,6 +1079,7 @@
         k.push(["track", "Started Checkout", {
           $email: lastEmail,
           $value: total || undefined,
+          CheckoutURL: location.href, /* terk-ödeme maili CTA'sı: {{ event.CheckoutURL }} */
           ItemNames: items.map(function (i) { return i.title || i.name; }),
           Items: items.map(function (i) {
             return { ProductName: i.title || i.name, Quantity: i.quantity || i.qty || 1,
@@ -1482,6 +1489,216 @@
       .observe(document.documentElement, { childList: true, subtree: true });
     var rt16; window.addEventListener("resize", function () { clearTimeout(rt16); rt16 = setTimeout(brandPass, 200); });
     setTimeout(run, 600); brandPass();
+  })();
+
+  /* =========================================================================
+     §17 — SOCIETY SIGN-UP FORM (global, brand-owned full-page overlay)
+     A pixel-controlled Montserrat / 0px-corner overlay (NOT a Klaviyo form
+     builder embed) that writes the email to list WFRJ95 via Klaviyo's client
+     subscriptions API — which in turn fires the (live) Welcome flow, so the
+     SOCIETY10 code lands in the subscriber's inbox as Welcome Mail 1.
+     Only the public company_id (WwEqh4) + list id (WFRJ95) live here.
+     Shows once (first of: 25s dwell / desktop exit-intent / 55% scroll),
+     honours a 14-day cool-off on close and a permanent silence on join,
+     and never opens on checkout / thank-you / order-tracking / the password gate.
+     ========================================================================= */
+  (function () {
+    if (window.__mgSociety) return;
+    window.__mgSociety = 1;
+
+    var COMPANY_ID = "WwEqh4", LIST_ID = "WFRJ95";
+    var HERO = "https://d3k81ch9hvuctc.cloudfront.net/company/WwEqh4/images/ad249a64-549c-4980-8892-d7ed606f00ec.jpeg";
+    var reMail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var SEEN_MS = 14 * 24 * 60 * 60 * 1000;
+
+    function ls(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+    function lset(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
+
+    /* Routes where a lifestyle overlay would be intrusive or brand-wrong. */
+    function excludedRoute() {
+      var st = window.data && window.data.step_type;
+      if (st === "checkout_page" || st === "thank_you_page") return true;
+      if (/\/siparis-takibi/.test(location.pathname)) return true;
+      if (document.querySelector('input[type="password"]')) return true; /* storefront password gate */
+      return false;
+    }
+
+    function canShow() {
+      if (ls("mg_society_member")) return false;                 /* joined → forever silent */
+      try { if (sessionStorage.getItem("mg_society_session")) return false; } catch (e) {} /* once per session */
+      var seen = parseInt(ls("mg_society_seen") || "0", 10);
+      if (seen && (Date.now() - seen) < SEEN_MS) return false;   /* 14-day cool-off after a close */
+      if (excludedRoute()) return false;
+      return true;
+    }
+
+    css(
+      "#mg-society{position:fixed;inset:0;z-index:2147483000;background:#fafafa;display:none;font-family:'Montserrat',-apple-system,'Segoe UI',Arial,sans-serif;color:#0d0d0d;}" +
+      "#mg-society.open{display:flex;}" +
+      ".mgso-hero{width:55%;height:100%;object-fit:cover;object-position:center 30%;display:block;}" +
+      ".mgso-panel{width:45%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 56px;overflow-y:auto;}" +
+      ".mgso-inner{width:100%;max-width:400px;}" +
+      ".mgso-close{position:absolute;top:0;right:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:#0d0d0d;font-size:22px;line-height:1;z-index:3;font-family:'Montserrat',Arial,sans-serif;}" +
+      ".mgso-close:hover{opacity:.5;}" +
+      ".mgso-wm{font-size:16px;letter-spacing:6px;font-weight:500;text-align:center;}" +
+      ".mgso-rule{height:1px;background:#e6e6e6;margin:22px 0 24px;}" +
+      ".mgso-eb{font-size:11px;letter-spacing:4px;color:#8a8a8a;text-transform:uppercase;text-align:center;}" +
+      ".mgso-h{font-size:24px;font-weight:500;margin:14px 0 0;text-align:center;}" +
+      ".mgso-p{font-size:14px;line-height:1.9;margin:14px 0 26px;text-align:center;}" +
+      ".mgso-in{width:100%;box-sizing:border-box;border:1px solid #0d0d0d;border-radius:0!important;padding:14px;background:#fff;font-family:inherit;font-size:14px;color:#0d0d0d;outline:none;}" +
+      ".mgso-in::placeholder{color:#bdbdbd;}" +
+      ".mgso-btn{width:100%;box-sizing:border-box;background:#0d0d0d;color:#fafafa;border:none;border-radius:0!important;letter-spacing:3px;padding:16px;font-family:inherit;font-size:12px;font-weight:500;text-transform:uppercase;cursor:pointer;margin-top:14px;}" +
+      ".mgso-btn:hover{opacity:.85;}" +
+      ".mgso-note{font-size:10.5px;line-height:1.7;color:#8a8a8a;margin-top:16px;text-align:center;}" +
+      ".mgso-foot{font-size:11px;letter-spacing:2px;color:#8a8a8a;text-align:center;margin-top:30px;}" +
+      ".mgso-chip{display:inline-block;border:1px solid #0d0d0d;letter-spacing:5px;padding:14px 30px;font-size:13px;margin:8px 0 22px;}" +
+      "@media(max-width:767px){#mg-society.open{flex-direction:column;}.mgso-hero{width:100%;height:42%;object-position:center 28%;}.mgso-panel{width:100%;height:58%;padding:28px;justify-content:flex-start;padding-top:40px;}.mgso-close{color:#fff;}}"
+    );
+
+    var built = false, openState = false;
+
+    function buildOverlay() {
+      if (built) return;
+      built = true;
+      var o = document.createElement("div");
+      o.id = "mg-society";
+      o.setAttribute("role", "dialog");
+      o.setAttribute("aria-label", "Society");
+      o.setAttribute("aria-modal", "true");
+      o.innerHTML =
+        '<img class="mgso-hero" src="' + HERO + '" alt="">' +
+        '<button class="mgso-close" type="button" aria-label="Kapat">×</button>' +
+        '<div class="mgso-panel"><div class="mgso-inner" id="mgso-inner">' +
+          '<div class="mgso-wm">MERMAID\'S GLANCE</div>' +
+          '<div class="mgso-rule"></div>' +
+          '<div class="mgso-eb">SOCIETY</div>' +
+          '<h2 class="mgso-h">Society\'e katıl.</h2>' +
+          '<p class="mgso-p">O sabah aynada "tamam" dediğin an — ilk seçiminde seni bekliyor.</p>' +
+          '<input class="mgso-in" id="mgso-email" type="email" placeholder="e-posta" autocomplete="email" inputmode="email">' +
+          '<button class="mgso-btn" id="mgso-submit" type="button">KATIL</button>' +
+          '<p class="mgso-note" id="mgso-note">Katılarak Mermaid\'s Glance\'ten e-posta almayı kabul edersin. Dilediğinde ayrılırsın.</p>' +
+          '<div class="mgso-foot">Zarafetin Gücü.</div>' +
+        '</div></div>';
+      document.body.appendChild(o);
+      o.querySelector(".mgso-close").addEventListener("click", close);
+      o.querySelector("#mgso-submit").addEventListener("click", submit);
+      o.querySelector("#mgso-email").addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+      o.querySelector("#mgso-email").addEventListener("input", function () {
+        var n = document.getElementById("mgso-note"); var i = document.getElementById("mgso-email");
+        if (i) i.style.borderColor = "#0d0d0d";
+        if (n) { n.style.color = "#8a8a8a"; n.textContent = "Katılarak Mermaid's Glance'ten e-posta almayı kabul edersin. Dilediğinde ayrılırsın."; }
+      });
+    }
+
+    function open() {
+      if (openState || excludedRoute()) return;
+      buildOverlay();
+      var o = document.getElementById("mg-society");
+      if (!o) return;
+      o.classList.add("open");
+      openState = true;
+      document.body.style.overflow = "hidden";
+      try { sessionStorage.setItem("mg_society_session", "1"); } catch (e) {}
+      var i = document.getElementById("mgso-email");
+      if (i) setTimeout(function () { i.focus(); }, 80);
+    }
+
+    function hide() {
+      var o = document.getElementById("mg-society");
+      if (o) o.classList.remove("open");
+      openState = false;
+      document.body.style.overflow = "";
+    }
+
+    function close() {
+      lset("mg_society_seen", String(Date.now())); /* 14-day cool-off */
+      hide();
+    }
+
+    function submit() {
+      var i = document.getElementById("mgso-email");
+      var n = document.getElementById("mgso-note");
+      var b = document.getElementById("mgso-submit");
+      var email = i && i.value && i.value.trim();
+      if (!email || !reMail.test(email)) { if (i) i.style.borderColor = "#900"; return; }
+      if (b) { b.disabled = true; b.textContent = "…"; }
+      fetch("https://a.klaviyo.com/client/subscriptions/?company_id=" + COMPANY_ID, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", revision: "2024-10-15" },
+        body: JSON.stringify({ data: { type: "subscription", attributes: {
+          profile: { data: { type: "profile", attributes: { email: email } } },
+          custom_source: "Society Signup"
+        }, relationships: { list: { data: { type: "list", id: LIST_ID } } } } })
+      }).then(function (r) {
+        if (r.status >= 200 && r.status < 300) {
+          lset("mg_society_member", "1"); /* forever silent */
+          /* Merge the identity into the onsite queue (§13 uses _learnq). */
+          try { (window._learnq = window._learnq || []).push(["identify", { $email: email }]); } catch (e) {}
+          success();
+        } else { fail(); }
+      }).catch(fail);
+      function fail() {
+        if (b) { b.disabled = false; b.textContent = "KATIL"; }
+        if (i) i.style.borderColor = "#900";
+        if (n) { n.style.color = "#900"; n.textContent = "Bağlantı kurulamadı. Tekrar dene."; }
+      }
+    }
+
+    function success() {
+      var inner = document.getElementById("mgso-inner");
+      if (!inner) return;
+      inner.innerHTML =
+        '<div class="mgso-wm">MERMAID\'S GLANCE</div>' +
+        '<div class="mgso-rule"></div>' +
+        '<h2 class="mgso-h">Yerin hazır.</h2>' +
+        '<p class="mgso-p">İlk seçimin için ayırdık. Kod e-postanda.</p>' +
+        '<div style="text-align:center"><span class="mgso-chip">SOCIETY10</span></div>' +
+        '<button class="mgso-btn" id="mgso-explore" type="button">KEŞFET</button>' +
+        '<p class="mgso-note">Zarafetle, Destina — Mermaid\'s Glance</p>';
+      var e = document.getElementById("mgso-explore");
+      if (e) e.addEventListener("click", hide); /* joined: just close, no cool-off write needed (member flag set) */
+    }
+
+    /* ---- Triggers: first of 25s dwell / desktop exit-intent / 55% scroll ---- */
+    var armed = true;
+    function fire() {
+      if (!armed) return;
+      if (!canShow()) { armed = false; teardown(); return; }
+      armed = false;
+      teardown();
+      open();
+    }
+    function onScroll() {
+      var h = document.documentElement;
+      var reachable = (h.scrollHeight - h.clientHeight);
+      if (reachable <= 0) return;
+      if ((h.scrollTop || window.pageYOffset) / reachable >= 0.55) fire();
+    }
+    function onExit(e) { if (e.clientY <= 0 && !e.relatedTarget && !e.toElement) fire(); }
+    var dwellT;
+    function teardown() {
+      clearTimeout(dwellT);
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("mouseout", onExit);
+    }
+
+    if (canShow()) {
+      dwellT = setTimeout(fire, 25000);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      var mq = window.matchMedia && window.matchMedia("(min-width:768px) and (pointer:fine)");
+      if (!mq || mq.matches) document.addEventListener("mouseout", onExit);
+    }
+
+    /* ESC closes; SPA route change into an excluded step auto-closes the overlay. */
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && openState) close(); });
+    var lastP = location.pathname, soT;
+    new MutationObserver(function () {
+      clearTimeout(soT);
+      soT = setTimeout(function () {
+        if (openState && excludedRoute()) hide();
+        if (location.pathname !== lastP) { lastP = location.pathname; if (openState && excludedRoute()) hide(); }
+      }, 250);
+    }).observe(document.documentElement, { childList: true, subtree: true });
   })();
 
 })();
