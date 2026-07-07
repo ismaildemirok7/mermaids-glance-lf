@@ -1572,8 +1572,8 @@
           '<div class="mgso-wm">MERMAID\'S GLANCE</div>' +
           '<div class="mgso-rule"></div>' +
           '<div class="mgso-eb">SOCIETY</div>' +
-          '<h2 class="mgso-h">Society\'e katıl.</h2>' +
-          '<p class="mgso-p">O sabah aynada "tamam" dediğin an — ilk seçiminde seni bekliyor.</p>' +
+          '<h2 class="mgso-h">Önce sen görürsün.</h2>' +
+          '<p class="mgso-p">Yeni silüetler, dönen parçalar — ilk sana.<br>İlk seçimin için ayrılmış bir incelik seni bekliyor.</p>' +
           '<input class="mgso-in" id="mgso-email" type="email" placeholder="e-posta" autocomplete="email" inputmode="email">' +
           '<button class="mgso-btn" id="mgso-submit" type="button">KATIL</button>' +
           '<p class="mgso-note" id="mgso-note">Katılarak Mermaid\'s Glance\'ten e-posta almayı kabul edersin. Dilediğinde ayrılırsın.</p>' +
@@ -1651,7 +1651,7 @@
         '<div class="mgso-wm">MERMAID\'S GLANCE</div>' +
         '<div class="mgso-rule"></div>' +
         '<h2 class="mgso-h">Yerin hazır.</h2>' +
-        '<p class="mgso-p">İlk seçimin için ayırdık. Kod e-postanda.</p>' +
+        '<p class="mgso-p">İlk seçimin için ayırdık. Ayrıcalığın e-postanda.</p>' +
         '<div style="text-align:center"><span class="mgso-chip">SOCIETY10</span></div>' +
         '<button class="mgso-btn" id="mgso-explore" type="button">KEŞFET</button>' +
         '<p class="mgso-note">Zarafetle, Destina — Mermaid\'s Glance</p>';
