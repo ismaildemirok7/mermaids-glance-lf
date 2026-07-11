@@ -237,7 +237,7 @@
       t: "İADE VE TESLİMAT",
       body:
         '<p class="mgpol-lead">Her parça, size ulaşana dek özenle hazırlanır. Aşağıda hazırlık, teslimat ve iade sürecimizi açık ve eksiksiz bulacaksınız.</p>' +
-        '<h2>Hazırlık &amp; Teslimat</h2><p>Her siluet, sevkiyattan önce 2–5 iş günü süren özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat süresi — hem Türkiye hem global (ABD, İngiltere, AB) — 7–15 iş günüdür. Hafta sonları ve resmî tatiller bu süreye dâhil değildir.</p>' +
+        '<h2>Hazırlık &amp; Teslimat</h2><p>Her siluet, sevkiyattan önce 2–5 iş günü süren özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat süresi Türkiye’de 15 iş günü, global (ABD, İngiltere, AB) 7–15 iş günüdür. Hafta sonları ve resmî tatiller bu süreye dâhil değildir.</p>' +
         '<h2>Gümrük &amp; Vergiler</h2><p>Sınırların kontrolünü tümüyle biz üstleniriz. Tüm uluslararası vergiler, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta hiçbir gizli ücret yoktur.</p>' +
         '<h2>Sipariş Değişikliği &amp; İptal</h2><p>Satın alımdan itibaren siparişinizi iptal etmek veya bilgilerinizi düzenlemek için 24 saatlik bir süreniz vardır. Bu sürenin ardından küratörlük sürecimiz başlar ve lojistik ağı kilitlenir; iptal veya değişiklik artık mümkün değildir.</p>' +
         '<h2>İade</h2><p>Mahrem olmayan parçalar için teslimattan itibaren 14 gün içinde iade başlatabilirsiniz. Parça kusursuz, yıkanmamış, etiketli ve orijinal sunumunda olmalıdır.</p>' +
@@ -411,7 +411,7 @@
           ["Siparişimi iptal edebilir veya değiştirebilir miyim?",
             "Satın alımdan itibaren siparişinizi iptal etmek veya bilgilerinizi düzenlemek için kesin 24 saatlik bir süreniz vardır. Bu sürenin ardından küratörlük sürecimiz başlar ve lojistik ağı kilitlenir; iptal veya değişiklik artık mümkün değildir."],
           ["Parçam elime ne zaman ulaşır?",
-            "Her siluet, sevkiyattan önce 2–5 iş günü özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat — hem Türkiye hem global (ABD, İngiltere, AB) — 7–15 iş günüdür. Hafta sonları ve resmi tatiller bu süreye dahil değildir."],
+            "Her siluet, sevkiyattan önce 2–5 iş günü özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat Türkiye’de 15 iş günü, global (ABD, İngiltere, AB) 7–15 iş günüdür. Hafta sonları ve resmi tatiller bu süreye dahil değildir."],
           ["Sürpriz gümrük vergisi veya ek ücret öder miyim?",
             "Kesinlikle hayır. Sınırların kontrolünü tamamen biz üstleniriz. Tüm uluslararası vergiler, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta hiçbir gizli ücret yoktur — yalnızca kusursuzluğu teslim alırsınız."],
           ["İade protokolünüz nedir?",
@@ -973,13 +973,23 @@
      ========================================================================= */
   (function () {
     var TR = /[çğışöüÇĞİŞÖÜ]/;
+    /* task-10 item 3: the en-dash heuristic missed FR/short titles (Culotte Alba)
+       and stray EN strings → FİNE/CHEMİSE/NOİR/SEDUCTİON (task-01 finding 8).
+       Fallback: no Turkish letters AND a known EN/FR catalog word → lang=en.
+       Word list is closed (no bare heuristics) so Turkish copy that happens to
+       lack ç/ğ/ş/ı/ö/ü ("iade", "beden") can never be stamped by accident. */
+    var EN = /\b(fine|noir|chemise|seduction|piece|pieces|lace|mesh|silk|satin|sheer|strappy|cutout|nightie|kimono|gloves?|ring|fishnet|print|floral|embroidery|voile|linen|tulle|maxi|midi|mini|dress|robe|garter|harness|bandeau|culottes?|nuisette|harnais|string|graphic|velvet|crystal|bodysuits?|body|stockings?|corset|bustier|choker|cape|teddy|romper|babydoll|camisole|briefs?|selected|nothing)\b/i;
     function stamp() {
       var els = document.querySelectorAll("h1,h2,h3,a,p,div,span");
       for (var i = 0; i < els.length; i++) {
         var el = els[i];
         if (el.__mgLang || el.children.length > 0) continue;
         var t = el.textContent || "";
-        if (t.length < 8 || t.indexOf("–") < 0 || TR.test(t)) continue;
+        if (t.length < 4 || TR.test(t)) continue;
+        /* wordlist path additionally requires a lowercase "i": without one the
+           i→İ bug cannot occur, and this skips ambiguous all-caps Turkish
+           ("SATIN AL" matches the EN word "satin" but carries no i to break). */
+        if (t.indexOf("–") < 0 && !(EN.test(t) && /i/.test(t))) continue;
         el.__mgLang = 1; el.setAttribute("lang", "en");
       }
     }
@@ -1410,7 +1420,9 @@
       + ".mg-co-h{font-size:12px!important;font-weight:600!important;letter-spacing:.2em!important;text-transform:uppercase!important;color:#0d0d0d!important;font-family:'Montserrat',sans-serif!important;}"
       + ".mg-co-lbl{font-size:9px!important;font-weight:600!important;letter-spacing:.18em!important;text-transform:uppercase!important;color:#7a7a7a!important;font-family:'Montserrat',sans-serif!important;}"
       + ".mg-co-tot{font-size:11px!important;font-weight:600!important;letter-spacing:.2em!important;text-transform:uppercase!important;color:#0d0d0d!important;font-family:'Montserrat',sans-serif!important;}"
-      + ".mg-co-secure{display:flex;align-items:center;justify-content:center;gap:7px;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#9a9a9a;margin:14px 0 4px;font-family:'Montserrat',sans-serif;}");
+      + ".mg-co-secure{display:flex;align-items:center;justify-content:center;gap:7px;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#9a9a9a;margin:14px 0 4px;font-family:'Montserrat',sans-serif;}"
+      + ".mg-co-badges{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0 2px;opacity:.75;}"
+      + ".mg-co-badges svg{display:block;height:15px;width:auto;}");
     function isCheckout() { return !!(window.data && window.data.step_type === "checkout_page"); }
     function brandPass() {
       var on = isCheckout();
@@ -1438,6 +1450,20 @@
         var pay = null, bb = document.querySelectorAll("button");
         for (var k = 0; k < bb.length; k++) { if (PAY_RE.test(trNorm(bb[k].innerText))) { pay = bb[k]; break; } }
         if (pay && pay.parentNode) { var sec = document.createElement("div"); sec.className = "mg-co-secure"; sec.textContent = "GÜVENLİ VE ŞİFRELİ ÖDEME"; pay.parentNode.insertBefore(sec, pay.nextSibling); }
+      }
+      /* task-10 item 5: card badges under the trust line — monochrome inline SVG,
+         Visa + Mastercard only (owner-confirmed via Stripe; Troy NOT confirmed → omitted).
+         Grayscale keeps the brand's quiet checkout language (no color logos). */
+      if (!document.querySelector(".mg-co-badges")) {
+        var secEl = document.querySelector(".mg-co-secure");
+        if (secEl && secEl.parentNode) {
+          var bdg = document.createElement("div");
+          bdg.className = "mg-co-badges";
+          bdg.innerHTML =
+            '<svg role="img" aria-label="Visa" viewBox="0 0 44 15"><text x="0" y="13" font-family="Arial,Helvetica,sans-serif" font-size="14.5" font-style="italic" font-weight="800" letter-spacing="1" fill="#9a9a9a">VISA</text></svg>' +
+            '<svg role="img" aria-label="Mastercard" viewBox="0 0 34 21"><circle cx="12" cy="10.5" r="9.5" fill="#adadad"/><circle cx="22" cy="10.5" r="9.5" fill="#8a8a8a" fill-opacity=".85"/></svg>';
+          secEl.parentNode.insertBefore(bdg, secEl.nextSibling);
+        }
       }
       /* Mobile: LF renders the order summary twice (top mobile-native + bottom
          desktop column). Restore first (no tag build-up), then on narrow
@@ -1602,6 +1628,7 @@
       var i = document.getElementById("mgso-email");
       if (i) setTimeout(function () { i.focus(); }, 80);
     }
+    window.__mgSocietyOpen = open; /* §18 PDP köprüsü manuel tetik — beyin onaylı export */
 
     function hide() {
       var o = document.getElementById("mg-society");
@@ -1699,6 +1726,80 @@
         if (location.pathname !== lastP) { lastP = location.pathname; if (openState && excludedRoute()) hide(); }
       }, 250);
     }).observe(document.documentElement, { childList: true, subtree: true });
+  })();
+
+  /* =========================================================================
+     §18 — PDP TRUST LAYER (route: /products/..., task-10 / Cephe A)
+     Three visibility-critical pieces that must NOT hide in an accordion:
+       1. trust strip right under the ATC block (task-01 finding 6 — the fold
+          rule: first screen, no interaction needed). Copy = task-02 Blok 4
+          Varyant A, universally safe on every PDP (no return-window claim,
+          so no intimate-piece gating needed here).
+       2. price-justification line right under .mg-pdp-price (AYŞE's moment —
+          task-02 Blok 3 TR-A first sentence, verbatim).
+       3. Society bridge under the .mgpx accordion family (task-02 Blok 5 TR-A)
+          — opens the §17 overlay via the approved __mgSocietyOpen export.
+     Column gate reuses the inline export __mgPDPCol (no selector duplication).
+     CLS: text-only nodes; live measurement is beyin's deploy-gate (card item 6).
+     ========================================================================= */
+  (function () {
+    if (window.__mgPDPTrust) return; window.__mgPDPTrust = true;
+    css(
+      ".mg-pt-strip{margin:14px 0 4px;padding:12px 2px;border-top:1px solid #e6e4e0;border-bottom:1px solid #e6e4e0;display:flex;flex-wrap:wrap;gap:6px 18px;}" +
+      ".mg-pt-strip span{font-size:8.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#7a7a7a;font-family:'Montserrat',sans-serif;white-space:nowrap;}" +
+      ".mg-pdp-value{font-size:11px;line-height:1.7;letter-spacing:.02em;color:#8a8a8a;margin:6px 0 2px;font-family:'Montserrat',sans-serif;font-style:italic;}" +
+      ".mg-pt-society{margin:18px 0 4px;}" +
+      ".mg-pt-society button{background:none;border:none;padding:0;cursor:pointer;text-align:left;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.8;color:#555;letter-spacing:.02em;}" +
+      ".mg-pt-society button u{color:#0d0d0d;text-decoration:underline;text-underline-offset:3px;font-weight:600;}" +
+      ".mg-pt-society button:hover u{opacity:.6;}"
+    );
+    var STRIP = ["Güvenli ödeme altyapısı", "Takip numarasıyla teslimat", "Kargo, gümrük ve harç bizden", "Sade, markasız paket"];
+    function onPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
+    function build() {
+      if (!onPDP()) return;
+      var col = window.__mgPDPCol && window.__mgPDPCol();
+      if (!col) return;
+      /* 1 — trust strip under the ATC child block (first screen) */
+      if (!document.querySelector(".mg-pt-strip")) {
+        var atcChild = null, kids = [].slice.call(col.children);
+        for (var j = 0; j < kids.length; j++) {
+          if (/add to (bag|cart)|sepete ekle|çantaya ekle/i.test(kids[j].innerText || "")) { atcChild = kids[j]; break; }
+        }
+        if (atcChild) {
+          var st = document.createElement("div");
+          st.className = "mg-pt-strip";
+          st.innerHTML = STRIP.map(function (s) { return "<span>" + s + "</span>"; }).join("");
+          atcChild.parentNode.insertBefore(st, atcChild.nextSibling);
+        }
+      }
+      /* 2 — price justification (single line, visible — never an accordion) */
+      if (!document.querySelector(".mg-pdp-value")) {
+        var prc = col.querySelector(".mg-pdp-price");
+        if (prc && prc.parentNode) {
+          var v = document.createElement("div");
+          v.className = "mg-pdp-value";
+          v.textContent = "Her Silüet siparişinle üretilir; rafta bekleyen bir yığının parçası değildir.";
+          prc.parentNode.insertBefore(v, prc.nextSibling);
+        }
+      }
+      /* 3 — Society bridge after the accordion family */
+      if (!document.querySelector(".mg-pt-society")) {
+        var mgpx = col.querySelector(".mgpx");
+        if (mgpx && mgpx.parentNode) {
+          var so = document.createElement("div");
+          so.className = "mg-pt-society";
+          var b = document.createElement("button");
+          b.type = "button";
+          b.innerHTML = "Society'de yeni silüetler herkese açılmadan önce senin önüne gelir. <u>Önce sen gör</u>";
+          b.addEventListener("click", function () { if (window.__mgSocietyOpen) window.__mgSocietyOpen(); });
+          so.appendChild(b);
+          mgpx.parentNode.insertBefore(so, mgpx.nextSibling);
+        }
+      }
+    }
+    var t18; new MutationObserver(function () { clearTimeout(t18); t18 = setTimeout(build, 250); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+    setTimeout(build, 600);
   })();
 
 })();

@@ -69,7 +69,10 @@
     "ABOUT US":             { tr: "HAKKIMIZDA",          de: "ÜBER UNS",          fr: "À PROPOS" },
 
     /* cart drawer */
-    "YOUR BAG":             { tr: "SEPETİNİZ",           de: "IHRE TASCHE",       fr: "VOTRE PANIER" },
+    /* task-10 item 4: drawer language — "Sepet" is banned vocabulary (anayasa:
+       Çanta≠Sepet, sen dili); "Nothing selected yet" was untranslated → İ-bug. */
+    "YOUR BAG":             { tr: "ÇANTAN",              de: "IHRE TASCHE",       fr: "VOTRE PANIER" },
+    "Nothing selected yet": { tr: "Çantan henüz boş",    de: "Noch nichts gewählt", fr: "Rien de sélectionné" },
     "SUBTOTAL":             { tr: "ARA TOPLAM",          de: "ZWISCHENSUMME",     fr: "SOUS-TOTAL" },
     "COMPLETE ORDER":       { tr: "SİPARİŞİ TAMAMLA",    de: "BESTELLUNG ABSCHLIESSEN", fr: "FINALISER LA COMMANDE" },
     "ADD TO BAG":           { tr: "ÇANTAYA EKLE",        de: "IN DIE TASCHE",     fr: "AJOUTER AU PANIER" },
@@ -127,7 +130,7 @@
      - "SIZE: S" / "COLOR: BLACK" → cart variant lines are ONE text node in
        LABEL: VALUE form, so the bare "SIZE"/"COLOR" dict keys never match.     */
   var RULES = [
-    [/^(\d+)\s+ITEMS?$/i, { tr: "$1 ÜRÜN", de: "$1 ARTIKEL", fr: "$1 ARTICLE$2" }],
+    [/^(\d+)\s+ITEMS?$/i, { tr: "$1 PARÇA", de: "$1 ARTIKEL", fr: "$1 ARTICLE$2" }], /* task-10: "ürün" yasak sözlük (Silüet/Parça) */
     [/^SIZE:\s*(.+)$/i,   { tr: "BEDEN: $1", de: "GRÖSSE: $1", fr: "TAILLE: $1" }],
     [/^COLOR:\s*(.+)$/i,  { tr: "RENK: $1",  de: "FARBE: $1",  fr: "COULEUR: $1" }]
   ];
