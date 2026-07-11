@@ -996,6 +996,11 @@
     stamp();
     var lgT; new MutationObserver(function () { clearTimeout(lgT); lgT = setTimeout(stamp, 300); })
       .observe(document.documentElement, { childList: true, subtree: true });
+    /* Live finding (2026-07-11 deploy check): on the LF PDP the observers set up
+       from head scripts never fired (React hydration #423 fallback suspected),
+       so late-rendered titles were never stamped. Interval safety pass — stamp
+       is idempotent (__mgLang skip) and cheap on a settled DOM. */
+    setInterval(stamp, 1500);
   })();
 
   /* =========================================================================
@@ -1800,6 +1805,11 @@
     var t18; new MutationObserver(function () { clearTimeout(t18); t18 = setTimeout(build, 250); })
       .observe(document.documentElement, { childList: true, subtree: true });
     setTimeout(build, 600);
+    /* Live finding (2026-07-11 deploy check): head-script observers never fired
+       on the LF PDP, so blocks whose anchors (.mg-pdp-price / .mgpx) render
+       after the 600ms pass were skipped forever. Interval safety pass — build
+       is guarded-idempotent (three querySelector checks) and near-free. */
+    setInterval(build, 1200);
   })();
 
 })();
