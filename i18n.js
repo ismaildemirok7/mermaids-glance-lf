@@ -76,6 +76,11 @@
     "SUBTOTAL":             { tr: "ARA TOPLAM",          de: "ZWISCHENSUMME",     fr: "SOUS-TOTAL" },
     "COMPLETE ORDER":       { tr: "SİPARİŞİ TAMAMLA",    de: "BESTELLUNG ABSCHLIESSEN", fr: "FINALISER LA COMMANDE" },
     "ADD TO BAG":           { tr: "ÇANTAYA EKLE",        de: "IN DIE TASCHE",     fr: "AJOUTER AU PANIER" },
+    "CHOOSE A SIZE":        { tr: "BEDENİNİ SEÇ" },
+    "UNAVAILABLE":          { tr: "MEVCUT DEĞİL" },
+    "Unavailable":          { tr: "Mevcut değil" },
+    "Go to size selection": { tr: "Beden seçimine git" },
+    "Add selected size to bag": { tr: "Seçili bedeni çantaya ekle" },
     "SEPETE EKLE":          { tr: "ÇANTAYA EKLE",        de: "IN DIE TASCHE",     fr: "AJOUTER AU PANIER" },
     "SIZE GUIDE":           { tr: "BEDEN REHBERİ",       de: "GRÖSSENTABELLE",    fr: "GUIDE DES TAILLES" },
     "SIZE":                 { tr: "BEDEN",               de: "GRÖSSE",            fr: "TAILLE" },
@@ -94,6 +99,52 @@
     "Shipping":             { tr: "Kargo",               de: "Versand",           fr: "Livraison" },
     "Return policy":        { tr: "İade politikası",     de: "Rückgaberecht",     fr: "Politique de retour" },
     "You may also like":    { tr: "Bunları da beğenebilirsiniz", de: "Das könnte dir auch gefallen", fr: "Vous aimerez aussi" }, // SELIN
+    "Discover Your Size":   { tr: "Bedenini Keşfet" },
+    "DISCOVER YOUR SIZE":   { tr: "BEDENİNİ KEŞFET" },
+    "COMPLETE THE RITUAL":  { tr: "RİTÜELİNİ TAMAMLA" },
+    "DETAILS & FIT":        { tr: "DETAY VE KALIP" },
+    "SIZE, RETURNS & HYGIENE": { tr: "BEDEN, İADE VE HİJYEN" },
+    "DELIVERY & TRACKING":  { tr: "TESLİMAT VE TAKİP" },
+
+    /* PDP legal/trust copy — English base prevents TR leakage in US/EU. */
+    "Size:": { tr: "Beden:" },
+    "Do not guess; consult": { tr: "Ölçünü tahmin etme; seçiminden önce" },
+    "before choosing.": { tr: "rehbere bak." },
+    "Withdrawal:": { tr: "Cayma hakkı:" },
+    "You may notify us from contract formation through delivery, and within 14 days after delivery.": { tr: "Sözleşmenin kurulmasından teslimata kadar ve teslimden itibaren 14 gün içinde cayma bildirimi yapabilirsin." },
+    "Hygiene exception:": { tr: "Hijyen istisnası:" },
+    "For lingerie, withdrawal does not apply after protective packaging, tape, seals or wrapping have been opened.": { tr: "İç çamaşırında ambalaj, bant, mühür veya paket gibi koruyucu unsur açıldıktan sonra cayma hakkı uygulanmaz." },
+    "For defective goods, your statutory choices include a refund, price reduction, free repair or replacement where possible. For a faster resolution,": { tr: "Ayıplı malda bedel iadesi, ayıp oranında indirim, ücretsiz onarım veya imkân varsa değişim dahil yasal seçimlik hakların saklıdır. Hızlı çözüm için" },
+    "write with images": { tr: "bize görselle yaz" },
+    "within 48 hours; this does not limit your legal rights. See every condition in our": { tr: "teslimattan sonraki 48 saat içinde yaz; bu süre yasal haklarını sınırlamaz. Tüm koşullar" },
+    "Return Policy": { tr: "İade Politikamızda" },
+    "Order routing takes 1 business day. Delivery after dispatch is estimated at 7–15 business days; the total estimate is 8–16 business days from your order. Weekends and public holidays are excluded.": { tr: "Sipariş yönlendirmesi 1 iş günü sürer. Sevkiyat sonrası teslimat tahmini 7–15 iş günüdür; toplam tahmin 8–16 iş günüdür. Hafta sonu ve resmî tatiller hariçtir." },
+    "Shipping, customs and border procedures are handled by us. Follow the journey on your": { tr: "Kargo, gümrük ve sınır işlemleri bize aittir. Yolculuğunu" },
+    "tracking page": { tr: "takip sayfandan" },
+    "The outer parcel is plain and unbranded; what it carries stays yours alone.": { tr: "Dış paket sade ve markasızdır; ne taşıdığı yalnızca sana kalır." },
+
+    /* Custom size guide — English base, TR localized here. */
+    "SIZE PROTOCOL — ARCHITECTURE": { tr: "BEDEN PROTOKOLÜ — MİMARİ" },
+    "01 — WAIST": { tr: "01 — BEL" },
+    "The narrowest point of your natural waist": { tr: "Doğal belinin en ince noktası" },
+    "02 — HIPS": { tr: "02 — KALÇA" },
+    "The widest point of your hips": { tr: "Kalçanın en geniş noktası" },
+    "03 — UNDERBUST": { tr: "03 — ALT GÖĞÜS" },
+    "Directly beneath your bust line": { tr: "Göğüs hattının hemen altı" },
+    "Sets & Bottoms": { tr: "Takımlar ve Altlar" },
+    "Bras & Bustiers": { tr: "Sütyen ve Büstiyer" },
+    "Nightwear": { tr: "Gecelik" },
+    "Waist (cm)": { tr: "Bel (cm)" },
+    "Hips (cm)": { tr: "Kalça (cm)" },
+    "Underbust": { tr: "Alt Göğüs" },
+    "A Cup": { tr: "A Kup" },
+    "B Cup": { tr: "B Kup" },
+    "C Cup": { tr: "C Kup" },
+    "D Cup": { tr: "D Kup" },
+    "Bust (cm)": { tr: "Göğüs (cm)" },
+    "Between two sizes —": { tr: "İki beden arasındaysan —" },
+    "choose the larger.": { tr: "büyük olanı seç." },
+    "The silhouette should hold without compromise.": { tr: "Siluet ödün vermeden sarmalıdır." },
 
     /* footer headings + links */
     "THE COMPANY":          { tr: "ŞİRKET",              de: "DAS UNTERNEHMEN",   fr: "L'ENTREPRISE" },
@@ -107,10 +158,17 @@
     "About Us":             { tr: "Hakkımızda",          de: "Über uns",          fr: "À propos" },
     "Size Guide":           { tr: "Beden Rehberi",       de: "Größentabelle",     fr: "Guide des tailles" },
     "Ultra-luxury lingerie.": { tr: "Ultra-lüks iç giyim.", de: "Ultra-luxuriöse Dessous.", fr: "Lingerie ultra-luxe." },
-    "Crafted for women who choose to feel extraordinary.": {
-      tr: "Olağanüstü hissetmeyi seçen kadınlar için tasarlandı.",
-      de: "Gefertigt für Frauen, die sich außergewöhnlich fühlen wollen.", // SELIN
-      fr: "Conçue pour les femmes qui choisissent de se sentir extraordinaires." }, // SELIN
+    "Curated for women who choose to feel extraordinary.": {
+      tr: "Olağanüstü hissetmeyi seçen kadınlar için küratörlüğü yapıldı." },
+
+    /* Homepage Promise — factual, non-coercive, legally qualified. */
+    "Trust begins with what is clear": { tr: "Güven, kararından önce" },
+    "before you decide.": { tr: "açık olanla başlar." },
+    "CURATED WITH INTENT": { tr: "NİYETLE SEÇİLDİ" },
+    "Every piece is evaluated by the same standard: clear information, considered presence and no invented claims.": { tr: "Her parça aynı standartla değerlendirilir: açık bilgi, düşünülmüş duruş ve uydurulmamış iddia." },
+    "RETURNS & HYGIENE": { tr: "İADE VE HİJYEN" },
+    "Notify us of withdrawal within 14 days after delivery. The hygiene exception applies only after protective packaging or seals are opened.": { tr: "Teslimden itibaren 14 gün içinde cayma bildirimi yapabilirsin. Hijyen istisnası yalnız koruyucu ambalaj veya mühür açıldıysa uygulanır." },
+    "Order routing takes 1 business day; delivery after dispatch is estimated at 7–15. Duties are handled and tracking is shared at dispatch.": { tr: "Sipariş yönlendirmesi 1 iş günü sürer; sevkiyat sonrası teslimat tahmini 7–15 iş günüdür. Harçlar bize aittir; takip bilgisi sevkiyatla paylaşılır." },
 
     /* contact page */
     "GET IN TOUCH":         { tr: "BİZE ULAŞIN",         de: "KONTAKT AUFNEHMEN", fr: "NOUS CONTACTER" },
@@ -202,11 +260,19 @@
   }
   function translateAttrs(root) {
     if (LANG === "en") return;
-    var inputs = (root.querySelectorAll ? root : document).querySelectorAll("input[placeholder],textarea[placeholder]");
+    var scope = root.querySelectorAll ? root : document;
+    var inputs = scope.querySelectorAll("input[placeholder],textarea[placeholder]");
     for (var i = 0; i < inputs.length; i++) {
       var ph = inputs[i].getAttribute("placeholder");
       var t = ph && ATTR[ph.trim()];
       if (t && t[LANG]) inputs[i].setAttribute("placeholder", t[LANG]);
+    }
+    var labelled = scope.querySelectorAll("[aria-label],[title]");
+    for (var j = 0; j < labelled.length; j++) {
+      ["aria-label", "title"].forEach(function (name) {
+        var raw = labelled[j].getAttribute(name), out = raw && lookup(raw);
+        if (out != null && out !== raw) labelled[j].setAttribute(name, out);
+      });
     }
   }
   function walk(root) {

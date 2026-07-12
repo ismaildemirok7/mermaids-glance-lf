@@ -25,6 +25,7 @@
     return t ? t.src.replace(/\/(mg|i18n)\.js.*$/, "") : "https://cdn.jsdelivr.net/gh/ismaildemirok7/mermaids-glance-lf@v18";
   })();
   var path = location.pathname;
+  function L(en, tr) { return window.MG_LANG === "tr" ? tr : en; }
 
   /* Order-tracking Worker endpoint (§9). Set this to the URL printed by
      `wrangler deploy` (e.g. https://mg-tracking.<sub>.workers.dev). While it is
@@ -161,7 +162,7 @@
       '<div class="mgf-cols">' +
         '<div class="mgf-col mgf-brand">' +
           '<div class="mgf-wm">MERMAID\'S GLANCE</div>' +
-          '<div class="mgf-tag">Ultra-luxury lingerie.<br>Crafted for women who choose to feel extraordinary.</div>' +
+          '<div class="mgf-tag">Ultra-luxury lingerie.<br>Curated for women who choose to feel extraordinary.</div>' +
           '<div class="mgf-soc">' +
             '<a href="https://www.instagram.com/mermaidsglanceofficial/" target="_blank" rel="noopener" class="mgf-si">Instagram</a>' +
           '</div>' +
@@ -186,7 +187,7 @@
         '</div>' +
       '</div>' +
       '<div class="mgf-bot">' +
-        '<span>© 2025 MERMAID\'S GLANCE</span>' +
+        '<span>© ' + new Date().getFullYear() + ' MERMAID\'S GLANCE</span>' +
       '</div>' +
     '</div>';
 
@@ -234,16 +235,23 @@
         '<h2>Haklarınız</h2><p>Kişisel verilerinize erişme, bunları düzeltme veya silinmesini talep etme hakkına sahipsiniz. Bu haklarınızı kullanmak için <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresinden bize ulaşın.</p>'
     },
     "/refundpolicy": {
-      t: "İADE VE TESLİMAT",
-      body:
-        '<p class="mgpol-lead">Her parça, size ulaşana dek özenle hazırlanır. Aşağıda hazırlık, teslimat ve iade sürecimizi açık ve eksiksiz bulacaksınız.</p>' +
-        '<h2>Hazırlık &amp; Teslimat</h2><p>Her siluet, sevkiyattan önce 2–5 iş günü süren özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat süresi 15 iş günüdür. Hafta sonları ve resmî tatiller bu süreye dâhil değildir.</p>' +
-        '<h2>Gümrük &amp; Vergiler</h2><p>Sınırların kontrolünü tümüyle biz üstleniriz. Tüm uluslararası vergiler, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta hiçbir gizli ücret yoktur.</p>' +
-        '<h2>Sipariş Değişikliği &amp; İptal</h2><p>Satın alımdan itibaren siparişinizi iptal etmek veya bilgilerinizi düzenlemek için 24 saatlik bir süreniz vardır. Bu sürenin ardından küratörlük sürecimiz başlar ve lojistik ağı kilitlenir; iptal veya değişiklik artık mümkün değildir.</p>' +
-        '<h2>İade</h2><p>Mahrem olmayan parçalar için teslimattan itibaren 14 gün içinde iade başlatabilirsiniz. Parça kusursuz, yıkanmamış, etiketli ve orijinal sunumunda olmalıdır.</p>' +
-        '<h2>Hijyen Standardı</h2><p>Mahrem alt parçalarda, tangalarda ve bodysuit’lerde iade kabul edilmez. Bu standart, teninize değen parçanın kusursuz hijyenik ve yalnızca size ait olmasını güvence altına alır.</p>' +
-        '<h2>Kusurlu Parça</h2><p>Kusurlarla pazarlık etmez, kısmi iade sunmayız. Bir parça kusurlu ulaşırsa, gecikmeden kusursuz bir parçayla değiştirilir. Teslimattan sonraki 48 saat içinde görsel kanıtla <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresinden bize ulaşın.</p>' +
-        '<h2>İade Süreci</h2><p>Uygun bir iade için <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresinden talebinizi iletin. Onaylanan iadelerde ücret iadesi, parça tarafımıza ulaşıp incelendikten sonra orijinal ödeme yönteminize yapılır.</p>'
+      t: L("RETURNS & DELIVERY", "İADE VE TESLİMAT"),
+      body: L(
+        '<p class="mgpol-lead">Preparation, delivery, withdrawal and hygiene terms are stated here so you can review them before deciding.</p>' +
+        '<h2>Routing &amp; Delivery</h2><p>Order routing takes 1 business day. Delivery after dispatch is estimated at 7–15 business days, for a total estimate of 8–16 business days from the order. Weekends and public holidays are excluded.</p>' +
+        '<h2>Customs &amp; Duties</h2><p>Shipping, customs procedures and duties are handled by us. No additional customs charge is collected from you at delivery.</p>' +
+        '<h2>Order Changes &amp; Withdrawal</h2><p>You may notify us of withdrawal from contract formation through delivery, and within 14 days after delivery. Send your notice in a durable form to <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a>.</p>' +
+        '<h2>Returns &amp; Hygiene</h2><p>For lingerie, the hygiene exception applies after protective packaging, tape, seals or wrapping have been opened after delivery. Review size and contents before opening a protective element. Statutory withdrawal and defective-goods rights remain intact.</p>' +
+        '<h2>Defective Goods</h2><p>For defective goods, your statutory choices include withdrawal and refund, a proportional price reduction, free repair or replacement where possible. For a faster resolution, write to <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> with images within 48 hours after delivery; this request does not limit your legal rights.</p>' +
+        '<h2>Return Process</h2><p>Write to <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> for return instructions. Return the piece within 10 days after your withdrawal notice. We reimburse all eligible payments within 14 days after receiving that notice, in one transaction to the original payment method and without additional cost to you. If no return carrier was named in the pre-contract information, no return-shipping charge is requested from you.</p>',
+        '<p class="mgpol-lead">Hazırlık, teslimat, cayma ve hijyen koşullarını kararından önce inceleyebilmen için burada açıkça gösteriyoruz.</p>' +
+        '<h2>Yönlendirme &amp; Teslimat</h2><p>Sipariş yönlendirmesi 1 iş günü sürer. Sevkiyat sonrası teslimat tahmini 7–15 iş günüdür; siparişten itibaren toplam tahmin 8–16 iş günüdür. Hafta sonları ve resmî tatiller hariçtir.</p>' +
+        '<h2>Gümrük &amp; Vergiler</h2><p>Kargo, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta senden ek gümrük ücreti alınmaz.</p>' +
+        '<h2>Sipariş Değişikliği &amp; Cayma</h2><p>Sözleşmenin kurulmasından teslimata kadar ve teslimden itibaren 14 gün içinde cayma bildirimi yapabilirsin. Bildirimini kalıcı bir kayıt oluşturacak şekilde <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresine ilet.</p>' +
+        '<h2>İade &amp; Hijyen</h2><p>İç çamaşırında hijyen istisnası, ambalaj, bant, mühür veya paket gibi koruyucu unsur teslimden sonra açıldığında uygulanır. Koruyucu unsuru açmadan önce beden ve içerik bilgisini kontrol et. Yasal cayma ve ayıplı mal hakların saklıdır.</p>' +
+        '<h2>Ayıplı Mal</h2><p>Ayıplı malda sözleşmeden dönme ve bedel iadesi, ayıp oranında indirim, ücretsiz onarım veya imkân varsa ayıpsız misliyle değişim seçimlik hakların saklıdır. Hızlı çözüm için teslimattan sonraki 48 saat içinde görselle <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresine yaz; bu talep yasal haklarını sınırlamaz.</p>' +
+        '<h2>İade Süreci</h2><p>İade talimatı için <a href="mailto:info@mermaidsglance.com">info@mermaidsglance.com</a> adresine yaz. Cayma bildiriminden itibaren 10 gün içinde parçayı iade et. Uygun ödemeleri bildirimin bize ulaştığı tarihten itibaren 14 gün içinde, ek masraf yaratmadan ve tek seferde orijinal ödeme yöntemine iade ederiz. Ön bilgilendirmede iade taşıyıcısı belirtilmemişse senden iade kargo bedeli talep edilmez.</p>'
+      )
     },
     "/termsofservice": {
       t: "KULLANIM KOŞULLARI",
@@ -408,24 +416,24 @@
       /* FAQ section below the form grid */
       if (!document.querySelector(".mgc-faq")) {
         var faqs = [
-          ["Siparişimi iptal edebilir veya değiştirebilir miyim?",
-            "Satın alımdan itibaren siparişinizi iptal etmek veya bilgilerinizi düzenlemek için kesin 24 saatlik bir süreniz vardır. Bu sürenin ardından küratörlük sürecimiz başlar ve lojistik ağı kilitlenir; iptal veya değişiklik artık mümkün değildir."],
-          ["Parçam elime ne zaman ulaşır?",
-            "Her siluet, sevkiyattan önce 2–5 iş günü özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat 15 iş günüdür. Hafta sonları ve resmi tatiller bu süreye dahil değildir."],
-          ["Sürpriz gümrük vergisi veya ek ücret öder miyim?",
-            "Kesinlikle hayır. Sınırların kontrolünü tamamen biz üstleniriz. Tüm uluslararası vergiler, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta hiçbir gizli ücret yoktur — yalnızca kusursuzluğu teslim alırsınız."],
-          ["İade protokolünüz nedir?",
-            "Mahrem olmayan parçalar için teslimattan itibaren 14 gün içinde iade başlatabilirsiniz. Parça kusursuz, yıkanmamış, etiketli ve orijinal sunumunda olmalıdır. Kesin Hijyen Standardı: Mahrem alt parçalarda, tangalarda ve bodysuit’lerde iade kesinlikle kabul edilmez. Bu, teninize değen parçanın kusursuz hijyenik ve yalnızca size ait olmasını güvence altına alır."],
-          ["Parça kusurlu gelirse ne olur?",
-            "Kusurlarla pazarlık etmez, kısmi iade sunmayız. Bir parça kusurlu gelirse, gecikmeden kusursuz bir parçayla değiştirilir. Teslimattan sonraki 48 saat içinde görsel kanıtla info@mermaidsglance.com adresinden bize ulaşın."],
-          ["Parça nasıl paketlenir?",
-            "Dış kargo paketi tamamen sade ve markasızdır. Gizliliğiniz mutlaktır."],
-          ["Doğru bedenimi nasıl seçerim?",
-            "Her parça hassas ölçülere göre üretilir. Bedeninizi tahmin etmeyin. Uyumunuzdan tam olarak emin olmak için parçanızı edinmeden önce Beden Rehberimize başvurun."],
-          ["Ödemem güvende mi?",
-            "Ödemeniz Stripe’ın şifreli altyapısıyla alınır. Kart bilgilerinizi biz görmez, saklamayız."],
-          ["Bir sorum olursa nasıl ulaşırım?",
-            "info@mermaidsglance.com adresine yazın; her sorunuza 24 saat içinde yanıt veririz."]
+          [L("Can I cancel or change my order?", "Siparişimi iptal edebilir veya değiştirebilir miyim?"),
+            L("You may notify us of withdrawal from contract formation through delivery, and within 14 days after delivery. For address or size changes, write to info@mermaidsglance.com before preparation is complete; your legal rights remain intact.", "Sözleşmenin kurulmasından teslimata kadar ve teslimden itibaren 14 gün içinde cayma bildirimi yapabilirsiniz. Adres veya beden değişikliği için hazırlık tamamlanmadan önce info@mermaidsglance.com adresine yazın; yasal haklarınız saklıdır.")],
+          [L("When will my piece arrive?", "Parçam elime ne zaman ulaşır?"),
+            L("Order routing takes 1 business day. Delivery after dispatch is estimated at 7–15 business days, for a total estimate of 8–16 business days. Weekends and public holidays are excluded.", "Sipariş yönlendirmesi 1 iş günü sürer. Sevkiyat sonrası teslimat tahmini 7–15 iş günüdür; toplam tahmin 8–16 iş günüdür. Hafta sonları ve resmî tatiller hariçtir.")],
+          [L("Will I pay unexpected customs charges?", "Sürpriz gümrük vergisi veya ek ücret öder miyim?"),
+            L("No. Shipping, customs procedures and duties are handled by us. No additional customs charge is collected from you at delivery.", "Hayır. Kargo, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta senden ek gümrük ücreti alınmaz.")],
+          [L("What is your return protocol?", "İade protokolünüz nedir?"),
+            L("You may notify us of withdrawal within 14 days after delivery. For lingerie, the hygiene exception applies after protective packaging, tape, seals or wrapping have been opened. Statutory withdrawal and defective-goods rights remain intact.", "Teslimden itibaren 14 gün içinde cayma bildirimi yapabilirsiniz. İç çamaşırında hijyen istisnası, ambalaj, bant, mühür veya paket gibi koruyucu unsur açıldığında uygulanır. Yasal cayma ve ayıplı mal haklarınız saklıdır.")],
+          [L("What if a piece arrives defective?", "Parça kusurlu gelirse ne olur?"),
+            L("For defective goods, your statutory choices include a refund, proportional price reduction, free repair or replacement where possible. For a faster resolution, write with images within 48 hours; this request does not limit your legal rights.", "Ayıplı malda bedel iadesi, ayıp oranında indirim, ücretsiz onarım veya imkân varsa değişim dahil yasal seçimlik haklarınız saklıdır. Hızlı çözüm için 48 saat içinde görselle yazın; bu talep yasal haklarınızı sınırlamaz.")],
+          [L("How is the piece packaged?", "Parça nasıl paketlenir?"),
+            L("The outer parcel is plain and unbranded. What it carries stays private.", "Dış kargo paketi sade ve markasızdır. Ne taşıdığı yalnızca sana kalır.")],
+          [L("How do I choose the right size?", "Doğru bedenimi nasıl seçerim?"),
+            L("Do not guess. Consult the size guide before choosing; if you are between sizes, follow the rule for that product type.", "Bedeninizi tahmin etmeyin. Seçimden önce Beden Rehberimize başvurun; iki beden arasındaysanız rehberdeki ürün tipi kuralını izleyin.")],
+          [L("Is my payment secure?", "Ödemem güvende mi?"),
+            L("Payment is processed through Stripe's encrypted infrastructure. We do not see or store your card details.", "Ödemeniz Stripe’ın şifreli altyapısıyla alınır. Kart bilgilerinizi biz görmez, saklamayız.")],
+          [L("How can I reach you with a question?", "Bir sorum olursa nasıl ulaşırım?"),
+            L("Write to info@mermaidsglance.com; we answer every question within 24 hours.", "info@mermaidsglance.com adresine yazın; her sorunuza 24 saat içinde yanıt veririz.")]
         ];
         var faqEl = document.createElement("div");
         faqEl.className = "mgc-faq";
@@ -1754,57 +1762,140 @@
   (function () {
     if (window.__mgPDPTrust) return; window.__mgPDPTrust = true;
     css(
-      ".mg-pt-strip{margin:14px 0 4px;padding:12px 2px;border-top:1px solid #e6e4e0;border-bottom:1px solid #e6e4e0;}" +
-      ".mg-pt-strip span{font-size:11px;font-weight:400;letter-spacing:.02em;line-height:1.7;color:#8a8a8a;font-family:'Montserrat',sans-serif;}" +
-      ".mg-pdp-value{font-size:11px;line-height:1.7;letter-spacing:.02em;color:#8a8a8a;margin:6px 0 2px;font-family:'Montserrat',sans-serif;font-style:italic;}" +
+      ".mg-pt-strip{margin:14px 0 0;padding:12px 2px;border-top:1px solid #e6e4e0;border-bottom:1px solid #e6e4e0;}" +
+      ".mg-pt-strip span{font-size:11px;font-weight:400;letter-spacing:.02em;line-height:1.75;color:#666;font-family:'Montserrat',sans-serif;}" +
+      ".mg-pdp-value{font-size:11px;line-height:1.7;letter-spacing:.02em;color:#555;margin:8px 0 2px;font-family:'Montserrat',sans-serif;}" +
+      ".mg-pdp-facts{display:flex;flex-wrap:wrap;gap:4px 12px;margin:5px 0 2px;color:#777;}" +
+      ".mg-pdp-facts span{font-family:'Montserrat',sans-serif;font-size:9px;line-height:1.6;letter-spacing:.1em;text-transform:uppercase;}" +
+      ".mg-pdp-facts span+span:before{content:'·';margin-right:12px;color:#bbb;}" +
+      ".mg-pdp-edd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:9px 2px 4px;font-family:'Montserrat',sans-serif;}" +
+      ".mg-pdp-edd span{font-size:10px;line-height:1.6;letter-spacing:.035em;color:#555;}" +
+      ".mg-pdp-edd button{border:0;background:none;padding:0;color:#777;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:.08em;text-decoration:underline;text-underline-offset:3px;cursor:pointer;white-space:nowrap;}" +
       ".mg-pt-society{margin:18px 0 4px;}" +
       ".mg-pt-society button{background:none;border:none;padding:0;cursor:pointer;text-align:left;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.8;color:#555;letter-spacing:.02em;}" +
       ".mg-pt-society button u{color:#0d0d0d;text-decoration:underline;text-underline-offset:3px;font-weight:600;}" +
-      ".mg-pt-society button:hover u{opacity:.6;}"
+      ".mg-pt-society button:hover u{opacity:.6;}" +
+      "@media(max-width:480px){.mg-pdp-edd{align-items:flex-start;}.mg-pdp-facts{gap:3px 9px;}.mg-pdp-facts span+span:before{margin-right:9px;}}"
     );
     /* task-24 kabul (Varyant A): tek prose cümlesi, sentence-case — uppercase badge modeli kaldırıldı */
-    var STRIP_A = "Kargo, gümrük ve harç bize ait; paketin markasız gelir, her adımı takip numaranla izlenir.";
+    var STRIP_A = L(
+      "Shipping, customs and duties are handled by us. The outer parcel is plain and unbranded; tracking is shared at dispatch.",
+      "Kargo, gümrük ve harç bize ait. Dış paket sade ve markasız; takip bilgisi sevkiyatla paylaşılır."
+    );
+    function plain(html) {
+      var d = document.createElement("div"); d.innerHTML = String(html || "");
+      return (d.textContent || "").replace(/\s+/g, " ").trim();
+    }
+    function productText(p) {
+      var tags = (p && Array.isArray(p.tags)) ? p.tags.map(function (x) { return typeof x === "string" ? x : (x && x.title) || ""; }).join(" ") : "";
+      return [p && (p.title || p.name), tags, plain(p && p.description)].filter(Boolean).join(" ");
+    }
+    function insideText(p) {
+      var s = plain(p && p.description), m = s.match(/(?:Inside|Includes|Kutu İçeriği|Kutunun İçeriği|Kimono İçeriği)\s*:\s*([^.!?]{3,240})/i);
+      return m ? m[1].trim() : "";
+    }
+    function selectionValue(p) {
+      var s = String(p && (p.title || p.name) || "").toLocaleLowerCase("tr-TR"), lead = "";
+      if (/(five|5)[-\s]?piece|beş parç/.test(s)) lead = L("Five-piece selection", "Beş parçalı seçki");
+      else if (/(four|4)[-\s]?piece|dört parç/.test(s)) lead = L("Four-piece selection", "Dört parçalı seçki");
+      else if (/(three|3)[-\s]?piece|üç parç/.test(s)) lead = L("Three-piece selection", "Üç parçalı seçki");
+      else if (/(two|2)[-\s]?piece|iki parç/.test(s)) lead = L("Two-piece selection", "İki parçalı seçki");
+      else if (/\b(set|ensemble|takım|box)\b/.test(s)) lead = L("A coordinated selection", "Birbiriyle tamamlanan seçki");
+      else if (/bodysuit|\bbody\b/.test(s)) lead = L("One-piece silhouette", "Tek parça silüet");
+      else if (/nightgown|nightdress|nightie|chemise|babydoll|gecelik/.test(s)) lead = L("One-piece night silhouette", "Tek parça gece silüeti");
+      else if (/bralette|\bbra\b|sütyen|büstiyer/.test(s)) lead = L("One-piece upper silhouette", "Tek parça üst silüet");
+      return (lead ? lead + ". " : "") + L(
+        "The piece description appears under Details & Fit; only verified information is shown.",
+        "Parçanın açıklaması Detay ve Kalıp bölümünde; yalnız doğrulanmış bilgiler gösterilir."
+      );
+    }
+    function productFacts(p) {
+      var s = insideText(p), rules = [
+        [/underwire|wired cup|balen/i, L("Underwire structure", "Balenli yapı")],
+        [/adjustable|ayarlanabilir/i, L("Adjustable details", "Ayarlanabilir detaylar")],
+        [/removable|çıkarılabilir/i, L("Removable detail", "Çıkarılabilir detay")],
+        [/open[- ]back|açık sırt/i, L("Open back", "Açık sırt")],
+        [/choker|boyun bandı/i, L("Choker included", "Boyun bandı dahil")],
+        [/gloves?|eldiven/i, L("Gloves included", "Eldiven dahil")],
+        [/\bstockings?\b|\bthigh[- ]highs?\b|\bçorap\b/i, L("Stockings included", "Çorap dahil")]
+      ], out = [];
+      if (!s) return out;
+      rules.forEach(function (r) { if (out.length < 3 && r[0].test(s) && out.indexOf(r[1]) < 0) out.push(r[1]); });
+      return out;
+    }
+    function openDelivery(col) {
+      var hds = col.querySelectorAll(".mgpx-hd");
+      for (var i = 0; i < hds.length; i++) {
+        if (/TESL[İI]MAT|DELIVERY/i.test(hds[i].textContent || "")) {
+          var a = hds[i].closest(".mgpx-acc"); if (a) a.classList.add("open");
+          hds[i].scrollIntoView({ behavior: "smooth", block: "center" }); return;
+        }
+      }
+    }
     function onPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
     function build() {
       if (!onPDP()) return;
       var col = window.__mgPDPCol && window.__mgPDPCol();
       if (!col) return;
+      var p = window.data.product, pid = String(p.id || p.title || location.pathname), atcChild = null, kids = [].slice.call(col.children);
+      for (var j = 0; j < kids.length; j++) {
+        if (/add to (bag|cart)|sepete ekle|çantaya ekle|in die tasche|ajouter au panier/i.test(kids[j].innerText || "")) { atcChild = kids[j]; break; }
+      }
       /* 1 — trust strip under the ATC child block (first screen) */
-      if (!document.querySelector(".mg-pt-strip")) {
-        var atcChild = null, kids = [].slice.call(col.children);
-        for (var j = 0; j < kids.length; j++) {
-          if (/add to (bag|cart)|sepete ekle|çantaya ekle/i.test(kids[j].innerText || "")) { atcChild = kids[j]; break; }
-        }
-        if (atcChild) {
-          var st = document.createElement("div");
-          st.className = "mg-pt-strip";
-          st.innerHTML = "<span>" + STRIP_A + "</span>";
-          atcChild.parentNode.insertBefore(st, atcChild.nextSibling);
-        }
+      var st = col.querySelector(".mg-pt-strip");
+      if (!st && atcChild) {
+        st = document.createElement("div"); st.className = "mg-pt-strip";
+        atcChild.parentNode.insertBefore(st, atcChild.nextSibling);
       }
-      /* 2 — price justification (single line, visible — never an accordion) */
-      if (!document.querySelector(".mg-pdp-value")) {
-        var prc = col.querySelector(".mg-pdp-price");
-        if (prc && prc.parentNode) {
-          var v = document.createElement("div");
-          v.className = "mg-pdp-value";
-          v.textContent = "Her Silüet siparişinle üretilir; rafta bekleyen bir yığının parçası değildir.";
-          prc.parentNode.insertBefore(v, prc.nextSibling);
-        }
+      if (st && atcChild && atcChild.parentNode && (st.parentNode !== atcChild.parentNode || st.previousElementSibling !== atcChild)) {
+        atcChild.parentNode.insertBefore(st, atcChild.nextSibling);
       }
-      /* 3 — Society bridge after the accordion family */
-      if (!document.querySelector(".mg-pt-society")) {
-        var mgpx = col.querySelector(".mgpx");
-        if (mgpx && mgpx.parentNode) {
-          var so = document.createElement("div");
-          so.className = "mg-pt-society";
+      if (st && (st.getAttribute("data-for") !== pid || st.textContent !== STRIP_A)) {
+        st.innerHTML = "<span>" + STRIP_A + "</span>"; st.setAttribute("data-for", pid);
+      }
+      /* 2 — visible total lead time; exact calendar dates wait for a holiday-aware service */
+      var edd = col.querySelector(".mg-pdp-edd");
+      if (!edd && st && st.parentNode) {
+        edd = document.createElement("div"); edd.className = "mg-pdp-edd";
+        edd.innerHTML = L(
+          "<span>Estimated total: 8–16 business days · weekends and public holidays excluded</span><button type=\"button\">View the process</button>",
+          "<span>Tahmini toplam süre: 8–16 iş günü · hafta sonu ve resmî tatiller hariç</span><button type=\"button\">Süreci gör</button>"
+        );
+        edd.querySelector("button").addEventListener("click", function () { openDelivery(col); });
+        st.parentNode.insertBefore(edd, st.nextSibling);
+      }
+      if (edd && st && st.parentNode && (edd.parentNode !== st.parentNode || edd.previousElementSibling !== st)) st.parentNode.insertBefore(edd, st.nextSibling);
+      /* 3 — price-adjacent content truth + only facts explicitly listed under Inside/Kutu İçeriği */
+      var prc = col.querySelector(".mg-pdp-price"), v = col.querySelector(".mg-pdp-value"), fs = col.querySelector(".mg-pdp-facts");
+      if (prc && prc.parentNode) {
+        if (!v) { v = document.createElement("div"); v.className = "mg-pdp-value"; prc.parentNode.insertBefore(v, prc.nextSibling); }
+        if (v.parentNode !== prc.parentNode || v.previousElementSibling !== prc) prc.parentNode.insertBefore(v, prc.nextSibling);
+        var valueText = selectionValue(p);
+        if (v.getAttribute("data-for") !== pid || v.textContent !== valueText) { v.textContent = valueText; v.setAttribute("data-for", pid); }
+        var facts = productFacts(p);
+        if (facts.length) {
+          if (!fs) { fs = document.createElement("div"); fs.className = "mg-pdp-facts"; v.parentNode.insertBefore(fs, v.nextSibling); }
+          if (fs.parentNode !== v.parentNode || fs.previousElementSibling !== v) v.parentNode.insertBefore(fs, v.nextSibling);
+          var factsHTML = facts.map(function (x) { return "<span>" + x + "</span>"; }).join("");
+          if (fs.getAttribute("data-for") !== pid || fs.innerHTML !== factsHTML) { fs.innerHTML = factsHTML; fs.setAttribute("data-for", pid); }
+        } else if (fs) { fs.remove(); }
+      }
+      /* 4 — Society always follows the manifesto when it exists */
+      var mgpx = col.querySelector(".mgpx"), so = col.querySelector(".mg-pt-society");
+      if (mgpx && mgpx.parentNode) {
+        if (!so) {
+          so = document.createElement("div"); so.className = "mg-pt-society";
           var b = document.createElement("button");
           b.type = "button";
-          b.innerHTML = "Society'de yeni silüetler herkese açılmadan önce senin önüne gelir. <u>Önce sen gör</u>";
+          b.innerHTML = L(
+            "Society members see new silhouettes before public release. <u>See them first</u>",
+            "Society'de yeni silüetler herkese açılmadan önce senin önüne gelir. <u>Önce sen gör</u>"
+          );
           b.addEventListener("click", function () { if (window.__mgSocietyOpen) window.__mgSocietyOpen(); });
           so.appendChild(b);
-          mgpx.parentNode.insertBefore(so, mgpx.nextSibling);
         }
+        var anchor = col.querySelector(".mg-s8") || mgpx;
+        if (so.previousElementSibling !== anchor) anchor.parentNode.insertBefore(so, anchor.nextSibling);
       }
     }
     var t18; new MutationObserver(function () { clearTimeout(t18); t18 = setTimeout(build, 250); })
@@ -1820,20 +1911,21 @@
   /* =========================================================================
      §20 — PDP STORY / DESIRE LAYER (route: /products/..., dalga-3)
      Inline .mgpx accordion ailesine ADDITIVE (0 inline bayt — blueprint §11.4).
-     Enjekte eder: S2 kimlik satırı · BAKIM RİTÜELİ accordion · TESLİMAT RİTÜELİ
-     başlığına tahmini-teslim suffix'i · S8 manifesto + sınıf-2 story bandı.
-     ATLANAN (bilinçli, kart onaylı): S6 İlk Bakış — fiyat-gösterimi kararına
-     kadar (kuruşlu ₺ akıcılığı kırar); S10 IG grid — ig-06 HELD; video-loop —
-     beyin ayrı onayı bekler. __mgPDPCol + .mgpx yeniden kullanılır; §18 gibi
+     Enjekte eder: S2 kimlik satırı · S6 İlk Bakış · BAKIM RİTÜELİ accordion ·
+     S8 kısa manifesto + açıkça etiketli sınıf-2 editoryal story bandı.
+     ATLANAN: S10 IG grid — ig-06 HELD; video-loop — beyin ayrı onayı bekler.
+     __mgPDPCol + .mgpx yeniden kullanılır; §18 gibi
      zamanlanmış emniyet pass'i (LF observer'ları tek başına ateşlemiyor).
      ========================================================================= */
   (function () {
     if (window.__mgPDPStory) return; window.__mgPDPStory = true;
     css(
       ".mg-s2-id{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;color:#8a8a8a;margin:6px 0 2px;}" +
+      ".mg-s6{margin:18px 0 16px;padding:0 2px;}" +
+      ".mg-s6-k{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#8a8a8a;margin:0 0 8px;}" +
+      ".mg-s6 p{font-family:'Montserrat',sans-serif;font-size:12px;line-height:1.85;letter-spacing:.015em;color:#444;margin:0;}" +
       ".mg-s8{margin:24px 0 8px;}" +
-      ".mg-s8-band{display:block;width:100%;margin:0 0 16px;background:#f2f0ec;}" +
-      ".mg-s8-band img{display:block;width:100%;height:auto;}" +
+      ".mg-s8-kicker{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#999;margin:0 0 10px;}" +
       ".mg-s8 h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#0d0d0d;margin:0 0 12px;}" +
       ".mg-s8 p{font-family:'Montserrat',sans-serif;font-size:12px;line-height:1.9;letter-spacing:.015em;color:#555;margin:0 0 13px;}" +
       ".mg-s8 p:last-child{margin:0;}"
@@ -1843,38 +1935,46 @@
     /* S2 — koleksiyon kimlik satırı; uppercase önceden pişmiş (İ-tuzağı yok);
        eşleşme yoksa HİÇBİR ŞEY basma (blueprint kuralı). */
     var IDENT = {
-      NOCTURNE: "GECENİN SAHİBİ SENSİN", SERENA: "MASUMİYET, EN KESKİN SİLAHIN",
-      VEDA: "ARZUYU SEN BAŞLATIRSIN", CALYPSO: "MESAFEN, EN SOĞUK CAZİBENDİR",
-      MARLENE: "AVCI OLAN SENSİN", FLORA: "ZARAFET, BOTANİK BİR OTORİTE",
-      AXELLE: "ZIRHINI SEN SEÇERSİN", SIENNA: "ÇIPLAKLIK DEĞİL, İLLÜZYON",
-      SOLANGE: "AĞIRLIĞIN ALTIN DEĞERİNDE", LORELEI: "İPEK KADAR AKIŞKAN, O KADAR KARARLI",
-      BIJOU: "DETAY, SENİN İMZANDIR", ILLUSION: "GÖZÜ SEN YANILTIRSIN",
-      BLAISE: "DURUŞUN MİMARİ OLUR", JUNO: "SİMETRİYİ SEN BOZARSIN"
+      NOCTURNE: L("THE NIGHT ANSWERS TO YOU", "GECENİN SAHİBİ SENSİN"), SERENA: L("SOFTNESS, HELD WITH RESOLVE", "YUMUŞAKLIK, KARARLILIKLA DURUR"),
+      VEDA: L("YOU SET THE RHYTHM", "RİTMİ SEN BELİRLERSİN"), CALYPSO: L("DISTANCE, ON YOUR TERMS", "MESAFE, SENİN KOŞULLARINDA"),
+      MARLENE: L("YOU CHOOSE THE GAZE", "BAKIŞI SEN SEÇERSİN"), FLORA: L("GRACE BECOMES AUTHORITY", "ZARAFET, OTORİTEYE DÖNÜŞÜR"),
+      AXELLE: L("YOU CHOOSE YOUR ARMOUR", "ZIRHINI SEN SEÇERSİN"), SIENNA: L("YOU DECIDE WHAT IS REVEALED", "NEYİN GÖRÜNECEĞİNE SEN KARAR VERİRSİN"),
+      SOLANGE: L("YOUR VALUE IS NOT NEGOTIABLE", "DEĞERİN PAZARLIK KONUSU DEĞİL"), LORELEI: L("CALM, FLUID, RESOLVED", "AKIŞKAN, SAKİN, KARARLI"),
+      BIJOU: L("THE DETAIL IS YOUR SIGNATURE", "DETAY, SENİN İMZANDIR"), ILLUSION: L("YOU DIRECT THE GAZE", "BAKIŞI SEN YÖNETİRSİN"),
+      BLAISE: L("YOU HOLD YOUR OWN AXIS", "KENDİ EKSENİNDE DURURSUN"), JUNO: L("YOU CHOOSE WHERE THE RULE BREAKS", "KURALIN NEREDE KIRILACAĞINI SEN SEÇERSİN")
     };
-    function identFor(title) {
-      var up = (title || "").toLocaleUpperCase("tr-TR");
-      for (var k in IDENT) { if (up.indexOf(k) !== -1) return IDENT[k]; }
-      return null;
+    function collectionKey(p) {
+      var tags = p && Array.isArray(p.tags) ? p.tags.map(function (x) { return String(typeof x === "string" ? x : (x && x.title) || "").toLocaleUpperCase("tr-TR").trim(); }) : [];
+      var hits = [];
+      for (var k in IDENT) { if (tags.indexOf("THE " + k + " COLLECTION") >= 0) hits.push(k); }
+      return hits.length === 1 ? hits[0] : null;
     }
+    var GLANCE = {
+      NOCTURNE: L("Quiet authority enters the night with you. The decision remains yours.", "Sessiz otorite geceye seninle girer. Karar yalnızca sana aittir."),
+      SERENA: L("Softness and resolve can share the same scene. The hour remains yours.", "Yumuşaklık ve kararlılık aynı sahneyi paylaşır. O saat yalnızca sana aittir."),
+      VEDA: L("You enter the scene and set its rhythm. The choice begins with you.", "Sahneye girer ve ritmi sen belirlersin. Seçim seninle başlar."),
+      CALYPSO: L("Distance can be a form of control. Even in a crowd, the rhythm remains yours.", "Mesafe bir kontrol biçimi olabilir. Kalabalıkta bile ritim sana aittir."),
+      MARLENE: L("You decide what receives your attention. The gaze follows your terms.", "Neye dikkat vereceğine sen karar verirsin. Bakış senin koşullarını izler."),
+      FLORA: L("Grace does not ask for permission. The hour you keep for yourself remains yours.", "Zarafet izin istemez. Kendine ayırdığın saat yalnızca sana aittir."),
+      AXELLE: L("Armour is also a choice. The rules of the night remain yours.", "Zırh da bir seçimdir. Gecenin kuralları sana aittir."),
+      SIENNA: L("Revelation and restraint both belong to you. You decide what stays yours.", "Göstermek de saklamak da sana aittir. Neyin sende kalacağına sen karar verirsin."),
+      SOLANGE: L("Value needs no announcement. You know what is not open to negotiation.", "Değerin ilana ihtiyacı yoktur. Neyin pazarlık konusu olmadığını bilirsin."),
+      LORELEI: L("Calm can carry its own momentum. The night begins for you.", "Sakinlik kendi hareketini taşır. Gece senin için başlar."),
+      BIJOU: L("A considered detail can hold the final word. The signature remains yours.", "Düşünülmüş bir ayrıntı son sözü taşıyabilir. İmza sana aittir."),
+      ILLUSION: L("You decide where attention rests. Control remains with you.", "Dikkatin nerede duracağına sen karar verirsin. Kontrol sende kalır."),
+      BLAISE: L("You hold your own axis. Presence needs no explanation.", "Kendi ekseninde durursun. Duruşun açıklamaya ihtiyacı yoktur."),
+      JUNO: L("A rule matters only where you choose to keep it. The break is yours.", "Bir kural yalnız sen korumayı seçtiğinde anlam taşır. Kırılma sana aittir.")
+    };
 
-    /* Tahmini teslim — saf fonksiyon; iş günü (Cmt/Paz atlar); TR ay adı.
-       Canlı FAQ ile tutarlı: 2–5 iş günü hazırlık + 15 iş günü teslimat = 17–20. */
-    var TRMON = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-    function addBusinessDays(from, n) {
-      var d = new Date(from.getTime()), added = 0;
-      while (added < n) { d.setDate(d.getDate() + 1); var wd = d.getDay(); if (wd !== 0 && wd !== 6) added++; }
-      return d;
-    }
-    function fmtTR(d) { return d.getDate() + " " + TRMON[d.getMonth()]; }
-    function eddSuffix(from) { return " — tahmini " + fmtTR(addBusinessDays(from, 17)) + "–" + fmtTR(addBusinessDays(from, 20)); }
-
-    var S8_TITLE = "ADIMIZDA SAKLI SÖZ";
-    var S8_BODY =
-      "<p>Bir markanın gerçek olduğunu satışı değil, tuttuğu söz gösterir. Mermaid's Glance bir seçki evi olarak doğdu: her silüeti elimize aldık, 'bunu ödeyen haklı çıkmalı' demeden rafta tutmadık.</p>" +
-      "<p>Adımız, bize en değerli olan bir sözün harflerinden kuruldu — ismini henüz vermiyoruz, ama taşıdığı niyet her seçkinin içinde. İnandığımız bir sabah var: uykunu almış kalkarsın, bakımını yaparsın, güzel giyinirsin ve o gün her şey yerli yerine oturur. Kahveden fazlası tadılır, ayrıntı ertelenmez, kimse o günü bozamaz. O sabahın adı 'Tamam'dır. Biz o sabahın parçasını hazırlıyoruz.</p>" +
-      "<p>Eksik ya da kusurlu bir şey gelirse değiştiririz; politikamıza yazdığımıza uyarız. Türkiye'de kurulduk; künyemiz açık, arkasında gerçek insanlar var. Yazdığımız her satır bir sözdür.</p>";
-    var BAKIM_BODY =
-      "<p>Zarafet, gösterilen özenle sürer. Parçanı elde, soğuk suyla yıka; makinenin sertliğinden uzak tut. Kurutucu kullanma — nem gölgede, kendiliğinden çekilsin. Danteli ve tülü çekiştirme; kancasını kapatarak sakla ki teli takılmasın. Her parçayı ışıktan uzak, düz ya da askıda dinlendir. Gösterdiğin özen, parçanın hakkıdır.</p>";
+    var S8_TITLE = L("THE PROMISE WITHIN OUR NAME", "ADIMIZDA SAKLI SÖZ");
+    var S8_BODY = L(
+      "<p>Mermaid's Glance began as a house of curation. We consider every selection through the same question: does this presence feel like yours? Our name is built from the letters of a promise dearest to us — the moment you feel complete and think, ‘Enough.’</p><p>Founded in Turkey, we state preparation, delivery, tracking and return terms before you choose. For missing, incorrect or defective deliveries, your statutory choices remain intact. Every line is a promise; every promise is a measurable responsibility.</p>",
+      "<p>Mermaid's Glance bir seçki evi olarak doğdu. Her seçkiyi aynı soruyla değerlendiriyoruz: Bu parçanın duruşu sana ait hissettiriyor mu? Adımız, bize en değerli olan bir sözün harflerinden kuruldu. O söz; kendini tamamlanmış hissettiğin, ayrıntıyı ertelemediğin ‘Tamam’ anını taşır.</p><p>Türkiye'de kurulduk. Eksik, yanlış veya kusurlu bir teslimatta yasal seçimlik haklarını uygularız. Hazırlık, teslimat, takip ve iade koşullarını seçiminden önce açıkça gösteririz. Her satırımız bir söz, her sözümüz ölçülebilir bir sorumluluktur.</p>"
+    );
+    var BAKIM_BODY = L(
+      "<p>Follow the care label first; if it gives a different method, that instruction prevails. Unless stated otherwise, wash gently by hand in cold water. Do not wring or tumble dry. Dry in shade, away from direct heat and sunlight. Close straps and hooks before storing away from friction.</p>",
+      "<p>Önce parçanın etiketindeki bakım talimatını izle; etiket farklı bir yöntem söylüyorsa o geçerlidir. Aksi belirtilmedikçe soğuk suda nazikçe elde yıka; sıkma ve kurutucu kullanma. Doğrudan ısıdan ve güneşten uzakta, gölgede kurut. Askı ve kopçaları kapatarak, sürtünmeden uzak sakla.</p>"
+    );
 
     function mkAcc(t, bHTML) {
       var w = document.createElement("div"); w.className = "mgpx-acc";
@@ -1887,38 +1987,28 @@
       var col = window.__mgPDPCol && window.__mgPDPCol();
       if (!col) return;
 
-      /* S2 — kimlik satırı başlık altında */
-      if (!col.querySelector(".mg-s2-id")) {
-        var ttl = col.querySelector(".mg-pdp-title") || col.querySelector("h1");
-        var line = identFor(window.data && window.data.product && window.data.product.title);
-        if (ttl && ttl.parentNode && line) {
-          var idn = document.createElement("div"); idn.className = "mg-s2-id"; idn.textContent = line;
-          ttl.parentNode.insertBefore(idn, ttl.nextSibling);
-        }
-      }
+      /* S2 — yalnız tek ve exact koleksiyon tag'inde kimlik satırı; belirsizde gizle */
+      var p = window.data.product, pid = String(p.id || p.title || location.pathname), key = collectionKey(p);
+      var ttl = col.querySelector(".mg-pdp-title") || col.querySelector("h1"), idn = col.querySelector(".mg-s2-id");
+      if (ttl && ttl.parentNode && key) {
+        if (!idn) { idn = document.createElement("div"); idn.className = "mg-s2-id"; ttl.parentNode.insertBefore(idn, ttl.nextSibling); }
+        if (idn.getAttribute("data-for") !== pid || idn.textContent !== IDENT[key]) { idn.textContent = IDENT[key]; idn.setAttribute("data-for", pid); }
+      } else if (idn) { idn.remove(); }
 
       var mgpx = col.querySelector(".mgpx");
       if (!mgpx) return; /* inline accordion ailesi henüz kurulmadı — bekle */
 
-      /* Tahmini-teslim suffix'i TESLİMAT RİTÜELİ başlığına */
-      if (!mgpx.querySelector(".mg-edd")) {
-        var hds = mgpx.querySelectorAll(".mgpx-hd");
-        for (var i = 0; i < hds.length; i++) {
-          if (/TESL[İI]MAT R[İI]T[ÜU]EL[İI]/.test(hds[i].textContent || "")) {
-            var sfx = document.createElement("span");
-            sfx.className = "mg-edd";
-            sfx.style.cssText = "font-weight:400;letter-spacing:.04em;color:#8a8a8a;text-transform:none;";
-            sfx.textContent = eddSuffix(new Date());
-            var pl = hds[i].querySelector(".mgpx-pl");
-            if (pl) hds[i].insertBefore(sfx, pl); else hds[i].appendChild(sfx);
-            break;
-          }
-        }
-      }
+      /* S6 — koleksiyon kimliğine bağlı, materyal iddiası taşımayan İlk Bakış */
+      var s6 = col.querySelector(".mg-s6");
+      if (key && GLANCE[key]) {
+        if (!s6) { s6 = document.createElement("div"); s6.className = "mg-s6"; mgpx.parentNode.insertBefore(s6, mgpx); }
+        var s6HTML = '<div class="mg-s6-k">' + L("FIRST GLANCE", "İLK BAKIŞ") + '</div><p>' + GLANCE[key] + '</p>';
+        if (s6.getAttribute("data-for") !== pid || s6.innerHTML !== s6HTML) { s6.innerHTML = s6HTML; s6.setAttribute("data-for", pid); }
+      } else if (s6) { s6.remove(); }
 
       /* BAKIM RİTÜELİ accordion — aileye eklenir */
       if (!mgpx.querySelector(".mg-bakim")) {
-        var ba = mkAcc("BAKIM RİTÜELİ", BAKIM_BODY);
+        var ba = mkAcc(L("CARE RITUAL", "BAKIM RİTÜELİ"), BAKIM_BODY);
         ba.classList.add("mg-bakim");
         mgpx.appendChild(ba);
       }
@@ -1927,7 +2017,7 @@
       if (!col.querySelector(".mg-s8")) {
         var s8 = document.createElement("div"); s8.className = "mg-s8";
         s8.innerHTML =
-          '<div class="mg-s8-band"><img src="' + CDN + '/assets/story/ipek-akis.webp" width="1200" height="1600" loading="lazy" alt="İpeğin akışı"></div>' +
+          '<div class="mg-s8-kicker">' + L("BRAND STORY", "MARKA HİKÂYESİ") + '</div>' +
           '<h3>' + S8_TITLE + '</h3>' + S8_BODY;
         if (mgpx.parentNode) mgpx.parentNode.insertBefore(s8, mgpx.nextSibling);
       }
