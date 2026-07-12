@@ -108,19 +108,19 @@
 
     /* PDP legal/trust copy — English base prevents TR leakage in US/EU. */
     "Size:": { tr: "Beden:" },
-    "Do not guess; consult": { tr: "Ölçünü tahmin etme; seçiminden önce" },
-    "before choosing.": { tr: "rehbere bak." },
+    "Review the size guide before choosing": { tr: "Seçiminden önce beden rehberini incele" },
+    "; do not guess.": { tr: "; ölçünü tahmin etme." },
     "Withdrawal:": { tr: "Cayma hakkı:" },
     "You may notify us from contract formation through delivery, and within 14 days after delivery.": { tr: "Sözleşmenin kurulmasından teslimata kadar ve teslimden itibaren 14 gün içinde cayma bildirimi yapabilirsin." },
     "Hygiene exception:": { tr: "Hijyen istisnası:" },
     "For lingerie, withdrawal does not apply after protective packaging, tape, seals or wrapping have been opened.": { tr: "İç çamaşırında ambalaj, bant, mühür veya paket gibi koruyucu unsur açıldıktan sonra cayma hakkı uygulanmaz." },
     "For defective goods, your statutory choices include a refund, price reduction, free repair or replacement where possible. For a faster resolution,": { tr: "Ayıplı malda bedel iadesi, ayıp oranında indirim, ücretsiz onarım veya imkân varsa değişim dahil yasal seçimlik hakların saklıdır. Hızlı çözüm için" },
-    "write with images": { tr: "bize görselle yaz" },
-    "within 48 hours; this does not limit your legal rights. See every condition in our": { tr: "teslimattan sonraki 48 saat içinde yaz; bu süre yasal haklarını sınırlamaz. Tüm koşullar" },
+    "write with images within 48 hours after delivery": { tr: "teslimattan sonraki 48 saat içinde bize görselle yaz" },
+    "; this does not limit your legal rights. See every condition in our": { tr: "; bu talep yasal haklarını sınırlamaz. Tüm koşullar" },
     "Return Policy": { tr: "İade Politikamızda" },
     "Order routing takes 1 business day. Delivery after dispatch is estimated at 7–15 business days; the total estimate is 8–16 business days from your order. Weekends and public holidays are excluded.": { tr: "Sipariş yönlendirmesi 1 iş günü sürer. Sevkiyat sonrası teslimat tahmini 7–15 iş günüdür; toplam tahmin 8–16 iş günüdür. Hafta sonu ve resmî tatiller hariçtir." },
-    "Shipping, customs and border procedures are handled by us. Follow the journey on your": { tr: "Kargo, gümrük ve sınır işlemleri bize aittir. Yolculuğunu" },
-    "tracking page": { tr: "takip sayfandan" },
+    "Shipping, customs and border procedures are handled by us.": { tr: "Kargo, gümrük ve sınır işlemleri bize aittir." },
+    "Follow it on your tracking page": { tr: "Yolculuğu takip sayfandan izleyebilirsin" },
     "The outer parcel is plain and unbranded; what it carries stays yours alone.": { tr: "Dış paket sade ve markasızdır; ne taşıdığı yalnızca sana kalır." },
 
     /* Custom size guide — English base, TR localized here. */
