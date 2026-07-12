@@ -237,7 +237,7 @@
       t: "İADE VE TESLİMAT",
       body:
         '<p class="mgpol-lead">Her parça, size ulaşana dek özenle hazırlanır. Aşağıda hazırlık, teslimat ve iade sürecimizi açık ve eksiksiz bulacaksınız.</p>' +
-        '<h2>Hazırlık &amp; Teslimat</h2><p>Her siluet, sevkiyattan önce 2–5 iş günü süren özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat süresi Türkiye’de 15 iş günü, global (ABD, İngiltere, AB) 7–15 iş günüdür. Hafta sonları ve resmî tatiller bu süreye dâhil değildir.</p>' +
+        '<h2>Hazırlık &amp; Teslimat</h2><p>Her siluet, sevkiyattan önce 2–5 iş günü süren özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat süresi 15 iş günüdür. Hafta sonları ve resmî tatiller bu süreye dâhil değildir.</p>' +
         '<h2>Gümrük &amp; Vergiler</h2><p>Sınırların kontrolünü tümüyle biz üstleniriz. Tüm uluslararası vergiler, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta hiçbir gizli ücret yoktur.</p>' +
         '<h2>Sipariş Değişikliği &amp; İptal</h2><p>Satın alımdan itibaren siparişinizi iptal etmek veya bilgilerinizi düzenlemek için 24 saatlik bir süreniz vardır. Bu sürenin ardından küratörlük sürecimiz başlar ve lojistik ağı kilitlenir; iptal veya değişiklik artık mümkün değildir.</p>' +
         '<h2>İade</h2><p>Mahrem olmayan parçalar için teslimattan itibaren 14 gün içinde iade başlatabilirsiniz. Parça kusursuz, yıkanmamış, etiketli ve orijinal sunumunda olmalıdır.</p>' +
@@ -411,7 +411,7 @@
           ["Siparişimi iptal edebilir veya değiştirebilir miyim?",
             "Satın alımdan itibaren siparişinizi iptal etmek veya bilgilerinizi düzenlemek için kesin 24 saatlik bir süreniz vardır. Bu sürenin ardından küratörlük sürecimiz başlar ve lojistik ağı kilitlenir; iptal veya değişiklik artık mümkün değildir."],
           ["Parçam elime ne zaman ulaşır?",
-            "Her siluet, sevkiyattan önce 2–5 iş günü özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat Türkiye’de 15 iş günü, global (ABD, İngiltere, AB) 7–15 iş günüdür. Hafta sonları ve resmi tatiller bu süreye dahil değildir."],
+            "Her siluet, sevkiyattan önce 2–5 iş günü özenli bir hazırlık gerektirir. Sevkiyat sonrası teslimat 15 iş günüdür. Hafta sonları ve resmi tatiller bu süreye dahil değildir."],
           ["Sürpriz gümrük vergisi veya ek ücret öder miyim?",
             "Kesinlikle hayır. Sınırların kontrolünü tamamen biz üstleniriz. Tüm uluslararası vergiler, gümrük işlemleri ve yasal harçlar tarafımızca karşılanır. Teslimatta hiçbir gizli ücret yoktur — yalnızca kusursuzluğu teslim alırsınız."],
           ["İade protokolünüz nedir?",
@@ -419,9 +419,13 @@
           ["Parça kusurlu gelirse ne olur?",
             "Kusurlarla pazarlık etmez, kısmi iade sunmayız. Bir parça kusurlu gelirse, gecikmeden kusursuz bir parçayla değiştirilir. Teslimattan sonraki 48 saat içinde görsel kanıtla info@mermaidsglance.com adresinden bize ulaşın."],
           ["Parça nasıl paketlenir?",
-            "Dış kargo paketi tamamen sade ve gizlidir. İçeride parçanız, imza mat siyah kutumuzun içinde özenle dinlenir. Gizliliğiniz mutlaktır."],
+            "Dış kargo paketi tamamen sade ve markasızdır. Gizliliğiniz mutlaktır."],
           ["Doğru bedenimi nasıl seçerim?",
-            "Her parça hassas ölçülere göre üretilir. Bedeninizi tahmin etmeyin. Uyumunuzdan tam olarak emin olmak için parçanızı edinmeden önce Beden Rehberimize başvurun."]
+            "Her parça hassas ölçülere göre üretilir. Bedeninizi tahmin etmeyin. Uyumunuzdan tam olarak emin olmak için parçanızı edinmeden önce Beden Rehberimize başvurun."],
+          ["Ödemem güvende mi?",
+            "Ödemeniz Stripe’ın şifreli altyapısıyla alınır. Kart bilgilerinizi biz görmez, saklamayız."],
+          ["Bir sorum olursa nasıl ulaşırım?",
+            "info@mermaidsglance.com adresine yazın; her sorunuza 24 saat içinde yanıt veririz."]
         ];
         var faqEl = document.createElement("div");
         faqEl.className = "mgc-faq";
@@ -1750,15 +1754,16 @@
   (function () {
     if (window.__mgPDPTrust) return; window.__mgPDPTrust = true;
     css(
-      ".mg-pt-strip{margin:14px 0 4px;padding:12px 2px;border-top:1px solid #e6e4e0;border-bottom:1px solid #e6e4e0;display:flex;flex-wrap:wrap;gap:6px 18px;}" +
-      ".mg-pt-strip span{font-size:8.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#7a7a7a;font-family:'Montserrat',sans-serif;white-space:nowrap;}" +
+      ".mg-pt-strip{margin:14px 0 4px;padding:12px 2px;border-top:1px solid #e6e4e0;border-bottom:1px solid #e6e4e0;}" +
+      ".mg-pt-strip span{font-size:11px;font-weight:400;letter-spacing:.02em;line-height:1.7;color:#8a8a8a;font-family:'Montserrat',sans-serif;}" +
       ".mg-pdp-value{font-size:11px;line-height:1.7;letter-spacing:.02em;color:#8a8a8a;margin:6px 0 2px;font-family:'Montserrat',sans-serif;font-style:italic;}" +
       ".mg-pt-society{margin:18px 0 4px;}" +
       ".mg-pt-society button{background:none;border:none;padding:0;cursor:pointer;text-align:left;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.8;color:#555;letter-spacing:.02em;}" +
       ".mg-pt-society button u{color:#0d0d0d;text-decoration:underline;text-underline-offset:3px;font-weight:600;}" +
       ".mg-pt-society button:hover u{opacity:.6;}"
     );
-    var STRIP = ["Güvenli ödeme altyapısı", "Takip numarasıyla teslimat", "Kargo, gümrük ve harç bizden", "Sade, markasız paket"];
+    /* task-24 kabul (Varyant A): tek prose cümlesi, sentence-case — uppercase badge modeli kaldırıldı */
+    var STRIP_A = "Kargo, gümrük ve harç bize ait; paketin markasız gelir, her adımı takip numaranla izlenir.";
     function onPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
     function build() {
       if (!onPDP()) return;
@@ -1773,7 +1778,7 @@
         if (atcChild) {
           var st = document.createElement("div");
           st.className = "mg-pt-strip";
-          st.innerHTML = STRIP.map(function (s) { return "<span>" + s + "</span>"; }).join("");
+          st.innerHTML = "<span>" + STRIP_A + "</span>";
           atcChild.parentNode.insertBefore(st, atcChild.nextSibling);
         }
       }
@@ -1810,6 +1815,127 @@
        after the 600ms pass were skipped forever. Interval safety pass — build
        is guarded-idempotent (three querySelector checks) and near-free. */
     setInterval(build, 1200);
+  })();
+
+  /* =========================================================================
+     §20 — PDP STORY / DESIRE LAYER (route: /products/..., dalga-3)
+     Inline .mgpx accordion ailesine ADDITIVE (0 inline bayt — blueprint §11.4).
+     Enjekte eder: S2 kimlik satırı · BAKIM RİTÜELİ accordion · TESLİMAT RİTÜELİ
+     başlığına tahmini-teslim suffix'i · S8 manifesto + sınıf-2 story bandı.
+     ATLANAN (bilinçli, kart onaylı): S6 İlk Bakış — fiyat-gösterimi kararına
+     kadar (kuruşlu ₺ akıcılığı kırar); S10 IG grid — ig-06 HELD; video-loop —
+     beyin ayrı onayı bekler. __mgPDPCol + .mgpx yeniden kullanılır; §18 gibi
+     zamanlanmış emniyet pass'i (LF observer'ları tek başına ateşlemiyor).
+     ========================================================================= */
+  (function () {
+    if (window.__mgPDPStory) return; window.__mgPDPStory = true;
+    css(
+      ".mg-s2-id{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;color:#8a8a8a;margin:6px 0 2px;}" +
+      ".mg-s8{margin:24px 0 8px;}" +
+      ".mg-s8-band{display:block;width:100%;margin:0 0 16px;background:#f2f0ec;}" +
+      ".mg-s8-band img{display:block;width:100%;height:auto;}" +
+      ".mg-s8 h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#0d0d0d;margin:0 0 12px;}" +
+      ".mg-s8 p{font-family:'Montserrat',sans-serif;font-size:12px;line-height:1.9;letter-spacing:.015em;color:#555;margin:0 0 13px;}" +
+      ".mg-s8 p:last-child{margin:0;}"
+    );
+    function onPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
+
+    /* S2 — koleksiyon kimlik satırı; uppercase önceden pişmiş (İ-tuzağı yok);
+       eşleşme yoksa HİÇBİR ŞEY basma (blueprint kuralı). */
+    var IDENT = {
+      NOCTURNE: "GECENİN SAHİBİ SENSİN", SERENA: "MASUMİYET, EN KESKİN SİLAHIN",
+      VEDA: "ARZUYU SEN BAŞLATIRSIN", CALYPSO: "MESAFEN, EN SOĞUK CAZİBENDİR",
+      MARLENE: "AVCI OLAN SENSİN", FLORA: "ZARAFET, BOTANİK BİR OTORİTE",
+      AXELLE: "ZIRHINI SEN SEÇERSİN", SIENNA: "ÇIPLAKLIK DEĞİL, İLLÜZYON",
+      SOLANGE: "AĞIRLIĞIN ALTIN DEĞERİNDE", LORELEI: "İPEK KADAR AKIŞKAN, O KADAR KARARLI",
+      BIJOU: "DETAY, SENİN İMZANDIR", ILLUSION: "GÖZÜ SEN YANILTIRSIN",
+      BLAISE: "DURUŞUN MİMARİ OLUR", JUNO: "SİMETRİYİ SEN BOZARSIN"
+    };
+    function identFor(title) {
+      var up = (title || "").toLocaleUpperCase("tr-TR");
+      for (var k in IDENT) { if (up.indexOf(k) !== -1) return IDENT[k]; }
+      return null;
+    }
+
+    /* Tahmini teslim — saf fonksiyon; iş günü (Cmt/Paz atlar); TR ay adı.
+       Canlı FAQ ile tutarlı: 2–5 iş günü hazırlık + 15 iş günü teslimat = 17–20. */
+    var TRMON = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+    function addBusinessDays(from, n) {
+      var d = new Date(from.getTime()), added = 0;
+      while (added < n) { d.setDate(d.getDate() + 1); var wd = d.getDay(); if (wd !== 0 && wd !== 6) added++; }
+      return d;
+    }
+    function fmtTR(d) { return d.getDate() + " " + TRMON[d.getMonth()]; }
+    function eddSuffix(from) { return " — tahmini " + fmtTR(addBusinessDays(from, 17)) + "–" + fmtTR(addBusinessDays(from, 20)); }
+
+    var S8_TITLE = "ADIMIZDA SAKLI SÖZ";
+    var S8_BODY =
+      "<p>Bir markanın gerçek olduğunu satışı değil, tuttuğu söz gösterir. Mermaid's Glance bir seçki evi olarak doğdu: her silüeti elimize aldık, 'bunu ödeyen haklı çıkmalı' demeden rafta tutmadık.</p>" +
+      "<p>Adımız, bize en değerli olan bir sözün harflerinden kuruldu — ismini henüz vermiyoruz, ama taşıdığı niyet her seçkinin içinde. İnandığımız bir sabah var: uykunu almış kalkarsın, bakımını yaparsın, güzel giyinirsin ve o gün her şey yerli yerine oturur. Kahveden fazlası tadılır, ayrıntı ertelenmez, kimse o günü bozamaz. O sabahın adı 'Tamam'dır. Biz o sabahın parçasını hazırlıyoruz.</p>" +
+      "<p>Eksik ya da kusurlu bir şey gelirse değiştiririz; politikamıza yazdığımıza uyarız. Türkiye'de kurulduk; künyemiz açık, arkasında gerçek insanlar var. Yazdığımız her satır bir sözdür.</p>";
+    var BAKIM_BODY =
+      "<p>Zarafet, gösterilen özenle sürer. Parçanı elde, soğuk suyla yıka; makinenin sertliğinden uzak tut. Kurutucu kullanma — nem gölgede, kendiliğinden çekilsin. Danteli ve tülü çekiştirme; kancasını kapatarak sakla ki teli takılmasın. Her parçayı ışıktan uzak, düz ya da askıda dinlendir. Gösterdiğin özen, parçanın hakkıdır.</p>";
+
+    function mkAcc(t, bHTML) {
+      var w = document.createElement("div"); w.className = "mgpx-acc";
+      w.innerHTML = '<div class="mgpx-hd" onclick="this.parentElement.classList.toggle(\'open\')">' + t + '<span class="mgpx-pl">+</span></div><div class="mgpx-bd"><div class="mgpx-in">' + bHTML + '</div></div>';
+      return w;
+    }
+
+    function build() {
+      if (!onPDP()) return;
+      var col = window.__mgPDPCol && window.__mgPDPCol();
+      if (!col) return;
+
+      /* S2 — kimlik satırı başlık altında */
+      if (!col.querySelector(".mg-s2-id")) {
+        var ttl = col.querySelector(".mg-pdp-title") || col.querySelector("h1");
+        var line = identFor(window.data && window.data.product && window.data.product.title);
+        if (ttl && ttl.parentNode && line) {
+          var idn = document.createElement("div"); idn.className = "mg-s2-id"; idn.textContent = line;
+          ttl.parentNode.insertBefore(idn, ttl.nextSibling);
+        }
+      }
+
+      var mgpx = col.querySelector(".mgpx");
+      if (!mgpx) return; /* inline accordion ailesi henüz kurulmadı — bekle */
+
+      /* Tahmini-teslim suffix'i TESLİMAT RİTÜELİ başlığına */
+      if (!mgpx.querySelector(".mg-edd")) {
+        var hds = mgpx.querySelectorAll(".mgpx-hd");
+        for (var i = 0; i < hds.length; i++) {
+          if (/TESL[İI]MAT R[İI]T[ÜU]EL[İI]/.test(hds[i].textContent || "")) {
+            var sfx = document.createElement("span");
+            sfx.className = "mg-edd";
+            sfx.style.cssText = "font-weight:400;letter-spacing:.04em;color:#8a8a8a;text-transform:none;";
+            sfx.textContent = eddSuffix(new Date());
+            var pl = hds[i].querySelector(".mgpx-pl");
+            if (pl) hds[i].insertBefore(sfx, pl); else hds[i].appendChild(sfx);
+            break;
+          }
+        }
+      }
+
+      /* BAKIM RİTÜELİ accordion — aileye eklenir */
+      if (!mgpx.querySelector(".mg-bakim")) {
+        var ba = mkAcc("BAKIM RİTÜELİ", BAKIM_BODY);
+        ba.classList.add("mg-bakim");
+        mgpx.appendChild(ba);
+      }
+
+      /* S8 — manifesto + story bandı, accordion ailesinin ALTINDA görünür blok */
+      if (!col.querySelector(".mg-s8")) {
+        var s8 = document.createElement("div"); s8.className = "mg-s8";
+        s8.innerHTML =
+          '<div class="mg-s8-band"><img src="' + CDN + '/assets/story/ipek-akis.webp" width="1200" height="1600" loading="lazy" alt="İpeğin akışı"></div>' +
+          '<h3>' + S8_TITLE + '</h3>' + S8_BODY;
+        if (mgpx.parentNode) mgpx.parentNode.insertBefore(s8, mgpx.nextSibling);
+      }
+    }
+    var t20; new MutationObserver(function () { clearTimeout(t20); t20 = setTimeout(build, 300); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+    setTimeout(build, 700);
+    setInterval(build, 1300);
   })();
 
 })();
