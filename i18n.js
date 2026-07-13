@@ -53,11 +53,18 @@
     /* nav — structural + category labels */
     "HOME":                 { tr: "ANA SAYFA",          de: "STARTSEITE",        fr: "ACCUEIL" },
     "NEW ARRIVALS":         { tr: "YENİ GELENLER",       de: "NEUHEITEN",         fr: "NOUVEAUTÉS" },
+    "MOST DESIRED":         { tr: "EN ÇOK ARZULANLAR", de: "BESTSELLER",         fr: "LES PLUS DÉSIRÉS" },
+    "SHOP":                 { tr: "ALIŞVERİŞ",           de: "SHOP",               fr: "BOUTIQUE" },
     "THE COLLECTIONS":      { tr: "KOLEKSİYONLAR",       de: "DIE KOLLEKTIONEN",  fr: "LES COLLECTIONS" },
     "ALL PIECES":           { tr: "TÜM PARÇALAR",        de: "ALLE TEILE",        fr: "TOUTES LES PIÈCES" },
     "CLIENT SERVICES":      { tr: "MÜŞTERİ HİZMETLERİ",  de: "KUNDENSERVICE",     fr: "SERVICE CLIENT" },
     "LINGERIE":             { tr: "İÇ GİYİM",            de: "DESSOUS",           fr: "LINGERIE" },
     "BODYSUIT":             { tr: "BODY",                de: "BODY",              fr: "BODY" },
+    "BODYSUITS":            { tr: "BODY",                de: "BODYS",               fr: "BODYS" },
+    "NIGHTWEAR":            { tr: "GECELİK",             de: "NACHTWÄSCHE",         fr: "NUIT" },
+    "CORSET & HARNESS":     { tr: "KORSE & HARNESS",     de: "KORSETT & HARNESS",  fr: "CORSET & HARNAIS" },
+    "COSTUME & ROLEPLAY":   { tr: "KOSTÜM & ROLEPLAY",   de: "KOSTÜM & ROLEPLAY",  fr: "COSTUME & JEUX DE RÔLE" },
+    "ACCESSORIES":          { tr: "AKSESUARLAR",         de: "ACCESSOIRES",         fr: "ACCESSOIRES" },
     "CHEMISE & NIGHTDRESS": { tr: "KOMBİNEZON & GECELİK",de: "CHEMISE & NACHTKLEID", fr: "NUISETTE & CHEMISE DE NUIT" }, // SELIN
     "ROBE & KIMONO":        { tr: "ROB & KİMONO",        de: "MORGENMANTEL & KIMONO", fr: "PEIGNOIR & KIMONO" },
     "CAMI & PAJAMA SET":    { tr: "ATLET & PİJAMA TAKIMI", de: "CAMI & PYJAMA-SET", fr: "CARACO & PYJAMA" }, // SELIN
