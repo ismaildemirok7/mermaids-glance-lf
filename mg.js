@@ -1897,9 +1897,13 @@
      §21 — BEDEN BULUCU (task-21, Model A wizard inside the size drawer)
      Owner layout directive 2026-07-13: static chart LEFT, finder RIGHT on
      desktop; stacked finder-first on mobile (column-reverse).
-     Rules: cro/research/beden-kural-seti.json (1:1 with the live SG table);
-     copy: task-09 accepted set. Deterministic — tie-break picks the LARGER
-     size; out-of-range NEVER recommends a size; no social-proof framing.
+     Rules: supplier category size guides (owner screenshots 2026-07-13 —
+     supersede the old single SG table; beden-kural-seti.json is historical);
+     copy: task-09 accepted set + clamp lines (owner feedback wave).
+     Deterministic — tie-break picks the LARGER size; out-of-range NEVER
+     recommends a size; the result is CLAMPED to the sizes this product
+     actually sells (never names an unsold size); the LEFT chart is rendered
+     from the same data as the wizard, per selected panel (single source).
      ========================================================================= */
   (function () {
     if (window.__mgBF) return; window.__mgBF = true;
@@ -1931,40 +1935,52 @@
       ".mgbf-back{display:inline-block;background:none;border:none;color:#888;font-size:10px;letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:12px;padding:0;}" +
       ".mgbf-err{font-size:11.5px;color:#0d0d0d;font-style:italic;margin:12px 0 0;line-height:1.7;}"
     );
-    var SZ5 = ["XS", "S", "M", "L", "XL"];
+    /* Data source: supplier category size guides, owner screenshots 2026-07-13.
+       sets = Thong & Garter / Panties chart (XS–XXL) · body = Bodysuit chart
+       (S–XXL, stretch windows, single hip values → smallest-fit + nearest-hip)
+       · night = Nightwear chart (S–XXL) · bra = EU worn-size grid (S–XL). */
+    var SZA = ["XS", "S", "M", "L", "XL", "XXL"];
     var RB = {
       sets: {
-        lab: L("Sets & Bottoms", "Takımlar & Altlar"), sz: SZ5,
+        lab: L("Sets & Bottoms", "Takımlar & Altlar"), sz: SZA,
         inputs: [
-          { id: "bel", lb: L("Waist", "Bel"), hint: L("Measure the narrowest point; keep the tape easy, not tight.", "En ince noktandan ölç; mezurayı gergin değil rahat tut."), rng: [[58, 70], [64, 76], [70, 82], [76, 88], [82, 94]] },
-          { id: "kalca", lb: L("Hip", "Kalça"), hint: L("Measure the fullest point, tape parallel to the floor.", "En geniş noktandan, mezura yere paralel kalsın."), rng: [[87, 91], [91, 95], [95, 99], [99, 103], [103, 108]] }
+          { id: "bel", lb: L("Waist", "Bel"), hint: L("Measure the narrowest point; keep the tape easy, not tight.", "En ince noktandan ölç; mezurayı gergin değil rahat tut."), rng: [[56, 61], [61, 66], [66, 74], [74, 79], [79, 84], [84, 92]] },
+          { id: "kalca", lb: L("Hip", "Kalça"), hint: L("Measure the fullest point, tape parallel to the floor.", "En geniş noktandan, mezura yere paralel kalsın."), rng: [[76, 84], [81, 89], [86, 94], [91, 99], [96, 104], [102, 109]] }
         ]
       },
-      bra: { lab: L("Bras & Bustiers", "Sütyen & Büstiyer"), bra: true },
+      bra: { lab: L("Bras & Bustiers", "Sütyen & Büstiyer"), bra: true, sz: ["S", "M", "L", "XL"] },
       body: {
-        lab: "Bodysuit", sz: SZ5,
+        lab: "Bodysuit", sz: ["S", "M", "L", "XL", "XXL"], fit: "small",
         inputs: [
-          { id: "gogus", lb: L("Bust", "Göğüs"), hint: L("Measure the fullest point; keep the tape flat across your back.", "En dolgun noktandan; mezura sırtında düz dursun."), rng: [[79, 85], [83, 89], [87, 93], [91, 97], [95, 101]] },
-          { id: "bel", lb: L("Waist", "Bel"), hint: L("At your natural waistline, without holding your breath.", "Doğal bel çizginden, nefesini tutmadan."), rng: [[58, 64], [62, 68], [66, 72], [70, 76], [74, 80]] },
-          { id: "kalca", lb: L("Hip", "Kalça"), hint: L("Measure the fullest point, tape parallel to the floor.", "En geniş noktandan, mezura yere paralel kalsın."), rng: [[86, 92], [90, 96], [94, 100], [98, 104], [102, 108]] }
+          { id: "altgogus", lb: L("Under bust", "Alt göğüs"), hint: L("Directly beneath the bust, on the exhale.", "Göğsünün hemen altından, nefes verirken."), rng: [[64, 88], [67, 91], [71, 95], [76, 99], [81, 104]] },
+          { id: "bel", lb: L("Waist", "Bel"), hint: L("At your natural waistline, without holding your breath.", "Doğal bel çizginden, nefesini tutmadan."), rng: [[60, 86], [64, 90], [67, 94], [71, 98], [76, 103]] },
+          { id: "kalca", lb: L("Hip", "Kalça"), hint: L("Measure the fullest point, tape parallel to the floor.", "En geniş noktandan, mezura yere paralel kalsın."), one: [94, 97, 102, 104, 109] }
         ]
       },
       night: {
-        lab: L("Nightwear", "Gecelik"), sz: ["S", "M", "L", "XL"],
+        lab: L("Nightwear", "Gecelik"), sz: ["S", "M", "L", "XL", "XXL"],
         inputs: [
-          { id: "gogus", lb: L("Bust", "Göğüs"), hint: L("Measure the fullest point; keep the tape flat across your back.", "En dolgun noktandan; mezura sırtında düz dursun."), rng: [[88, 93], [93, 98], [98, 103], [103, 108]] },
-          { id: "bel", lb: L("Waist", "Bel"), hint: L("At your natural waistline, without holding your breath.", "Doğal bel çizginden, nefesini tutmadan."), rng: [[68, 73], [73, 78], [78, 83], [83, 88]] },
-          { id: "kalca", lb: L("Hip", "Kalça"), hint: L("Measure the fullest point, tape parallel to the floor.", "En geniş noktandan, mezura yere paralel kalsın."), rng: [[95, 100], [100, 105], [105, 110], [110, 115]] }
+          { id: "gogus", lb: L("Bust", "Göğüs"), hint: L("Measure the fullest point; keep the tape flat across your back.", "En dolgun noktandan; mezura sırtında düz dursun."), rng: [[88, 93], [93, 98], [98, 103], [103, 108], [108, 113]] },
+          { id: "bel", lb: L("Waist", "Bel"), hint: L("At your natural waistline, without holding your breath.", "Doğal bel çizginden, nefesini tutmadan."), rng: [[68, 73], [73, 78], [78, 83], [83, 88], [88, 93]] },
+          { id: "kalca", lb: L("Hip", "Kalça"), hint: L("Measure the fullest point, tape parallel to the floor.", "En geniş noktandan, mezura yere paralel kalsın."), rng: [[95, 100], [100, 105], [105, 110], [110, 115], [115, 120]] }
         ]
       }
     };
-    var BRA_LK = { 80: { A: "XS", B: "XS", C: "XS", D: null }, 85: { A: "XS", B: "XS", C: "S", D: "S" }, 90: { A: "S", B: "S", C: "M", D: "L" }, 95: { A: "M", B: "M", C: "L", D: "L" }, 100: { A: "L", B: "L", C: "XL", D: "XL" } };
+    /* Bra grid keyed on the EU size she already wears (supplier lists per size).
+       70A/70B are not made → honest nocell message. */
+    var BRA_MAP = { 70: { A: null, B: null, C: "S", D: "S" }, 75: { A: "S", B: "S", C: "M", D: "M" }, 80: { A: "M", B: "M", C: "L", D: "L" }, 85: { A: "L", B: "L", C: "XL", D: "XL" }, 90: { A: "XL", B: "XL", C: "XL", D: "XL" } };
+    var BRA_EU = { S: "70C · 70D · 75A · 75B", M: "75C · 75D · 80A · 80B", L: "80C · 80D · 85A · 85B", XL: "85C · 85D · 90A–90D" };
+    var BRA_UB = { S: "82–92", M: "87–97", L: "92–102", XL: "97–107" };
     var ORDER = ["sets", "bra", "body", "night"], cur = "sets";
     var TXT = {
       need: L("This silhouette needs just {N} measurements.", "Bu silüet için {N} ölçü yeter."),
+      needBra: L("Tell us the size you always wear.", "Her zaman giydiğin bedeni söylemen yeter."),
       go: L("SEE YOUR SIZE", "BEDENİNİ GÖR"),
       rk: L("Your Size", "Senin Bedenin"),
+      rkc: L("Our suggestion in this silhouette", "Bu silüette önerimiz"),
       rbody: L("This silhouette sits at {B} on you. Your measurements said the rest.", "Bu silüet sende {B} oturur. Ölçülerin gerisini söyledi."),
+      clamp: L("This silhouette is offered from {MIN} to {MAX}; the size closest to your measurements is {B}.", "Bu silüet {MIN}–{MAX} aralığında sunulur; ölçülerine en yakın beden {B}."),
+      far: L("Write to us if you want to be sure: info@mermaidsglance.com — we answer within 24 hours.", "Emin olmak istersen yaz: info@mermaidsglance.com — 24 saat içinde yanıt veririz."),
       own: L("OWN IT IN {B}", "{B} BEDENİYLE SAHİP OL"),
       back: L("Change my measures", "Ölçülerimi değiştir"),
       tie: L("You are between two sizes — we chose {B} so the silhouette wraps you.", "İki bedenin sınırındasın — silüet seni sarsın diye {B} önerdik."),
@@ -1972,12 +1988,13 @@
       out: L("This silhouette is not made in your measurements right now. We will not name a size that is not yours.", "Bu silüet şu an senin ölçünde üretilmiyor. Yanlış beden önermeyi doğru bulmuyoruz."),
       nocell: L("This band and cup are not made.", "Bu band ve kup birleşimi üretilmiyor."),
       err: L("Check your measurements once more.", "Ölçülerini bir daha kontrol et."),
-      band: L("Underbust (band)", "Alt göğüs (band)"),
-      bandh: L("Just below the bust, on the exhale; we round to the nearest five.", "Göğsünün hemen altından, nefes verirken; en yakın beşe biz yuvarlarız."),
+      band: L("Band (EU)", "Band (EU)"),
+      bandh: L("The band of the bra you always wear; if unsure, check the label of your favourite bra.", "Her zaman giydiğin sütyenin bandı; emin değilsen en sevdiğin sütyenin etiketine bak."),
       cup: L("Cup", "Kup"),
       cuph: L("The cup letter of the bra you always wear (A–D).", "Her zaman giydiğin sütyenin kup harfi (A–D)."),
       pick: L("Mark {B} on the size selector.", "Beden seçicide {B} işaretle."),
-      link: L("Skip the chart, find your fit", "Bedenini bul, tabloyu bırak")
+      link: L("Skip the chart, find your fit", "Bedenini bul, tabloyu bırak"),
+      chartFoot: L("Between two sizes — choose the larger. The silhouette should hold without compromise.", "İki bedenin arasındaysan büyüğü seç. Silüet ödün vermeden sarmalı.")
     };
     function guessPanel() {
       var t = ((window.data && window.data.product && window.data.product.title) || "").toLowerCase();
@@ -1989,50 +2006,109 @@
     function fieldHTML(inp) {
       return '<div class="mgbf-f"><label>' + inp.lb + ' <span>cm</span></label><input id="mgbf-' + inp.id + '" type="number" inputmode="decimal" min="30" max="200"><p class="mgbf-h">' + inp.hint + '</p></div>';
     }
+    function chartHTML(p) {
+      var d = RB[p], h = '<table class="sg-tbl"><thead><tr><th style="width:20%">' + L("Size", "Beden") + "</th>", i, k;
+      if (d.bra) {
+        h += "<th>EU</th><th>" + L("Under bust (cm)", "Alt göğüs (cm)") + "</th></tr></thead><tbody>";
+        for (i = 0; i < d.sz.length; i++) h += '<tr><td><span class="sg-sz">' + d.sz[i] + "</span></td><td>" + BRA_EU[d.sz[i]] + "</td><td>" + BRA_UB[d.sz[i]] + "</td></tr>";
+      } else {
+        for (k = 0; k < d.inputs.length; k++) h += "<th>" + d.inputs[k].lb + " (cm)</th>";
+        h += "</tr></thead><tbody>";
+        for (i = 0; i < d.sz.length; i++) {
+          h += '<tr><td><span class="sg-sz">' + d.sz[i] + "</span></td>";
+          for (k = 0; k < d.inputs.length; k++) {
+            var inp = d.inputs[k];
+            h += "<td>" + (inp.one ? inp.one[i] : inp.rng[i][0] + "–" + inp.rng[i][1]) + "</td>";
+          }
+          h += "</tr>";
+        }
+      }
+      return h + "</tbody></table>";
+    }
+    function drawChart(p) {
+      var c = document.querySelector("#mgbf-chart .sg"); if (!c) return;
+      c.innerHTML = '<span class="sg-eyebrow">' + L("SIZE PROTOCOL", "BEDEN PROTOKOLÜ") + " — " + RB[p].lab + '</span><div class="sg-body">' + chartHTML(p) + '</div><span class="sg-foot">' + TXT.chartFoot + "</span>";
+    }
     function renderPanel(p) {
       cur = p;
       var box = document.getElementById("mgbf"); if (!box) return;
       var pills = box.querySelector("#mgbf-pills"), fl = box.querySelector("#mgbf-fields"), need = box.querySelector("#mgbf-need"), res = box.querySelector("#mgbf-res");
       var ph = ""; for (var i = 0; i < ORDER.length; i++) ph += '<button type="button" class="mgbf-pill' + (ORDER[i] === p ? " on" : "") + '" data-p="' + ORDER[i] + '">' + RB[ORDER[i]].lab + "</button>";
       pills.innerHTML = ph;
-      var n = RB[p].bra ? 2 : RB[p].inputs.length;
-      need.textContent = TXT.need.replace("{N}", n);
       if (RB[p].bra) {
+        need.textContent = TXT.needBra;
+        var bb = "", bands = [70, 75, 80, 85, 90];
+        for (var b = 0; b < bands.length; b++) bb += '<button type="button" class="mgbf-cup" data-b="' + bands[b] + '">' + bands[b] + "</button>";
         fl.innerHTML =
-          '<div class="mgbf-f"><label>' + TXT.band + ' <span>cm</span></label><input id="mgbf-band" type="number" inputmode="decimal" min="60" max="130"><p class="mgbf-h">' + TXT.bandh + '</p></div>' +
+          '<div class="mgbf-f"><label>' + TXT.band + '</label><div class="mgbf-cups" id="mgbf-bands">' + bb + '</div><p class="mgbf-h">' + TXT.bandh + '</p></div>' +
           '<div class="mgbf-f"><label>' + TXT.cup + '</label><div class="mgbf-cups" id="mgbf-cups"><button type="button" class="mgbf-cup" data-c="A">A</button><button type="button" class="mgbf-cup" data-c="B">B</button><button type="button" class="mgbf-cup" data-c="C">C</button><button type="button" class="mgbf-cup" data-c="D">D</button></div><p class="mgbf-h">' + TXT.cuph + '</p></div>';
       } else {
+        need.textContent = TXT.need.replace("{N}", RB[p].inputs.length);
         var h = ""; for (var j = 0; j < RB[p].inputs.length; j++) h += fieldHTML(RB[p].inputs[j]);
         fl.innerHTML = h;
       }
       fl.style.display = ""; pills.style.display = ""; need.style.display = "";
       var go = box.querySelector("#mgbf-go"); if (go) go.style.display = "";
       res.innerHTML = "";
+      drawChart(p);
     }
     function fitIdx(v, rng) { var hits = []; for (var i = 0; i < rng.length; i++) { if (v >= rng[i][0] && v <= rng[i][1]) hits.push(i); } return hits; }
+    /* Variant clamp (owner directive 2026-07-13): the finder never names a size
+       this product does not sell. Available sizes are read from the live size
+       selector; the table-ideal is clamped to the nearest offered size, said
+       honestly (rkc + clamp line). No selector found → no clamp. */
+    function availSizes() {
+      var out = [], labels = document.querySelectorAll(".D0I_i");
+      for (var i = 0; i < labels.length; i++) {
+        var l = labels[i];
+        if (!/^(size|beden|größe|taille)$/i.test((l.innerText || "").trim())) continue;
+        var grp = l.closest(".Y3eUK") || l.parentElement; if (!grp) continue;
+        var cand = grp.querySelectorAll("button,[role=button],label,span,div");
+        for (var j = 0; j < cand.length; j++) {
+          var c = cand[j]; if (c.children.length > 1) continue;
+          var t = (c.innerText || "").trim().toUpperCase();
+          if (SZA.indexOf(t) >= 0 && out.indexOf(t) < 0) out.push(t);
+        }
+        if (out.length) break;
+      }
+      out.sort(function (a, b) { return SZA.indexOf(a) - SZA.indexOf(b); });
+      return out;
+    }
+    function clampSz(sz) {
+      var av = availSizes();
+      if (!av.length || av.indexOf(sz) >= 0) return null;
+      var ii = SZA.indexOf(sz), best = null, bd = 1e9;
+      for (var i = 0; i < av.length; i++) {
+        var d = Math.abs(SZA.indexOf(av[i]) - ii);
+        if (d < bd || (d === bd && best !== null && SZA.indexOf(av[i]) > SZA.indexOf(best))) { best = av[i]; bd = d; }
+      }
+      return { sz: best, far: bd >= 2, min: av[0], max: av[av.length - 1] };
+    }
     function compute() {
       var box = document.getElementById("mgbf"); if (!box) return;
       var res = box.querySelector("#mgbf-res"), fl = box.querySelector("#mgbf-fields"), pills = box.querySelector("#mgbf-pills"), need = box.querySelector("#mgbf-need"), go = box.querySelector("#mgbf-go");
       var sz = null, note = "", honest = "";
       if (RB[cur].bra) {
-        var bEl = box.querySelector("#mgbf-band"), cEl = box.querySelector(".mgbf-cup.on");
-        var bv = bEl ? parseFloat(bEl.value) : NaN;
-        if (isNaN(bv) || !cEl) { res.innerHTML = '<p class="mgbf-err">' + TXT.err + "</p>"; return; }
-        var band = Math.round(bv / 5) * 5;
-        if (band < 80 || band > 100) { honest = TXT.out; }
-        else {
-          var cell = BRA_LK[band][cEl.getAttribute("data-c")];
-          if (cell === null) honest = TXT.nocell; else sz = cell;
-        }
+        var bEl = box.querySelector("#mgbf-bands .mgbf-cup.on"), cEl = box.querySelector("#mgbf-cups .mgbf-cup.on");
+        if (!bEl || !cEl) { res.innerHTML = '<p class="mgbf-err">' + TXT.err + "</p>"; return; }
+        var cell = BRA_MAP[bEl.getAttribute("data-b")][cEl.getAttribute("data-c")];
+        if (cell === null) honest = TXT.nocell; else sz = cell;
       } else {
-        var szs = RB[cur].sz, idxs = [], anyTie = false;
+        var szs = RB[cur].sz, idxs = [], anyTie = false, small = RB[cur].fit === "small";
         for (var i = 0; i < RB[cur].inputs.length; i++) {
           var inp = RB[cur].inputs[i], el = box.querySelector("#mgbf-" + inp.id), v = el ? parseFloat(el.value) : NaN;
           if (isNaN(v) || v < 30 || v > 200) { res.innerHTML = '<p class="mgbf-err">' + TXT.err + "</p>"; return; }
-          var hits = fitIdx(v, inp.rng);
-          if (!hits.length) { honest = TXT.out; break; }
-          if (hits.length > 1) anyTie = true;
-          idxs.push(Math.max.apply(null, hits));
+          if (inp.one) {
+            if (v < inp.one[0] - 4 || v > inp.one[inp.one.length - 1] + 4) { honest = TXT.out; break; }
+            var bi = 0, bdd = 1e9;
+            for (var q = 0; q < inp.one.length; q++) { var dq = Math.abs(v - inp.one[q]); if (dq <= bdd) { bdd = dq; bi = q; } }
+            idxs.push(bi);
+          } else {
+            var hits = fitIdx(v, inp.rng);
+            if (!hits.length) { honest = TXT.out; break; }
+            if (!small && hits.length > 1) anyTie = true;
+            idxs.push(small ? Math.min.apply(null, hits) : Math.max.apply(null, hits));
+          }
         }
         if (!honest) {
           var mx = Math.max.apply(null, idxs), mn = Math.min.apply(null, idxs);
@@ -2041,11 +2117,18 @@
           else if (anyTie || mx !== mn) note = TXT.tie.replace("{B}", sz);
         }
       }
+      var clamped = null;
+      if (!honest && sz) {
+        clamped = clampSz(sz);
+        if (clamped) { sz = clamped.sz; note = ""; }
+      }
       fl.style.display = "none"; pills.style.display = "none"; need.style.display = "none"; if (go) go.style.display = "none";
       if (honest) {
         res.innerHTML = '<div class="mgbf-card"><p style="margin:0;">' + honest + '</p><button type="button" class="mgbf-back">' + TXT.back + "</button></div>";
       } else {
-        res.innerHTML = '<div class="mgbf-card"><span class="mgbf-rk">' + TXT.rk + ": " + sz + "</span><p>" + TXT.rbody.replace("{B}", sz) + "</p>" + (note ? '<p class="mgbf-note">' + note + "</p>" : "") + '<button type="button" class="mgbf-own" data-sz="' + sz + '">' + TXT.own.replace("{B}", sz) + '</button><button type="button" class="mgbf-back">' + TXT.back + '</button><p class="mgbf-pickmiss" style="display:none;"></p></div>';
+        var head = (clamped ? TXT.rkc : TXT.rk) + ": " + sz;
+        var bodyP = clamped ? TXT.clamp.replace("{MIN}", clamped.min).replace("{MAX}", clamped.max).replace("{B}", sz) : TXT.rbody.replace("{B}", sz);
+        res.innerHTML = '<div class="mgbf-card"><span class="mgbf-rk">' + head + "</span><p>" + bodyP + "</p>" + (note ? '<p class="mgbf-note">' + note + "</p>" : "") + (clamped && clamped.far ? '<p class="mgbf-note">' + TXT.far + "</p>" : "") + '<button type="button" class="mgbf-own" data-sz="' + sz + '">' + TXT.own.replace("{B}", sz) + '</button><button type="button" class="mgbf-back">' + TXT.back + '</button><p class="mgbf-pickmiss" style="display:none;"></p></div>';
       }
     }
     function pickSize(sz) {
@@ -2080,7 +2163,7 @@
       right.addEventListener("click", function (e) {
         var t = e.target;
         if (t.classList.contains("mgbf-pill")) { renderPanel(t.getAttribute("data-p")); return; }
-        if (t.classList.contains("mgbf-cup")) { var cs = right.querySelectorAll(".mgbf-cup"); for (var i = 0; i < cs.length; i++) cs[i].classList.remove("on"); t.classList.add("on"); return; }
+        if (t.classList.contains("mgbf-cup")) { var cs = t.parentElement.querySelectorAll(".mgbf-cup"); for (var i = 0; i < cs.length; i++) cs[i].classList.remove("on"); t.classList.add("on"); return; }
         if (t.id === "mgbf-go") { compute(); return; }
         if (t.classList.contains("mgbf-back")) { renderPanel(cur); return; }
         if (t.classList.contains("mgbf-own")) {
@@ -2111,34 +2194,55 @@
 
   /* =========================================================================
      §22 — PDP EDITORIAL BANDS (route: /products/...)
-     (a) İÇ SES band — second-person editorial vignettes. Deliberately NOT a
-         review widget: no names, no stars, no counts, no "verified" (owner
-         decision 2026-07-11 review-RED + TR 2026-08-01 consumer-review rule).
-     (b) "3 ölçü." measure band — honest counter-design to fake-% blocks;
-         every sentence maps to a real rule (3-input max, larger-size
-         tie-break, 24h SLA). The whole band opens the size drawer.
+     Owner feedback wave 2026-07-13 (screenshots): dramaturgy order is
+     MOTION → İÇ SES → BEDEN GÜVENCESİ, all before the native COMPLETE THE
+     RITUAL block (Vesna: desire → identity → seal → invitation; Eylül: the
+     assurance band closes the last worry right before the second-piece ask).
+     (a) İÇ SES — swipeable second-person vignette carousel (6 cards,
+         LEYLA/AYŞE/FATMA ×2). Deliberately NOT a review widget: no names,
+         no stars, no counts, no "verified" (owner decision 2026-07-11
+         review-RED + TR 2026-08-01 consumer-review rule). Realism comes
+         from concrete moments, not fabricated identities.
+     (b) BEDEN GÜVENCESİ ink band — big-figure trust block in the reference's
+         typographic register but with honest numbers only: 14-day withdrawal
+         (policy-verified), 3-measure protocol, 24h SLA. The fake %-stat was
+         rejected again; the hygiene condition stays visible in the band
+         (karar paketi P0-5). The whole band opens the size drawer.
      (c) SİLÜET HAREKET HALİNDE — supplier motion loops (owner-confirmed
-         2026-07-12); muted/playsinline/poster, viewport-gated, honours
-         prefers-reduced-motion and Save-Data. Sits AFTER the native
-         COMPLETE THE RITUAL block (owner directive 2026-07-13).
+         2026-07-12), now six: v08/v14/v18/v16/v07/v12 (Vesna curation
+         2026-07-13, quality floor 4/5; red v12 as the single closing
+         accent). muted/playsinline/poster, viewport-gated, honours
+         prefers-reduced-motion and Save-Data.
      Anchored to the related-products section (.mg-yml-head ancestor);
      idempotent + interval-driven.
      ========================================================================= */
   (function () {
     if (window.__mgPDPBands) return; window.__mgPDPBands = true;
     css(
-      "#mg-icses{background:#fff;border-top:1px solid #e6e4e0;border-bottom:1px solid #e6e4e0;padding:74px 24px;font-family:'Montserrat',sans-serif;}" +
-      ".mg-ics-in{max-width:640px;margin:0 auto;text-align:center;}" +
-      ".mg-ics-k{display:block;font-size:9px;font-weight:600;letter-spacing:.24em;color:#888;margin:0 0 30px;}" +
-      ".mg-ics-in p{font-size:15px;font-weight:300;font-style:italic;line-height:2;color:#1a1a1a;margin:0;}" +
-      ".mg-ics-sep{display:block;width:26px;height:1px;background:#e6e4e0;margin:24px auto;}" +
-      "#mg-olcu{background:#0d0d0d;padding:78px 24px;cursor:pointer;font-family:'Montserrat',sans-serif;}" +
-      ".mg-olc-in{max-width:620px;margin:0 auto;text-align:center;}" +
+      "#mg-icses{background:#fff;border-top:1px solid #e6e4e0;border-bottom:1px solid #e6e4e0;padding:64px 0 70px;font-family:'Montserrat',sans-serif;}" +
+      ".mg-ics-hd{display:flex;align-items:center;justify-content:space-between;max-width:1162px;margin:0 auto;padding:0 24px;}" +
+      ".mg-ics-k{font-size:9px;font-weight:600;letter-spacing:.24em;color:#888;}" +
+      ".mg-ics-nav{display:none;}" +
+      "@media(min-width:720px){.mg-ics-nav{display:flex;gap:8px;}}" +
+      ".mg-ics-ar{width:38px;height:38px;border:1px solid #e6e4e0;background:#fff;color:#0d0d0d;font-size:16px;font-weight:300;cursor:pointer;font-family:'Montserrat',sans-serif;line-height:1;padding:0;}" +
+      ".mg-ics-ar:hover{border-color:#0d0d0d;}" +
+      ".mg-ics-row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:30px 24px 8px;scrollbar-width:none;}" +
+      ".mg-ics-row::-webkit-scrollbar{display:none;}" +
+      "@media(min-width:1240px){.mg-ics-row{padding-left:calc((100vw - 1162px)/2);padding-right:calc((100vw - 1162px)/2);}}" +
+      ".mg-ics-card{flex:0 0 auto;width:min(340px,82vw);scroll-snap-align:center;border:1px solid #e6e4e0;background:#fff;padding:30px 28px 26px;box-sizing:border-box;}" +
+      ".mg-ics-tag{display:block;font-size:8.5px;font-weight:600;letter-spacing:.22em;color:#8a8a8a;margin:0 0 16px;}" +
+      ".mg-ics-card p{font-size:13.5px;font-weight:300;font-style:italic;line-height:2;color:#1a1a1a;margin:0;}" +
+      "#mg-olcu{background:#0d0d0d;padding:84px 24px;cursor:pointer;font-family:'Montserrat',sans-serif;}" +
+      ".mg-olc-in{max-width:640px;margin:0 auto;text-align:center;}" +
       ".mg-olc-k{display:block;font-size:9px;font-weight:600;letter-spacing:.26em;color:#8a8a8a;}" +
-      ".mg-olc-big{display:block;font-size:clamp(46px,9vw,84px);font-weight:300;letter-spacing:.02em;color:#fafafa;line-height:1.05;margin:20px 0 14px;}" +
-      ".mg-olc-lead{font-size:13px;font-weight:500;letter-spacing:.04em;color:#d8d8d8;margin:0 0 16px;}" +
+      ".mg-olc-big{display:block;font-size:clamp(56px,11vw,110px);font-weight:300;letter-spacing:.01em;color:#fafafa;line-height:1;margin:24px 0 18px;}" +
+      ".mg-olc-big em{font-style:normal;font-size:.3em;letter-spacing:.22em;font-weight:400;color:#d8d8d8;}" +
+      ".mg-olc-lead{font-size:14px;font-weight:500;letter-spacing:.04em;color:#d8d8d8;margin:0 0 18px;}" +
       ".mg-olc-tx{font-size:12.5px;color:#a8a8a8;line-height:2;margin:0;}" +
-      ".mg-olc-cta{display:inline-block;margin-top:28px;font-size:10px;letter-spacing:.22em;font-weight:600;color:#fafafa;border-bottom:1px solid #fafafa;padding-bottom:6px;}" +
+      ".mg-olc-trio{display:flex;justify-content:center;margin:28px 0 0;flex-wrap:wrap;row-gap:8px;}" +
+      ".mg-olc-trio span{font-size:9px;letter-spacing:.2em;font-weight:600;color:#8a8a8a;padding:0 14px;}" +
+      ".mg-olc-trio span+span{border-left:1px solid #333;}" +
+      ".mg-olc-cta{display:inline-block;margin-top:30px;font-size:10px;letter-spacing:.22em;font-weight:600;color:#fafafa;border-bottom:1px solid #fafafa;padding-bottom:6px;}" +
       "#mg-motion{padding:70px 0 84px;background:#fafafa;font-family:'Montserrat',sans-serif;}" +
       ".mg-mot-hd{text-align:center;padding:0 24px;}" +
       ".mg-mot-t{display:block;font-size:12px;font-weight:600;letter-spacing:.26em;color:#0d0d0d;}" +
@@ -2150,19 +2254,39 @@
       ".mg-mot-card video{width:100%;height:100%;object-fit:cover;display:block;}"
     );
     function onPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
-    var VID = [1, 2, 3, 4].map(function (i) { return { v: CDN + "/video/motion-" + i + ".mp4", p: CDN + "/video/motion-" + i + ".jpg" }; });
-    var ICS =
-      '<div class="mg-ics-in"><span class="mg-ics-k">' + L("AT THE MIRROR", "AYNANIN KARŞISINDA") + "</span>" +
-      "<p>" + L("When the zip closes, you recognise the woman in the mirror. The decision is already made.", "Fermuar kapandığında aynadaki kadını tanırsın. Karar çoktan verilmiştir.") + "</p>" +
-      '<span class="mg-ics-sep"></span>' +
-      "<p>" + L("This hour is yours alone. The fabric flows with your body, without resistance.", "Bu saat yalnız senindir. Kumaş bedeninle akar, direnmeden.") + "</p>" +
-      '<span class="mg-ics-sep"></span>' +
-      "<p>" + L("When you enter, the temperature of the room changes. No one asks whose evening this is.", "Odaya girdiğinde ısı değişir. Kimin sahnesi olduğunu kimse sormaz.") + "</p></div>";
+    /* Display order = Vesna's colour dramaturgy: v08 candle open, v14 macro
+       craft, v18 silhouette, v16 chain detail, v07 rose-lace close, v12 red
+       theatrical finale. Files keep their motion-N names on the CDN. */
+    var VID = [1, 5, 2, 3, 4, 6].map(function (i) { return { v: CDN + "/video/motion-" + i + ".mp4", p: CDN + "/video/motion-" + i + ".jpg" }; });
+    var VOICES = [
+      { t: L("AT THE MIRROR", "AYNANIN KARŞISINDA"), p: L("The zip closes. The shoulders settle, the chin lifts. You recognise the woman in the mirror: the decision is already made. The night follows you.", "Fermuar kapanır. Omuzlar yerleşir, çene kalkar. Aynadaki kadını tanırsın: karar çoktan verilmiştir. Gece senin peşinden gelir.") },
+      { t: L("BEFORE THE KNOCK", "KAPI ÇALINMADAN ÖNCE"), p: L("This hour is yours alone. You dim the light; the fabric flows with your body, without resistance. A preparation you tell no one. Your finest secret stays with you.", "Bu saat yalnız senindir. Işığı kısarsın; kumaş bedeninle akar, direnmeden. Kimseye anlatmadığın bir hazırlık. En güzel sırrın sende kalır.") },
+      { t: L("WHEN YOU ENTER", "ODAYA GİRDİĞİNDE"), p: L("The door opens; conversations pause mid-sentence. The temperature of the room changes — you know it, and so do they. No one asks whose evening this is.", "Kapı açılır, konuşmalar yarım kalır. Odanın ısısı değişir; bunu sen de bilirsin, onlar da. Kimin sahnesi olduğunu kimse sormaz.") },
+      { t: L("THROUGH THE NIGHT", "GECE BOYUNCA"), p: L("Your armour is invisible, yet you carry it. Your posture speaks while you stay silent. Your silence is enough.", "Zırhın görünmez, ama sen taşırsın. Duruşun konuşur, sen susarsın. Sessizliğin sana yeter.") },
+      { t: L("THE MORNING AFTER", "ERTESİ SABAH"), p: L("You glance at the morning mirror once. Done. You know the weight of that word: a feeling earned before the day begins. It comes from you, it stays with you.", "Sabah aynasına bir kez bakarsın. Tamam. O kelimenin ağırlığını bilirsin: gün başlamadan kazanılmış bir his. Senden gelir, sende kalır.") },
+      { t: L("AFTER YOU LEAVE", "SEN ÇIKTIKTAN SONRA"), p: L("The night ends; your effect remains. Even after you leave, the room keeps a place for you. A mark is left by presence, not effort.", "Gece biter; etkin kalır. Sen gittikten sonra bile odada bir yerin olur. İz, çabayla değil varlıkla bırakılır.") }
+    ];
+    function icsHTML() {
+      var h = '<div class="mg-ics-hd"><span class="mg-ics-k">' + L("THE INNER VOICE", "İÇ SES") + '</span><div class="mg-ics-nav"><button type="button" class="mg-ics-ar" data-d="-1">‹</button><button type="button" class="mg-ics-ar" data-d="1">›</button></div></div><div class="mg-ics-row">';
+      for (var i = 0; i < VOICES.length; i++) h += '<div class="mg-ics-card"><span class="mg-ics-tag">' + VOICES[i].t + "</span><p>" + VOICES[i].p + "</p></div>";
+      return h + "</div>";
+    }
+    function wireVoice(sec) {
+      var row = sec.querySelector(".mg-ics-row");
+      sec.addEventListener("click", function (e) {
+        var b = e.target && e.target.closest ? e.target.closest(".mg-ics-ar") : null;
+        if (!b || !row) return;
+        var card = row.querySelector(".mg-ics-card"), w = card ? card.getBoundingClientRect().width + 14 : 340;
+        var d = parseInt(b.getAttribute("data-d"), 10) || 1;
+        try { row.scrollBy({ left: d * w, behavior: "smooth" }); } catch (err) { row.scrollLeft += d * w; }
+      });
+    }
     var OLCU =
-      '<div class="mg-olc-in"><span class="mg-olc-k">' + L("SIZE PROTOCOL", "BEDEN PROTOKOLÜ") + "</span>" +
-      '<span class="mg-olc-big">' + L("3 measures.", "3 ölçü.") + "</span>" +
-      '<p class="mg-olc-lead">' + L("The right size is found by measuring, not guessing.", "Doğru beden tahminle değil, ölçüyle bulunur.") + "</p>" +
-      '<p class="mg-olc-tx">' + L("The Size Finder compares at most three of your measurements with this silhouette's table and gives you one answer. On the border of two sizes, we suggest the larger so it sits at ease. When you are not sure, write to us; we answer every question within 24 hours.", "Beden Bulucu en fazla üç ölçünü bu silüetin tablosuyla karşılaştırır ve sana tek bir cevap verir. İki bedenin sınırında kaldığında, rahat oturması için büyük olanı öneririz. Emin olamadığında yaz; her soruya 24 saat içinde yanıt veririz.") + "</p>" +
+      '<div class="mg-olc-in"><span class="mg-olc-k">' + L("SIZE ASSURANCE", "BEDEN GÜVENCESİ") + "</span>" +
+      '<span class="mg-olc-big">14 <em>' + L("DAYS", "GÜN") + "</em></span>" +
+      '<p class="mg-olc-lead">' + L("A silhouette that does not fit does not stay with you.", "Uymayan silüet seninle kalmaz.") + "</p>" +
+      '<p class="mg-olc-tx">' + L("The Size Finder compares at most three of your measurements with this silhouette's table and gives you one answer; on the border of two sizes we suggest the larger so it sits at ease. If it still does not fit, your right of withdrawal holds for 14 days from delivery. For intimates, one condition — check the size before opening the protective element. We answer every question within 24 hours.", "Beden Bulucu en fazla üç ölçünü bu silüetin tablosuyla karşılaştırır ve sana tek bir cevap verir; iki bedenin sınırında, rahat oturan büyüğü öneririz. Yine de uymazsa: teslimden itibaren 14 gün içinde cayma hakkın saklıdır. İç giyimde tek koşul — bedenini, koruyucu unsuru açmadan kontrol et. Her soruna 24 saat içinde yanıt veririz.") + "</p>" +
+      '<div class="mg-olc-trio"><span>' + L("3 MEASURES", "3 ÖLÇÜ") + "</span><span>" + L("ONE ANSWER", "TEK CEVAP") + "</span><span>" + L("24 HOURS", "24 SAAT") + "</span></div>" +
       '<span class="mg-olc-cta">' + L("FIND YOUR SIZE", "BEDENİNİ BUL") + "</span></div>";
     function motHTML() {
       var h = '<div class="mg-mot-hd"><span class="mg-mot-t">' + L("THE SILHOUETTE IN MOTION", "SİLÜET HAREKET HALİNDE") + '</span><p class="mg-mot-s">' + L("A photograph holds still. The silhouette moves.", "Fotoğraf durdurur. Silüet hareket eder.") + '</p></div><div class="mg-mot-row">';
@@ -2200,19 +2324,20 @@
     function build() {
       if (!onPDP()) { if (!/\/products\//.test(location.pathname)) sweep(); return; }
       var rel = relSection(); if (!rel || !rel.parentElement) return;
+      if (!document.getElementById("mg-motion")) {
+        var c = document.createElement("section"); c.id = "mg-motion"; c.innerHTML = motHTML();
+        rel.parentElement.insertBefore(c, rel);
+        wireMotion(c);
+      }
       if (!document.getElementById("mg-icses")) {
-        var a = document.createElement("section"); a.id = "mg-icses"; a.innerHTML = ICS;
+        var a = document.createElement("section"); a.id = "mg-icses"; a.innerHTML = icsHTML();
         rel.parentElement.insertBefore(a, rel);
+        wireVoice(a);
       }
       if (!document.getElementById("mg-olcu")) {
         var b = document.createElement("section"); b.id = "mg-olcu"; b.innerHTML = OLCU;
         b.addEventListener("click", function () { window.__mgOpenSG && window.__mgOpenSG(); });
         rel.parentElement.insertBefore(b, rel);
-      }
-      if (!document.getElementById("mg-motion")) {
-        var c = document.createElement("section"); c.id = "mg-motion"; c.innerHTML = motHTML();
-        rel.parentElement.insertBefore(c, rel.nextSibling);
-        wireMotion(c);
       }
     }
     var t22; new MutationObserver(function () { clearTimeout(t22); t22 = setTimeout(build, 350); })
