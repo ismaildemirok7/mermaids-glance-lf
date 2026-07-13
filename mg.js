@@ -1795,16 +1795,69 @@
   })();
 
   /* =========================================================================
-     §20 — PDP CARE ACCORDION
-     Story, editorial image and collection identity were removed by owner
-     decision. Only the practical care accordion remains.
+     §20 — PDP ACCORDION CONTENT PASS (route: /products/...)
+     Owner directive 2026-07-13: the accordions carry the full, explicit truth.
+     (a) CARE RITUAL appended as icon rows — no per-product composition or
+         bullet claims (none are verified; karar paketi P0-3).
+     (b) The thin inline SIZE/RETURNS & HYGIENE and DELIVERY & TRACKING bodies
+         are replaced with complete, numbered, claim-verified copy (every
+         sentence maps to §5 policy / anayasa v1.3 / owner 24h SLA).
+     Idempotent; interval-driven (LF head-script observers are unreliable).
      ========================================================================= */
   (function () {
     if (window.__mgPDPCare) return; window.__mgPDPCare = true;
+    css(
+      ".mg-care-lead{margin:0 0 12px;}" +
+      ".mg-care-row{display:flex;align-items:center;gap:14px;padding:9px 0;}" +
+      ".mg-care-row+.mg-care-row{border-top:1px solid #f0eeeb;}" +
+      ".mg-care-ic{flex:none;width:34px;height:34px;border:1px solid #e6e4e0;display:flex;align-items:center;justify-content:center;color:#0d0d0d;}" +
+      ".mg-care-ic svg{width:19px;height:19px;display:block;}" +
+      ".mg-care-tx{font-size:12px;line-height:1.6;color:#555;}" +
+      ".mg-care-close{margin:14px 0 0;}"
+    );
     function onPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
-    var BAKIM_BODY = L(
-      "<p>Follow the care label first; if it gives a different method, that instruction prevails. Unless stated otherwise, wash gently by hand in cold water. Do not wring or tumble dry. Dry in shade, away from direct heat and sunlight. Close straps and hooks before storing away from friction.</p>",
-      "<p>Önce parçanın etiketindeki bakım talimatını izle; etiket farklı bir yöntem söylüyorsa o geçerlidir. Aksi belirtilmedikçe soğuk suda nazikçe elde yıka; sıkma ve kurutucu kullanma. Doğrudan ısıdan ve güneşten uzakta, gölgede kurut. Askı ve kopçaları kapatarak, sürtünmeden uzak sakla.</p>"
+    var IC = {
+      wash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3.5 9h17l-2.1 9.5H5.6L3.5 9z"/><path d="M6.5 5.6c1.2-1.1 2.4-1.1 3.6 0 1.2 1.1 2.4 1.1 3.6 0 1.2-1.1 2.4-1.1 3.6 0"/></svg>',
+      blc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 4.5 21 19.5H3L12 4.5z"/><path d="M4.5 5.5l15 14"/></svg>',
+      tmb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="4" y="4" width="16" height="16"/><circle cx="12" cy="12" r="5"/><path d="M5 5l14 14"/></svg>',
+      dry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="4" y="4" width="16" height="16"/><path d="M9 8.5v7M12 8.5v7M15 8.5v7"/></svg>',
+      irn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 16.5h16.3l-1.3-5.2a2.7 2.7 0 0 0-2.6-2H10.2c-3.7 0-6.2 3-6.2 7.2z"/><path d="M4 5.5l16.5 13.5"/></svg>',
+      dcl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="7.6"/><path d="M6.6 6.6l10.8 10.8"/></svg>'
+    };
+    function crow(ic, tx) { return '<div class="mg-care-row"><span class="mg-care-ic">' + ic + '</span><span class="mg-care-tx">' + tx + '</span></div>'; }
+    var CARE_BODY =
+      '<p class="mg-care-lead">' + L("The garment's label speaks first; if it says otherwise, follow the label.", "Önce parçanın etiketi konuşur; etiket farklı söylüyorsa o geçerlidir.") + '</p>' +
+      crow(IC.wash, L("Wash gently by hand in cold water.", "Soğuk suda, elde, nazikçe yıka.")) +
+      crow(IC.blc, L("Do not bleach.", "Çamaşır suyu kullanma.")) +
+      crow(IC.tmb, L("Do not tumble dry; do not wring.", "Kurutucuya verme; sıkma.")) +
+      crow(IC.dry, L("Dry flat or hung, in the shade.", "Gölgede, düz zeminde ya da askıda kurut.")) +
+      crow(IC.irn, L("Do not iron.", "Ütüleme.")) +
+      crow(IC.dcl, L("Do not dry-clean.", "Kuru temizleme yaptırma.")) +
+      '<p class="mg-care-close">' + L("Store with straps and hooks closed, away from friction.", "Askı ve kopçaları kapatarak, sürtünmeden uzak sakla.") + '</p>';
+    var OPEN_SG = '<a href="#" onclick="event.preventDefault();window.__mgOpenSG&&window.__mgOpenSG()">';
+    var SRH_BODY = L(
+      "<p><strong>Size.</strong> Do not guess. The " + OPEN_SG + "Size Finder</a> compares your measurements with this silhouette's table and gives you one answer; on the border of two sizes we suggest the larger so it sits at ease.</p>" +
+      "<p><strong>Returns.</strong> If you change your mind, you may declare withdrawal within 14 days of delivery. Write to <a href=\"mailto:info@mermaidsglance.com\">info@mermaidsglance.com</a> and the return instructions are sent to you. The refund is made in one payment to your original payment method within 14 days of your notice reaching us.</p>" +
+      "<p><strong>Hygiene.</strong> For intimates, the hygiene exception applies once the protective element — wrapping, tape or seal — is opened. Check the size and contents before opening it. Your statutory rights for defective items remain in every case.</p>" +
+      "<p>The <a href=\"/refundpolicy\">Return Policy</a> page shows every condition in one place.</p>",
+      "<p><strong>Beden.</strong> Tahmin etme. " + OPEN_SG + "Beden Bulucu</a> ölçülerini bu silüetin tablosuyla karşılaştırır ve sana tek bir cevap verir; iki bedenin sınırındaysan rahat oturması için büyüğü öneririz.</p>" +
+      "<p><strong>İade.</strong> Fikrin değişirse teslimden itibaren 14 gün içinde cayma bildirimi yapabilirsin. <a href=\"mailto:info@mermaidsglance.com\">info@mermaidsglance.com</a> adresine yaz; iade talimatı sana iletilir. Geri ödeme, bildirimin bize ulaşmasından itibaren 14 gün içinde, orijinal ödeme yöntemine tek seferde yapılır.</p>" +
+      "<p><strong>Hijyen.</strong> İç giyimde ambalaj, bant ya da mühür gibi koruyucu unsur açıldıktan sonra hijyen istisnası uygulanır. Bedenini ve içeriği, koruyucu unsuru açmadan kontrol et. Ayıplı mal hakların her durumda saklıdır.</p>" +
+      "<p><a href=\"/refundpolicy\">İade Politikası</a> sayfası tüm koşulları tek yerde gösterir.</p>"
+    );
+    var DEL_BODY = L(
+      "<p><strong>1 —</strong> Your order enters preparation and is routed within 1 business day.</p>" +
+      "<p><strong>2 —</strong> When dispatch begins, your tracking code is created and shared with you; follow the journey step by step on <a href=\"/siparis-takibi\">your tracking page</a>.</p>" +
+      "<p><strong>3 —</strong> Delivery after dispatch is estimated at 7–15 business days; the total estimate from order to delivery is 8–16 business days. Weekends and public holidays do not count.</p>" +
+      "<p><strong>4 —</strong> Shipping, customs and all duties are ours. Nothing extra is collected at your door.</p>" +
+      "<p><strong>5 —</strong> The outer parcel is plain and unbranded; what it carries stays unseen.</p>" +
+      "<p>Questions: <a href=\"mailto:info@mermaidsglance.com\">info@mermaidsglance.com</a> — we answer every question within 24 hours.</p>",
+      "<p><strong>1 —</strong> Siparişin 1 iş günü içinde hazırlığa alınır ve yönlendirilir.</p>" +
+      "<p><strong>2 —</strong> Sevkiyat başladığında takip kodun oluşur ve seninle paylaşılır; yolculuğu <a href=\"/siparis-takibi\">takip sayfandan</a> adım adım izlersin.</p>" +
+      "<p><strong>3 —</strong> Sevkiyattan sonra teslimat tahmini 7–15 iş günüdür; siparişten teslimata toplam tahmin 8–16 iş günüdür. Hafta sonları ve resmî tatiller bu sayıma girmez.</p>" +
+      "<p><strong>4 —</strong> Kargo, gümrük ve tüm harçlar bize aittir. Kapıda senden ek ücret istenmez.</p>" +
+      "<p><strong>5 —</strong> Dış paket sade ve markasızdır; üzerinde ne taşıdığı görünmez.</p>" +
+      "<p>Soruların için <a href=\"mailto:info@mermaidsglance.com\">info@mermaidsglance.com</a> — her soruya 24 saat içinde yanıt veririz.</p>"
     );
     function mkAcc(t, bHTML) {
       var w = document.createElement("div"); w.className = "mgpx-acc";
@@ -1818,13 +1871,353 @@
       var stale = col.querySelectorAll(".mg-s8,.mg-s2-id");
       for (var i = 0; i < stale.length; i++) stale[i].remove();
       var mgpx = col.querySelector(".mgpx");
-      if (!mgpx || mgpx.querySelector(".mg-bakim")) return;
-      var ba = mkAcc(L("CARE RITUAL", "BAKIM RİTÜELİ"), BAKIM_BODY);
-      ba.classList.add("mg-bakim"); mgpx.appendChild(ba);
+      if (!mgpx) return;
+      /* (b) upgrade the two inline bodies once per injected .mgpx (data-mgup guard) */
+      var accs = mgpx.querySelectorAll(".mgpx-acc");
+      for (var k = 0; k < accs.length; k++) {
+        if (accs[k].getAttribute("data-mgup")) continue;
+        var hd = accs[k].querySelector(".mgpx-hd"), bd = accs[k].querySelector(".mgpx-in");
+        if (!hd || !bd) continue;
+        var ht = (hd.textContent || "").toLocaleUpperCase("tr");
+        if (/RETURNS|HYGIENE|İADE|HİJYEN/.test(ht)) { bd.innerHTML = SRH_BODY; accs[k].setAttribute("data-mgup", "1"); }
+        else if (/DELIVERY|TESLİMAT/.test(ht)) { bd.innerHTML = DEL_BODY; accs[k].setAttribute("data-mgup", "1"); }
+      }
+      /* (a) care accordion, icon rows */
+      if (!mgpx.querySelector(".mg-bakim")) {
+        var ba = mkAcc(L("CARE RITUAL", "BAKIM RİTÜELİ"), CARE_BODY);
+        ba.classList.add("mg-bakim"); mgpx.appendChild(ba);
+      }
     }
     var t20; new MutationObserver(function () { clearTimeout(t20); t20 = setTimeout(build, 300); })
       .observe(document.documentElement, { childList: true, subtree: true });
     setTimeout(build, 700); setInterval(build, 1300);
+  })();
+
+  /* =========================================================================
+     §21 — BEDEN BULUCU (task-21, Model A wizard inside the size drawer)
+     Owner layout directive 2026-07-13: static chart LEFT, finder RIGHT on
+     desktop; stacked finder-first on mobile (column-reverse).
+     Rules: cro/research/beden-kural-seti.json (1:1 with the live SG table);
+     copy: task-09 accepted set. Deterministic — tie-break picks the LARGER
+     size; out-of-range NEVER recommends a size; no social-proof framing.
+     ========================================================================= */
+  (function () {
+    if (window.__mgBF) return; window.__mgBF = true;
+    css(
+      "#mgbf-row{display:flex;flex-direction:column-reverse;gap:36px;max-width:1200px;margin:0 auto;font-family:'Montserrat',sans-serif;}" +
+      "@media(min-width:920px){#mgbf-row{flex-direction:row;align-items:flex-start;gap:48px;}#mgbf-chart{flex:1 1 56%;min-width:0;}#mgbf{flex:1 1 44%;min-width:0;}}" +
+      "#mgbf-row .sg{max-width:none;margin:0;}" +
+      ".mgbf-k{display:block;font-size:9px;font-weight:600;letter-spacing:.24em;color:#0d0d0d;margin:0 0 10px;}" +
+      ".mgbf-need{font-size:12px;color:#888;margin:0 0 16px;line-height:1.6;}" +
+      ".mgbf-pills{display:flex;flex-wrap:wrap;border:1px solid #e6e4e0;margin:0 0 20px;}" +
+      ".mgbf-pill{flex:1 1 auto;font-size:9px;letter-spacing:.08em;text-transform:none;padding:10px 8px;background:none;border:none;border-right:1px solid #e6e4e0;color:#888;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:600;white-space:nowrap;}" +
+      ".mgbf-pill:last-child{border-right:none;}.mgbf-pill.on{background:#f5f5f5;color:#0d0d0d;}" +
+      ".mgbf-f{margin:0 0 16px;}" +
+      ".mgbf-f label{display:block;font-size:11px;font-weight:600;color:#0d0d0d;margin:0 0 7px;letter-spacing:.04em;}" +
+      ".mgbf-f label span{color:#888;font-weight:400;}" +
+      ".mgbf-f input{width:100%;box-sizing:border-box;border:1px solid #e6e4e0;background:#fff;padding:12px 14px;font-size:14px;font-family:'Montserrat',sans-serif;color:#0d0d0d;outline:none;border-radius:0;-moz-appearance:textfield;}" +
+      ".mgbf-f input:focus{border-color:#0d0d0d;}" +
+      ".mgbf-f input::-webkit-outer-spin-button,.mgbf-f input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}" +
+      ".mgbf-h{font-size:10.5px;color:#999;margin:6px 0 0;line-height:1.6;}" +
+      ".mgbf-cups{display:flex;gap:8px;}" +
+      ".mgbf-cup{width:42px;height:42px;border:1px solid #e6e4e0;background:#fff;font-size:12px;font-weight:600;color:#555;cursor:pointer;font-family:'Montserrat',sans-serif;}" +
+      ".mgbf-cup.on{background:#0d0d0d;color:#fafafa;border-color:#0d0d0d;}" +
+      "#mgbf-go{width:100%;background:#0d0d0d;color:#fafafa;border:none;padding:15px;font-size:10px;letter-spacing:.22em;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:4px;}" +
+      ".mgbf-card{margin-top:22px;border:1px solid #e6e4e0;background:#fff;padding:22px;}" +
+      ".mgbf-rk{display:block;font-size:14px;font-weight:600;letter-spacing:.06em;color:#0d0d0d;}" +
+      ".mgbf-card p{font-size:12px;color:#555;line-height:1.9;margin:10px 0 0;}" +
+      ".mgbf-note{font-style:italic;color:#8a8a8a;}" +
+      ".mgbf-own{display:block;width:100%;background:#0d0d0d;color:#fafafa;border:none;padding:14px;font-size:10px;letter-spacing:.2em;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:18px;}" +
+      ".mgbf-back{display:inline-block;background:none;border:none;color:#888;font-size:10px;letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:12px;padding:0;}" +
+      ".mgbf-err{font-size:11.5px;color:#0d0d0d;font-style:italic;margin:12px 0 0;line-height:1.7;}"
+    );
+    var SZ5 = ["XS", "S", "M", "L", "XL"];
+    var RB = {
+      sets: {
+        lab: L("Sets & Bottoms", "Takımlar & Altlar"), sz: SZ5,
+        inputs: [
+          { id: "bel", lb: L("Waist", "Bel"), hint: L("Measure the narrowest point; keep the tape easy, not tight.", "En ince noktandan ölç; mezurayı gergin değil rahat tut."), rng: [[58, 70], [64, 76], [70, 82], [76, 88], [82, 94]] },
+          { id: "kalca", lb: L("Hip", "Kalça"), hint: L("Measure the fullest point, tape parallel to the floor.", "En geniş noktandan, mezura yere paralel kalsın."), rng: [[87, 91], [91, 95], [95, 99], [99, 103], [103, 108]] }
+        ]
+      },
+      bra: { lab: L("Bras & Bustiers", "Sütyen & Büstiyer"), bra: true },
+      body: {
+        lab: "Bodysuit", sz: SZ5,
+        inputs: [
+          { id: "gogus", lb: L("Bust", "Göğüs"), hint: L("Measure the fullest point; keep the tape flat across your back.", "En dolgun noktandan; mezura sırtında düz dursun."), rng: [[79, 85], [83, 89], [87, 93], [91, 97], [95, 101]] },
+          { id: "bel", lb: L("Waist", "Bel"), hint: L("At your natural waistline, without holding your breath.", "Doğal bel çizginden, nefesini tutmadan."), rng: [[58, 64], [62, 68], [66, 72], [70, 76], [74, 80]] },
+          { id: "kalca", lb: L("Hip", "Kalça"), hint: L("Measure the fullest point, tape parallel to the floor.", "En geniş noktandan, mezura yere paralel kalsın."), rng: [[86, 92], [90, 96], [94, 100], [98, 104], [102, 108]] }
+        ]
+      },
+      night: {
+        lab: L("Nightwear", "Gecelik"), sz: ["S", "M", "L", "XL"],
+        inputs: [
+          { id: "gogus", lb: L("Bust", "Göğüs"), hint: L("Measure the fullest point; keep the tape flat across your back.", "En dolgun noktandan; mezura sırtında düz dursun."), rng: [[88, 93], [93, 98], [98, 103], [103, 108]] },
+          { id: "bel", lb: L("Waist", "Bel"), hint: L("At your natural waistline, without holding your breath.", "Doğal bel çizginden, nefesini tutmadan."), rng: [[68, 73], [73, 78], [78, 83], [83, 88]] },
+          { id: "kalca", lb: L("Hip", "Kalça"), hint: L("Measure the fullest point, tape parallel to the floor.", "En geniş noktandan, mezura yere paralel kalsın."), rng: [[95, 100], [100, 105], [105, 110], [110, 115]] }
+        ]
+      }
+    };
+    var BRA_LK = { 80: { A: "XS", B: "XS", C: "XS", D: null }, 85: { A: "XS", B: "XS", C: "S", D: "S" }, 90: { A: "S", B: "S", C: "M", D: "L" }, 95: { A: "M", B: "M", C: "L", D: "L" }, 100: { A: "L", B: "L", C: "XL", D: "XL" } };
+    var ORDER = ["sets", "bra", "body", "night"], cur = "sets";
+    var TXT = {
+      need: L("This silhouette needs just {N} measurements.", "Bu silüet için {N} ölçü yeter."),
+      go: L("SEE YOUR SIZE", "BEDENİNİ GÖR"),
+      rk: L("Your Size", "Senin Bedenin"),
+      rbody: L("This silhouette sits at {B} on you. Your measurements said the rest.", "Bu silüet sende {B} oturur. Ölçülerin gerisini söyledi."),
+      own: L("OWN IT IN {B}", "{B} BEDENİYLE SAHİP OL"),
+      back: L("Change my measures", "Ölçülerimi değiştir"),
+      tie: L("You are between two sizes — we chose {B} so the silhouette wraps you.", "İki bedenin sınırındasın — silüet seni sarsın diye {B} önerdik."),
+      div: L("Your measurements point to different sizes; we suggest {B} for coverage. Write to us if you want to be sure: info@mermaidsglance.com", "Ölçülerin farklı bedenlere işaret ediyor; kapsaması için {B} öneriyoruz. Emin olmak istersen yaz: info@mermaidsglance.com"),
+      out: L("This silhouette is not made in your measurements right now. We will not name a size that is not yours.", "Bu silüet şu an senin ölçünde üretilmiyor. Yanlış beden önermeyi doğru bulmuyoruz."),
+      nocell: L("This band and cup are not made.", "Bu band ve kup birleşimi üretilmiyor."),
+      err: L("Check your measurements once more.", "Ölçülerini bir daha kontrol et."),
+      band: L("Underbust (band)", "Alt göğüs (band)"),
+      bandh: L("Just below the bust, on the exhale; we round to the nearest five.", "Göğsünün hemen altından, nefes verirken; en yakın beşe biz yuvarlarız."),
+      cup: L("Cup", "Kup"),
+      cuph: L("The cup letter of the bra you always wear (A–D).", "Her zaman giydiğin sütyenin kup harfi (A–D)."),
+      pick: L("Mark {B} on the size selector.", "Beden seçicide {B} işaretle."),
+      link: L("Skip the chart, find your fit", "Bedenini bul, tabloyu bırak")
+    };
+    function guessPanel() {
+      var t = ((window.data && window.data.product && window.data.product.title) || "").toLowerCase();
+      if (/bodysuit|teddy|\bbody\b/.test(t)) return "body";
+      if (/night|gown|chemise|robe|babydoll|kimono|sleep|pyjama|pajama|negligee/.test(t)) return "night";
+      if (/\bbra\b|bustier|bralette|corset|\btop\b/.test(t)) return "bra";
+      return "sets";
+    }
+    function fieldHTML(inp) {
+      return '<div class="mgbf-f"><label>' + inp.lb + ' <span>cm</span></label><input id="mgbf-' + inp.id + '" type="number" inputmode="decimal" min="30" max="200"><p class="mgbf-h">' + inp.hint + '</p></div>';
+    }
+    function renderPanel(p) {
+      cur = p;
+      var box = document.getElementById("mgbf"); if (!box) return;
+      var pills = box.querySelector("#mgbf-pills"), fl = box.querySelector("#mgbf-fields"), need = box.querySelector("#mgbf-need"), res = box.querySelector("#mgbf-res");
+      var ph = ""; for (var i = 0; i < ORDER.length; i++) ph += '<button type="button" class="mgbf-pill' + (ORDER[i] === p ? " on" : "") + '" data-p="' + ORDER[i] + '">' + RB[ORDER[i]].lab + "</button>";
+      pills.innerHTML = ph;
+      var n = RB[p].bra ? 2 : RB[p].inputs.length;
+      need.textContent = TXT.need.replace("{N}", n);
+      if (RB[p].bra) {
+        fl.innerHTML =
+          '<div class="mgbf-f"><label>' + TXT.band + ' <span>cm</span></label><input id="mgbf-band" type="number" inputmode="decimal" min="60" max="130"><p class="mgbf-h">' + TXT.bandh + '</p></div>' +
+          '<div class="mgbf-f"><label>' + TXT.cup + '</label><div class="mgbf-cups" id="mgbf-cups"><button type="button" class="mgbf-cup" data-c="A">A</button><button type="button" class="mgbf-cup" data-c="B">B</button><button type="button" class="mgbf-cup" data-c="C">C</button><button type="button" class="mgbf-cup" data-c="D">D</button></div><p class="mgbf-h">' + TXT.cuph + '</p></div>';
+      } else {
+        var h = ""; for (var j = 0; j < RB[p].inputs.length; j++) h += fieldHTML(RB[p].inputs[j]);
+        fl.innerHTML = h;
+      }
+      fl.style.display = ""; pills.style.display = ""; need.style.display = "";
+      var go = box.querySelector("#mgbf-go"); if (go) go.style.display = "";
+      res.innerHTML = "";
+    }
+    function fitIdx(v, rng) { var hits = []; for (var i = 0; i < rng.length; i++) { if (v >= rng[i][0] && v <= rng[i][1]) hits.push(i); } return hits; }
+    function compute() {
+      var box = document.getElementById("mgbf"); if (!box) return;
+      var res = box.querySelector("#mgbf-res"), fl = box.querySelector("#mgbf-fields"), pills = box.querySelector("#mgbf-pills"), need = box.querySelector("#mgbf-need"), go = box.querySelector("#mgbf-go");
+      var sz = null, note = "", honest = "";
+      if (RB[cur].bra) {
+        var bEl = box.querySelector("#mgbf-band"), cEl = box.querySelector(".mgbf-cup.on");
+        var bv = bEl ? parseFloat(bEl.value) : NaN;
+        if (isNaN(bv) || !cEl) { res.innerHTML = '<p class="mgbf-err">' + TXT.err + "</p>"; return; }
+        var band = Math.round(bv / 5) * 5;
+        if (band < 80 || band > 100) { honest = TXT.out; }
+        else {
+          var cell = BRA_LK[band][cEl.getAttribute("data-c")];
+          if (cell === null) honest = TXT.nocell; else sz = cell;
+        }
+      } else {
+        var szs = RB[cur].sz, idxs = [], anyTie = false;
+        for (var i = 0; i < RB[cur].inputs.length; i++) {
+          var inp = RB[cur].inputs[i], el = box.querySelector("#mgbf-" + inp.id), v = el ? parseFloat(el.value) : NaN;
+          if (isNaN(v) || v < 30 || v > 200) { res.innerHTML = '<p class="mgbf-err">' + TXT.err + "</p>"; return; }
+          var hits = fitIdx(v, inp.rng);
+          if (!hits.length) { honest = TXT.out; break; }
+          if (hits.length > 1) anyTie = true;
+          idxs.push(Math.max.apply(null, hits));
+        }
+        if (!honest) {
+          var mx = Math.max.apply(null, idxs), mn = Math.min.apply(null, idxs);
+          sz = szs[mx];
+          if (mx - mn >= 2) note = TXT.div.replace("{B}", sz);
+          else if (anyTie || mx !== mn) note = TXT.tie.replace("{B}", sz);
+        }
+      }
+      fl.style.display = "none"; pills.style.display = "none"; need.style.display = "none"; if (go) go.style.display = "none";
+      if (honest) {
+        res.innerHTML = '<div class="mgbf-card"><p style="margin:0;">' + honest + '</p><button type="button" class="mgbf-back">' + TXT.back + "</button></div>";
+      } else {
+        res.innerHTML = '<div class="mgbf-card"><span class="mgbf-rk">' + TXT.rk + ": " + sz + "</span><p>" + TXT.rbody.replace("{B}", sz) + "</p>" + (note ? '<p class="mgbf-note">' + note + "</p>" : "") + '<button type="button" class="mgbf-own" data-sz="' + sz + '">' + TXT.own.replace("{B}", sz) + '</button><button type="button" class="mgbf-back">' + TXT.back + '</button><p class="mgbf-pickmiss" style="display:none;"></p></div>';
+      }
+    }
+    function pickSize(sz) {
+      var ok = false, labels = document.querySelectorAll(".D0I_i");
+      for (var i = 0; i < labels.length && !ok; i++) {
+        var l = labels[i];
+        if (!/^(size|beden|größe|taille)$/i.test((l.innerText || "").trim())) continue;
+        var grp = l.closest(".Y3eUK") || l.parentElement; if (!grp) continue;
+        var cand = grp.querySelectorAll("button,[role=button],label,span,div");
+        for (var j = 0; j < cand.length; j++) {
+          var c = cand[j]; if (c.children.length > 1) continue;
+          if ((c.innerText || "").trim().toUpperCase() === sz) { c.click(); ok = true; break; }
+        }
+      }
+      return ok;
+    }
+    function enhance() {
+      var bd = document.getElementById("mg-sg-bd"); if (!bd || bd.querySelector("#mgbf")) return;
+      var sg = bd.querySelector(".sg"); if (!sg) return;
+      var row = document.createElement("div"); row.id = "mgbf-row";
+      bd.insertBefore(row, sg);
+      var left = document.createElement("div"); left.id = "mgbf-chart";
+      var right = document.createElement("div"); right.id = "mgbf";
+      row.appendChild(left); row.appendChild(right); left.appendChild(sg);
+      right.innerHTML =
+        '<span class="mgbf-k">' + L("FIND MY SIZE", "BEDENİMİ BUL") + "</span>" +
+        '<p class="mgbf-need" id="mgbf-need"></p>' +
+        '<div class="mgbf-pills" id="mgbf-pills"></div>' +
+        '<div id="mgbf-fields"></div>' +
+        '<button type="button" id="mgbf-go">' + TXT.go + "</button>" +
+        '<div id="mgbf-res"></div>';
+      right.addEventListener("click", function (e) {
+        var t = e.target;
+        if (t.classList.contains("mgbf-pill")) { renderPanel(t.getAttribute("data-p")); return; }
+        if (t.classList.contains("mgbf-cup")) { var cs = right.querySelectorAll(".mgbf-cup"); for (var i = 0; i < cs.length; i++) cs[i].classList.remove("on"); t.classList.add("on"); return; }
+        if (t.id === "mgbf-go") { compute(); return; }
+        if (t.classList.contains("mgbf-back")) { renderPanel(cur); return; }
+        if (t.classList.contains("mgbf-own")) {
+          var sz = t.getAttribute("data-sz"), ok = pickSize(sz);
+          if (ok) { window.__mgCloseSG && window.__mgCloseSG(); }
+          else { var m = right.querySelector(".mgbf-pickmiss"); if (m) { m.textContent = TXT.pick.replace("{B}", sz); m.style.display = ""; m.className = "mgbf-pickmiss mgbf-note"; } }
+          return;
+        }
+      });
+      right.addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); compute(); } });
+      renderPanel(guessPanel());
+    }
+    function hook() {
+      if (window.__mgOpenSG && !window.__mgOpenSG.__bf) {
+        var o = window.__mgOpenSG;
+        var w = function () { o(); enhance(); try { renderPanel(guessPanel()); } catch (e) { } };
+        w.__bf = 1; window.__mgOpenSG = w;
+      }
+    }
+    hook();
+    setInterval(function () {
+      hook();
+      if (document.getElementById("mg-sg-dr")) enhance();
+      var lk = document.querySelector(".mg-sg-link");
+      if (lk && lk.textContent !== TXT.link) lk.textContent = TXT.link;
+    }, 1400);
+  })();
+
+  /* =========================================================================
+     §22 — PDP EDITORIAL BANDS (route: /products/...)
+     (a) İÇ SES band — second-person editorial vignettes. Deliberately NOT a
+         review widget: no names, no stars, no counts, no "verified" (owner
+         decision 2026-07-11 review-RED + TR 2026-08-01 consumer-review rule).
+     (b) "3 ölçü." measure band — honest counter-design to fake-% blocks;
+         every sentence maps to a real rule (3-input max, larger-size
+         tie-break, 24h SLA). The whole band opens the size drawer.
+     (c) SİLÜET HAREKET HALİNDE — supplier motion loops (owner-confirmed
+         2026-07-12); muted/playsinline/poster, viewport-gated, honours
+         prefers-reduced-motion and Save-Data. Sits AFTER the native
+         COMPLETE THE RITUAL block (owner directive 2026-07-13).
+     Anchored to the related-products section (.mg-yml-head ancestor);
+     idempotent + interval-driven.
+     ========================================================================= */
+  (function () {
+    if (window.__mgPDPBands) return; window.__mgPDPBands = true;
+    css(
+      "#mg-icses{background:#fff;border-top:1px solid #e6e4e0;border-bottom:1px solid #e6e4e0;padding:74px 24px;font-family:'Montserrat',sans-serif;}" +
+      ".mg-ics-in{max-width:640px;margin:0 auto;text-align:center;}" +
+      ".mg-ics-k{display:block;font-size:9px;font-weight:600;letter-spacing:.24em;color:#888;margin:0 0 30px;}" +
+      ".mg-ics-in p{font-size:15px;font-weight:300;font-style:italic;line-height:2;color:#1a1a1a;margin:0;}" +
+      ".mg-ics-sep{display:block;width:26px;height:1px;background:#e6e4e0;margin:24px auto;}" +
+      "#mg-olcu{background:#0d0d0d;padding:78px 24px;cursor:pointer;font-family:'Montserrat',sans-serif;}" +
+      ".mg-olc-in{max-width:620px;margin:0 auto;text-align:center;}" +
+      ".mg-olc-k{display:block;font-size:9px;font-weight:600;letter-spacing:.26em;color:#8a8a8a;}" +
+      ".mg-olc-big{display:block;font-size:clamp(46px,9vw,84px);font-weight:300;letter-spacing:.02em;color:#fafafa;line-height:1.05;margin:20px 0 14px;}" +
+      ".mg-olc-lead{font-size:13px;font-weight:500;letter-spacing:.04em;color:#d8d8d8;margin:0 0 16px;}" +
+      ".mg-olc-tx{font-size:12.5px;color:#a8a8a8;line-height:2;margin:0;}" +
+      ".mg-olc-cta{display:inline-block;margin-top:28px;font-size:10px;letter-spacing:.22em;font-weight:600;color:#fafafa;border-bottom:1px solid #fafafa;padding-bottom:6px;}" +
+      "#mg-motion{padding:70px 0 84px;background:#fafafa;font-family:'Montserrat',sans-serif;}" +
+      ".mg-mot-hd{text-align:center;padding:0 24px;}" +
+      ".mg-mot-t{display:block;font-size:12px;font-weight:600;letter-spacing:.26em;color:#0d0d0d;}" +
+      ".mg-mot-s{font-size:12px;color:#888;margin:12px 0 0;}" +
+      ".mg-mot-row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:34px 24px 6px;scrollbar-width:none;}" +
+      "@media(min-width:1240px){.mg-mot-row{padding-left:calc((100vw - 1162px)/2);padding-right:calc((100vw - 1162px)/2);}}" +
+      ".mg-mot-row::-webkit-scrollbar{display:none;}" +
+      ".mg-mot-card{flex:0 0 auto;width:min(280px,74vw);aspect-ratio:9/16;background:#0d0d0d;scroll-snap-align:center;}" +
+      ".mg-mot-card video{width:100%;height:100%;object-fit:cover;display:block;}"
+    );
+    function onPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
+    var VID = [1, 2, 3, 4].map(function (i) { return { v: CDN + "/video/motion-" + i + ".mp4", p: CDN + "/video/motion-" + i + ".jpg" }; });
+    var ICS =
+      '<div class="mg-ics-in"><span class="mg-ics-k">' + L("AT THE MIRROR", "AYNANIN KARŞISINDA") + "</span>" +
+      "<p>" + L("When the zip closes, you recognise the woman in the mirror. The decision is already made.", "Fermuar kapandığında aynadaki kadını tanırsın. Karar çoktan verilmiştir.") + "</p>" +
+      '<span class="mg-ics-sep"></span>' +
+      "<p>" + L("This hour is yours alone. The fabric flows with your body, without resistance.", "Bu saat yalnız senindir. Kumaş bedeninle akar, direnmeden.") + "</p>" +
+      '<span class="mg-ics-sep"></span>' +
+      "<p>" + L("When you enter, the temperature of the room changes. No one asks whose evening this is.", "Odaya girdiğinde ısı değişir. Kimin sahnesi olduğunu kimse sormaz.") + "</p></div>";
+    var OLCU =
+      '<div class="mg-olc-in"><span class="mg-olc-k">' + L("SIZE PROTOCOL", "BEDEN PROTOKOLÜ") + "</span>" +
+      '<span class="mg-olc-big">' + L("3 measures.", "3 ölçü.") + "</span>" +
+      '<p class="mg-olc-lead">' + L("The right size is found by measuring, not guessing.", "Doğru beden tahminle değil, ölçüyle bulunur.") + "</p>" +
+      '<p class="mg-olc-tx">' + L("The Size Finder compares at most three of your measurements with this silhouette's table and gives you one answer. On the border of two sizes, we suggest the larger so it sits at ease. When you are not sure, write to us; we answer every question within 24 hours.", "Beden Bulucu en fazla üç ölçünü bu silüetin tablosuyla karşılaştırır ve sana tek bir cevap verir. İki bedenin sınırında kaldığında, rahat oturması için büyük olanı öneririz. Emin olamadığında yaz; her soruya 24 saat içinde yanıt veririz.") + "</p>" +
+      '<span class="mg-olc-cta">' + L("FIND YOUR SIZE", "BEDENİNİ BUL") + "</span></div>";
+    function motHTML() {
+      var h = '<div class="mg-mot-hd"><span class="mg-mot-t">' + L("THE SILHOUETTE IN MOTION", "SİLÜET HAREKET HALİNDE") + '</span><p class="mg-mot-s">' + L("A photograph holds still. The silhouette moves.", "Fotoğraf durdurur. Silüet hareket eder.") + '</p></div><div class="mg-mot-row">';
+      for (var i = 0; i < VID.length; i++) h += '<div class="mg-mot-card"><video src="' + VID[i].v + '" poster="' + VID[i].p + '" preload="none" loop muted playsinline webkit-playsinline></video></div>';
+      return h + "</div>";
+    }
+    function wireMotion(sec) {
+      var reduce = false, save = false;
+      try { reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { }
+      try { save = !!(navigator.connection && navigator.connection.saveData); } catch (e) { }
+      var vids = [].slice.call(sec.querySelectorAll("video"));
+      vids.forEach(function (v) {
+        v.muted = true; v.defaultMuted = true;
+        v.addEventListener("click", function () { if (v.paused) { v.play && v.play().catch(function () { }); } else { v.pause(); } });
+      });
+      if (!reduce && !save && "IntersectionObserver" in window) {
+        var io = new IntersectionObserver(function (es) {
+          es.forEach(function (en) {
+            var v = en.target;
+            if (en.isIntersecting && en.intersectionRatio >= 0.5) { v.play && v.play().catch(function () { }); } else { v.pause(); }
+          });
+        }, { threshold: [0, 0.5, 1] });
+        vids.forEach(function (v) { io.observe(v); });
+      }
+    }
+    function relSection() {
+      var y = document.querySelector(".mg-yml-head"); if (!y) return null;
+      var h1 = document.querySelector("h1"), el = y;
+      while (el.parentElement && el.parentElement !== document.body && !(h1 && el.parentElement.contains(h1))) el = el.parentElement;
+      return el;
+    }
+    function sweep() {
+      ["mg-icses", "mg-olcu", "mg-motion"].forEach(function (id) { var n = document.getElementById(id); if (n) n.remove(); });
+    }
+    function build() {
+      if (!onPDP()) { if (!/\/products\//.test(location.pathname)) sweep(); return; }
+      var rel = relSection(); if (!rel || !rel.parentElement) return;
+      if (!document.getElementById("mg-icses")) {
+        var a = document.createElement("section"); a.id = "mg-icses"; a.innerHTML = ICS;
+        rel.parentElement.insertBefore(a, rel);
+      }
+      if (!document.getElementById("mg-olcu")) {
+        var b = document.createElement("section"); b.id = "mg-olcu"; b.innerHTML = OLCU;
+        b.addEventListener("click", function () { window.__mgOpenSG && window.__mgOpenSG(); });
+        rel.parentElement.insertBefore(b, rel);
+      }
+      if (!document.getElementById("mg-motion")) {
+        var c = document.createElement("section"); c.id = "mg-motion"; c.innerHTML = motHTML();
+        rel.parentElement.insertBefore(c, rel.nextSibling);
+        wireMotion(c);
+      }
+    }
+    var t22; new MutationObserver(function () { clearTimeout(t22); t22 = setTimeout(build, 350); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+    setTimeout(build, 900); setInterval(build, 1500);
   })();
 
 
