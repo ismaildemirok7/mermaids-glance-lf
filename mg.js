@@ -1748,14 +1748,7 @@
   /* =========================================================================
      §18 — PDP TRUST LAYER (route: /products/..., task-10 / Cephe A)
      Three visibility-critical pieces that must NOT hide in an accordion:
-       1. trust strip right under the ATC block (task-01 finding 6 — the fold
-          rule: first screen, no interaction needed). Copy = task-02 Blok 4
-          Varyant A, universally safe on every PDP (no return-window claim,
-          so no intimate-piece gating needed here).
-       2. price-justification line right under .mg-pdp-price (AYŞE's moment —
-          task-02 Blok 3 TR-A first sentence, verbatim).
-       3. Society bridge under the .mgpx accordion family (task-02 Blok 5 TR-A)
-          — opens the §17 overlay via the approved __mgSocietyOpen export.
+       A single, short delivery-confidence line remains below the ATC block.
      Column gate reuses the inline export __mgPDPCol (no selector duplication).
      CLS: text-only nodes; live measurement is beyin's deploy-gate (card item 6).
      ========================================================================= */
@@ -1765,73 +1758,10 @@
       ".mg-pt-strip{margin:14px 0 0;padding:12px 2px;border-top:1px solid #e6e4e0;border-bottom:1px solid #e6e4e0;}" +
       ".mg-pt-strip span{font-size:11px;font-weight:400;letter-spacing:.02em;line-height:1.75;color:#666;font-family:'Montserrat',sans-serif;}" +
       ".mg-pdp-value{font-size:11px;line-height:1.7;letter-spacing:.02em;color:#555;margin:8px 0 2px;font-family:'Montserrat',sans-serif;}" +
-      ".mg-pdp-facts{display:flex;flex-wrap:wrap;gap:4px 12px;margin:5px 0 2px;color:#777;}" +
-      ".mg-pdp-facts span{font-family:'Montserrat',sans-serif;font-size:9px;line-height:1.6;letter-spacing:.1em;text-transform:uppercase;}" +
-      ".mg-pdp-facts span+span:before{content:'·';margin-right:12px;color:#bbb;}" +
-      ".mg-pdp-edd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:9px 2px 4px;font-family:'Montserrat',sans-serif;}" +
-      ".mg-pdp-edd span{font-size:10px;line-height:1.6;letter-spacing:.035em;color:#555;}" +
-      ".mg-pdp-edd button{border:0;background:none;padding:0;color:#777;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:.08em;text-decoration:underline;text-underline-offset:3px;cursor:pointer;white-space:nowrap;}" +
-      ".mg-pt-society{margin:18px 0 4px;}" +
-      ".mg-pt-society button{background:none;border:none;padding:0;cursor:pointer;text-align:left;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.8;color:#555;letter-spacing:.02em;}" +
-      ".mg-pt-society button u{color:#0d0d0d;text-decoration:underline;text-underline-offset:3px;font-weight:600;}" +
-      ".mg-pt-society button:hover u{opacity:.6;}" +
       "@media(max-width:480px){.mg-pdp-edd{align-items:flex-start;}.mg-pdp-facts{gap:3px 9px;}.mg-pdp-facts span+span:before{margin-right:9px;}}"
     );
     /* task-24 kabul (Varyant A): tek prose cümlesi, sentence-case — uppercase badge modeli kaldırıldı */
-    var STRIP_A = L(
-      "Shipping, customs and duties are handled by us. The outer parcel is plain and unbranded; tracking is shared at dispatch.",
-      "Kargo, gümrük ve harç bize ait. Dış paket sade ve markasız; takip bilgisi sevkiyatla paylaşılır."
-    );
-    function plain(html) {
-      var d = document.createElement("div"); d.innerHTML = String(html || "");
-      return (d.textContent || "").replace(/\s+/g, " ").trim();
-    }
-    function productText(p) {
-      var tags = (p && Array.isArray(p.tags)) ? p.tags.map(function (x) { return typeof x === "string" ? x : (x && x.title) || ""; }).join(" ") : "";
-      return [p && (p.title || p.name), tags, plain(p && p.description)].filter(Boolean).join(" ");
-    }
-    function insideText(p) {
-      var s = plain(p && p.description), m = s.match(/(?:Inside|Includes|Kutu İçeriği|Kutunun İçeriği|Kimono İçeriği)\s*:\s*([^.!?]{3,240})/i);
-      return m ? m[1].trim() : "";
-    }
-    function selectionValue(p) {
-      var s = String(p && (p.title || p.name) || "").toLocaleLowerCase("tr-TR"), lead = "";
-      if (/(five|5)[-\s]?piece|beş parç/.test(s)) lead = L("Five-piece selection", "Beş parçalı seçki");
-      else if (/(four|4)[-\s]?piece|dört parç/.test(s)) lead = L("Four-piece selection", "Dört parçalı seçki");
-      else if (/(three|3)[-\s]?piece|üç parç/.test(s)) lead = L("Three-piece selection", "Üç parçalı seçki");
-      else if (/(two|2)[-\s]?piece|iki parç/.test(s)) lead = L("Two-piece selection", "İki parçalı seçki");
-      else if (/\b(set|ensemble|takım|box)\b/.test(s)) lead = L("A coordinated selection", "Birbiriyle tamamlanan seçki");
-      else if (/bodysuit|\bbody\b/.test(s)) lead = L("One-piece silhouette", "Tek parça silüet");
-      else if (/nightgown|nightdress|nightie|chemise|babydoll|gecelik/.test(s)) lead = L("One-piece night silhouette", "Tek parça gece silüeti");
-      else if (/bralette|\bbra\b|sütyen|büstiyer/.test(s)) lead = L("One-piece upper silhouette", "Tek parça üst silüet");
-      return (lead ? lead + ". " : "") + L(
-        "The piece description appears under Details & Fit; only verified information is shown.",
-        "Parçanın açıklaması Detay ve Kalıp bölümünde; yalnız doğrulanmış bilgiler gösterilir."
-      );
-    }
-    function productFacts(p) {
-      var s = insideText(p), rules = [
-        [/underwire|wired cup|balen/i, L("Underwire structure", "Balenli yapı")],
-        [/adjustable|ayarlanabilir/i, L("Adjustable details", "Ayarlanabilir detaylar")],
-        [/removable|çıkarılabilir/i, L("Removable detail", "Çıkarılabilir detay")],
-        [/open[- ]back|açık sırt/i, L("Open back", "Açık sırt")],
-        [/choker|boyun bandı/i, L("Choker included", "Boyun bandı dahil")],
-        [/gloves?|eldiven/i, L("Gloves included", "Eldiven dahil")],
-        [/\bstockings?\b|\bthigh[- ]highs?\b|\bçorap\b/i, L("Stockings included", "Çorap dahil")]
-      ], out = [];
-      if (!s) return out;
-      rules.forEach(function (r) { if (out.length < 3 && r[0].test(s) && out.indexOf(r[1]) < 0) out.push(r[1]); });
-      return out;
-    }
-    function openDelivery(col) {
-      var hds = col.querySelectorAll(".mgpx-hd");
-      for (var i = 0; i < hds.length; i++) {
-        if (/TESL[İI]MAT|DELIVERY/i.test(hds[i].textContent || "")) {
-          var a = hds[i].closest(".mgpx-acc"); if (a) a.classList.add("open");
-          hds[i].scrollIntoView({ behavior: "smooth", block: "center" }); return;
-        }
-      }
-    }
+    var STRIP_A = L("Plain parcel · tracking shared at dispatch", "Sade paket · takip bilgisi sevkiyatta");
     function onPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
     function build() {
       if (!onPDP()) return;
@@ -1853,50 +1783,6 @@
       if (st && (st.getAttribute("data-for") !== pid || st.textContent !== STRIP_A)) {
         st.innerHTML = "<span>" + STRIP_A + "</span>"; st.setAttribute("data-for", pid);
       }
-      /* 2 — visible total lead time; exact calendar dates wait for a holiday-aware service */
-      var edd = col.querySelector(".mg-pdp-edd");
-      if (!edd && st && st.parentNode) {
-        edd = document.createElement("div"); edd.className = "mg-pdp-edd";
-        edd.innerHTML = L(
-          "<span>Estimated total: 8–16 business days · weekends and public holidays excluded</span><button type=\"button\">View the process</button>",
-          "<span>Tahmini toplam süre: 8–16 iş günü · hafta sonu ve resmî tatiller hariç</span><button type=\"button\">Süreci gör</button>"
-        );
-        edd.querySelector("button").addEventListener("click", function () { openDelivery(col); });
-        st.parentNode.insertBefore(edd, st.nextSibling);
-      }
-      if (edd && st && st.parentNode && (edd.parentNode !== st.parentNode || edd.previousElementSibling !== st)) st.parentNode.insertBefore(edd, st.nextSibling);
-      /* 3 — price-adjacent content truth + only facts explicitly listed under Inside/Kutu İçeriği */
-      var prc = col.querySelector(".mg-pdp-price"), v = col.querySelector(".mg-pdp-value"), fs = col.querySelector(".mg-pdp-facts");
-      if (prc && prc.parentNode) {
-        if (!v) { v = document.createElement("div"); v.className = "mg-pdp-value"; prc.parentNode.insertBefore(v, prc.nextSibling); }
-        if (v.parentNode !== prc.parentNode || v.previousElementSibling !== prc) prc.parentNode.insertBefore(v, prc.nextSibling);
-        var valueText = selectionValue(p);
-        if (v.getAttribute("data-for") !== pid || v.textContent !== valueText) { v.textContent = valueText; v.setAttribute("data-for", pid); }
-        var facts = productFacts(p);
-        if (facts.length) {
-          if (!fs) { fs = document.createElement("div"); fs.className = "mg-pdp-facts"; v.parentNode.insertBefore(fs, v.nextSibling); }
-          if (fs.parentNode !== v.parentNode || fs.previousElementSibling !== v) v.parentNode.insertBefore(fs, v.nextSibling);
-          var factsHTML = facts.map(function (x) { return "<span>" + x + "</span>"; }).join("");
-          if (fs.getAttribute("data-for") !== pid || fs.innerHTML !== factsHTML) { fs.innerHTML = factsHTML; fs.setAttribute("data-for", pid); }
-        } else if (fs) { fs.remove(); }
-      }
-      /* 4 — Society always follows the manifesto when it exists */
-      var mgpx = col.querySelector(".mgpx"), so = col.querySelector(".mg-pt-society");
-      if (mgpx && mgpx.parentNode) {
-        if (!so) {
-          so = document.createElement("div"); so.className = "mg-pt-society";
-          var b = document.createElement("button");
-          b.type = "button";
-          b.innerHTML = L(
-            "Society members see new silhouettes before public release. <u>See them first</u>",
-            "Society'de yeni silüetler herkese açılmadan önce senin önüne gelir. <u>Önce sen gör</u>"
-          );
-          b.addEventListener("click", function () { if (window.__mgSocietyOpen) window.__mgSocietyOpen(); });
-          so.appendChild(b);
-        }
-        var anchor = col.querySelector(".mg-s8") || mgpx;
-        if (so.previousElementSibling !== anchor) anchor.parentNode.insertBefore(so, anchor.nextSibling);
-      }
     }
     var t18; new MutationObserver(function () { clearTimeout(t18); t18 = setTimeout(build, 250); })
       .observe(document.documentElement, { childList: true, subtree: true });
@@ -1911,8 +1797,8 @@
   /* =========================================================================
      §20 — PDP STORY / DESIRE LAYER (route: /products/..., dalga-3)
      Inline .mgpx accordion ailesine ADDITIVE (0 inline bayt — blueprint §11.4).
-     Enjekte eder: S2 kimlik satırı · S6 İlk Bakış · BAKIM RİTÜELİ accordion ·
-     S8 kısa manifesto + açıkça etiketli sınıf-2 editoryal story bandı.
+     Enjekte eder: S2 kimlik satırı · BAKIM RİTÜELİ accordion ·
+     eski görsel ritmi taşıyan kısa editoryal story bandı.
      ATLANAN: S10 IG grid — ig-06 HELD; video-loop — beyin ayrı onayı bekler.
      __mgPDPCol + .mgpx yeniden kullanılır; §18 gibi
      zamanlanmış emniyet pass'i (LF observer'ları tek başına ateşlemiyor).
@@ -1921,10 +1807,9 @@
     if (window.__mgPDPStory) return; window.__mgPDPStory = true;
     css(
       ".mg-s2-id{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;color:#8a8a8a;margin:6px 0 2px;}" +
-      ".mg-s6{margin:18px 0 16px;padding:0 2px;}" +
-      ".mg-s6-k{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#8a8a8a;margin:0 0 8px;}" +
-      ".mg-s6 p{font-family:'Montserrat',sans-serif;font-size:12px;line-height:1.85;letter-spacing:.015em;color:#444;margin:0;}" +
       ".mg-s8{margin:24px 0 8px;}" +
+      ".mg-s8-band{display:block;width:100%;margin:0 0 16px;background:#f2f0ec;}" +
+      ".mg-s8-band img{display:block;width:100%;height:auto;}" +
       ".mg-s8-kicker{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#999;margin:0 0 10px;}" +
       ".mg-s8 h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#0d0d0d;margin:0 0 12px;}" +
       ".mg-s8 p{font-family:'Montserrat',sans-serif;font-size:12px;line-height:1.9;letter-spacing:.015em;color:#555;margin:0 0 13px;}" +
@@ -1949,27 +1834,10 @@
       for (var k in IDENT) { if (tags.indexOf("THE " + k + " COLLECTION") >= 0) hits.push(k); }
       return hits.length === 1 ? hits[0] : null;
     }
-    var GLANCE = {
-      NOCTURNE: L("Quiet authority enters the night with you. The decision remains yours.", "Sessiz otorite geceye seninle girer. Karar yalnızca sana aittir."),
-      SERENA: L("Softness and resolve can share the same scene. The hour remains yours.", "Yumuşaklık ve kararlılık aynı sahneyi paylaşır. O saat yalnızca sana aittir."),
-      VEDA: L("You enter the scene and set its rhythm. The choice begins with you.", "Sahneye girer ve ritmi sen belirlersin. Seçim seninle başlar."),
-      CALYPSO: L("Distance can be a form of control. Even in a crowd, the rhythm remains yours.", "Mesafe bir kontrol biçimi olabilir. Kalabalıkta bile ritim sana aittir."),
-      MARLENE: L("You decide what receives your attention. The gaze follows your terms.", "Neye dikkat vereceğine sen karar verirsin. Bakış senin koşullarını izler."),
-      FLORA: L("Grace does not ask for permission. The hour you keep for yourself remains yours.", "Zarafet izin istemez. Kendine ayırdığın saat yalnızca sana aittir."),
-      AXELLE: L("Armour is also a choice. The rules of the night remain yours.", "Zırh da bir seçimdir. Gecenin kuralları sana aittir."),
-      SIENNA: L("Revelation and restraint both belong to you. You decide what stays yours.", "Göstermek de saklamak da sana aittir. Neyin sende kalacağına sen karar verirsin."),
-      SOLANGE: L("Value needs no announcement. You know what is not open to negotiation.", "Değerin ilana ihtiyacı yoktur. Neyin pazarlık konusu olmadığını bilirsin."),
-      LORELEI: L("Calm can carry its own momentum. The night begins for you.", "Sakinlik kendi hareketini taşır. Gece senin için başlar."),
-      BIJOU: L("A considered detail can hold the final word. The signature remains yours.", "Düşünülmüş bir ayrıntı son sözü taşıyabilir. İmza sana aittir."),
-      ILLUSION: L("You decide where attention rests. Control remains with you.", "Dikkatin nerede duracağına sen karar verirsin. Kontrol sende kalır."),
-      BLAISE: L("You hold your own axis. Presence needs no explanation.", "Kendi ekseninde durursun. Duruşun açıklamaya ihtiyacı yoktur."),
-      JUNO: L("A rule matters only where you choose to keep it. The break is yours.", "Bir kural yalnız sen korumayı seçtiğinde anlam taşır. Kırılma sana aittir.")
-    };
-
     var S8_TITLE = L("THE PROMISE WITHIN OUR NAME", "ADIMIZDA SAKLI SÖZ");
     var S8_BODY = L(
-      "<p>Mermaid's Glance began as a house of curation. We consider every selection through the same question: does this presence feel like yours? Our name is built from the letters of a promise dearest to us — the moment you feel complete and think, ‘Enough.’</p><p>Founded in Turkey, we state preparation, delivery, tracking and return terms before you choose. For missing, incorrect or defective deliveries, your statutory choices remain intact. Every line is a promise; every promise is a measurable responsibility.</p>",
-      "<p>Mermaid's Glance bir seçki evi olarak doğdu. Her seçkiyi aynı soruyla değerlendiriyoruz: Bu parçanın duruşu sana ait hissettiriyor mu? Adımız, bize en değerli olan bir sözün harflerinden kuruldu. O söz; kendini tamamlanmış hissettiğin, ayrıntıyı ertelemediğin ‘Tamam’ anını taşır.</p><p>Türkiye'de kurulduk. Eksik, yanlış veya kusurlu bir teslimatta yasal seçimlik haklarını uygularız. Hazırlık, teslimat, takip ve iade koşullarını seçiminden önce açıkça gösteririz. Her satırımız bir söz, her sözümüz ölçülebilir bir sorumluluktur.</p>"
+      "<p>Mermaid\'s Glance is a curation house founded in Turkey.</p>",
+      "<p>Mermaid\'s Glance, Türkiye\'de kurulmuş bir seçki evidir.</p>"
     );
     var BAKIM_BODY = L(
       "<p>Follow the care label first; if it gives a different method, that instruction prevails. Unless stated otherwise, wash gently by hand in cold water. Do not wring or tumble dry. Dry in shade, away from direct heat and sunlight. Close straps and hooks before storing away from friction.</p>",
@@ -1998,14 +1866,6 @@
       var mgpx = col.querySelector(".mgpx");
       if (!mgpx) return; /* inline accordion ailesi henüz kurulmadı — bekle */
 
-      /* S6 — koleksiyon kimliğine bağlı, materyal iddiası taşımayan İlk Bakış */
-      var s6 = col.querySelector(".mg-s6");
-      if (key && GLANCE[key]) {
-        if (!s6) { s6 = document.createElement("div"); s6.className = "mg-s6"; mgpx.parentNode.insertBefore(s6, mgpx); }
-        var s6HTML = '<div class="mg-s6-k">' + L("FIRST GLANCE", "İLK BAKIŞ") + '</div><p>' + GLANCE[key] + '</p>';
-        if (s6.getAttribute("data-for") !== pid || s6.innerHTML !== s6HTML) { s6.innerHTML = s6HTML; s6.setAttribute("data-for", pid); }
-      } else if (s6) { s6.remove(); }
-
       /* BAKIM RİTÜELİ accordion — aileye eklenir */
       if (!mgpx.querySelector(".mg-bakim")) {
         var ba = mkAcc(L("CARE RITUAL", "BAKIM RİTÜELİ"), BAKIM_BODY);
@@ -2017,7 +1877,8 @@
       if (!col.querySelector(".mg-s8")) {
         var s8 = document.createElement("div"); s8.className = "mg-s8";
         s8.innerHTML =
-          '<div class="mg-s8-kicker">' + L("BRAND STORY", "MARKA HİKÂYESİ") + '</div>' +
+          '<div class="mg-s8-band"><img src="' + CDN + '/assets/story/ipek-akis.webp" width="1200" height="1600" loading="lazy" alt="' + L("Editorial atmosphere", "Editoryal atmosfer") + '"></div>' +
+          '<div class="mg-s8-kicker">' + L("EDITORIAL", "EDİTORYAL") + '</div>' +
           '<h3>' + S8_TITLE + '</h3>' + S8_BODY;
         if (mgpx.parentNode) mgpx.parentNode.insertBefore(s8, mgpx.nextSibling);
       }
