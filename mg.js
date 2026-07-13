@@ -1795,98 +1795,37 @@
   })();
 
   /* =========================================================================
-     §20 — PDP STORY / DESIRE LAYER (route: /products/..., dalga-3)
-     Inline .mgpx accordion ailesine ADDITIVE (0 inline bayt — blueprint §11.4).
-     Enjekte eder: S2 kimlik satırı · BAKIM RİTÜELİ accordion ·
-     eski görsel ritmi taşıyan kısa editoryal story bandı.
-     ATLANAN: S10 IG grid — ig-06 HELD; video-loop — beyin ayrı onayı bekler.
-     __mgPDPCol + .mgpx yeniden kullanılır; §18 gibi
-     zamanlanmış emniyet pass'i (LF observer'ları tek başına ateşlemiyor).
+     §20 — PDP CARE ACCORDION
+     Story, editorial image and collection identity were removed by owner
+     decision. Only the practical care accordion remains.
      ========================================================================= */
   (function () {
-    if (window.__mgPDPStory) return; window.__mgPDPStory = true;
-    css(
-      ".mg-s2-id{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;color:#8a8a8a;margin:6px 0 2px;}" +
-      ".mg-s8{margin:24px 0 8px;}" +
-      ".mg-s8-band{display:block;width:100%;margin:0 0 16px;background:#f2f0ec;}" +
-      ".mg-s8-band img{display:block;width:100%;height:auto;}" +
-      ".mg-s8-kicker{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#999;margin:0 0 10px;}" +
-      ".mg-s8 h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#0d0d0d;margin:0 0 12px;}" +
-      ".mg-s8 p{font-family:'Montserrat',sans-serif;font-size:12px;line-height:1.9;letter-spacing:.015em;color:#555;margin:0 0 13px;}" +
-      ".mg-s8 p:last-child{margin:0;}"
-    );
+    if (window.__mgPDPCare) return; window.__mgPDPCare = true;
     function onPDP() { return /\/products\//.test(location.pathname) && !!(window.data && window.data.product); }
-
-    /* S2 — koleksiyon kimlik satırı; uppercase önceden pişmiş (İ-tuzağı yok);
-       eşleşme yoksa HİÇBİR ŞEY basma (blueprint kuralı). */
-    var IDENT = {
-      NOCTURNE: L("THE NIGHT ANSWERS TO YOU", "GECENİN SAHİBİ SENSİN"), SERENA: L("SOFTNESS, HELD WITH RESOLVE", "YUMUŞAKLIK, KARARLILIKLA DURUR"),
-      VEDA: L("YOU SET THE RHYTHM", "RİTMİ SEN BELİRLERSİN"), CALYPSO: L("DISTANCE, ON YOUR TERMS", "MESAFE, SENİN KOŞULLARINDA"),
-      MARLENE: L("YOU CHOOSE THE GAZE", "BAKIŞI SEN SEÇERSİN"), FLORA: L("GRACE BECOMES AUTHORITY", "ZARAFET, OTORİTEYE DÖNÜŞÜR"),
-      AXELLE: L("YOU CHOOSE YOUR ARMOUR", "ZIRHINI SEN SEÇERSİN"), SIENNA: L("YOU DECIDE WHAT IS REVEALED", "NEYİN GÖRÜNECEĞİNE SEN KARAR VERİRSİN"),
-      SOLANGE: L("YOUR VALUE IS NOT NEGOTIABLE", "DEĞERİN PAZARLIK KONUSU DEĞİL"), LORELEI: L("CALM, FLUID, RESOLVED", "AKIŞKAN, SAKİN, KARARLI"),
-      BIJOU: L("THE DETAIL IS YOUR SIGNATURE", "DETAY, SENİN İMZANDIR"), ILLUSION: L("YOU DIRECT THE GAZE", "BAKIŞI SEN YÖNETİRSİN"),
-      BLAISE: L("YOU HOLD YOUR OWN AXIS", "KENDİ EKSENİNDE DURURSUN"), JUNO: L("YOU CHOOSE WHERE THE RULE BREAKS", "KURALIN NEREDE KIRILACAĞINI SEN SEÇERSİN")
-    };
-    function collectionKey(p) {
-      var tags = p && Array.isArray(p.tags) ? p.tags.map(function (x) { return String(typeof x === "string" ? x : (x && x.title) || "").toLocaleUpperCase("tr-TR").trim(); }) : [];
-      var hits = [];
-      for (var k in IDENT) { if (tags.indexOf("THE " + k + " COLLECTION") >= 0) hits.push(k); }
-      return hits.length === 1 ? hits[0] : null;
-    }
-    var S8_TITLE = L("THE PROMISE WITHIN OUR NAME", "ADIMIZDA SAKLI SÖZ");
-    var S8_BODY = L(
-      "<p>Mermaid\'s Glance is a curation house founded in Turkey.</p>",
-      "<p>Mermaid\'s Glance, Türkiye\'de kurulmuş bir seçki evidir.</p>"
-    );
     var BAKIM_BODY = L(
       "<p>Follow the care label first; if it gives a different method, that instruction prevails. Unless stated otherwise, wash gently by hand in cold water. Do not wring or tumble dry. Dry in shade, away from direct heat and sunlight. Close straps and hooks before storing away from friction.</p>",
       "<p>Önce parçanın etiketindeki bakım talimatını izle; etiket farklı bir yöntem söylüyorsa o geçerlidir. Aksi belirtilmedikçe soğuk suda nazikçe elde yıka; sıkma ve kurutucu kullanma. Doğrudan ısıdan ve güneşten uzakta, gölgede kurut. Askı ve kopçaları kapatarak, sürtünmeden uzak sakla.</p>"
     );
-
     function mkAcc(t, bHTML) {
       var w = document.createElement("div"); w.className = "mgpx-acc";
       w.innerHTML = '<div class="mgpx-hd" onclick="this.parentElement.classList.toggle(\'open\')">' + t + '<span class="mgpx-pl">+</span></div><div class="mgpx-bd"><div class="mgpx-in">' + bHTML + '</div></div>';
       return w;
     }
-
     function build() {
       if (!onPDP()) return;
       var col = window.__mgPDPCol && window.__mgPDPCol();
       if (!col) return;
-
-      /* S2 — yalnız tek ve exact koleksiyon tag'inde kimlik satırı; belirsizde gizle */
-      var p = window.data.product, pid = String(p.id || p.title || location.pathname), key = collectionKey(p);
-      var ttl = col.querySelector(".mg-pdp-title") || col.querySelector("h1"), idn = col.querySelector(".mg-s2-id");
-      if (ttl && ttl.parentNode && key) {
-        if (!idn) { idn = document.createElement("div"); idn.className = "mg-s2-id"; ttl.parentNode.insertBefore(idn, ttl.nextSibling); }
-        if (idn.getAttribute("data-for") !== pid || idn.textContent !== IDENT[key]) { idn.textContent = IDENT[key]; idn.setAttribute("data-for", pid); }
-      } else if (idn) { idn.remove(); }
-
+      var stale = col.querySelectorAll(".mg-s8,.mg-s2-id");
+      for (var i = 0; i < stale.length; i++) stale[i].remove();
       var mgpx = col.querySelector(".mgpx");
-      if (!mgpx) return; /* inline accordion ailesi henüz kurulmadı — bekle */
-
-      /* BAKIM RİTÜELİ accordion — aileye eklenir */
-      if (!mgpx.querySelector(".mg-bakim")) {
-        var ba = mkAcc(L("CARE RITUAL", "BAKIM RİTÜELİ"), BAKIM_BODY);
-        ba.classList.add("mg-bakim");
-        mgpx.appendChild(ba);
-      }
-
-      /* S8 — manifesto + story bandı, accordion ailesinin ALTINDA görünür blok */
-      if (!col.querySelector(".mg-s8")) {
-        var s8 = document.createElement("div"); s8.className = "mg-s8";
-        s8.innerHTML =
-          '<div class="mg-s8-band"><img src="' + CDN + '/assets/story/ipek-akis.webp" width="1200" height="1600" loading="lazy" alt="' + L("Editorial atmosphere", "Editoryal atmosfer") + '"></div>' +
-          '<div class="mg-s8-kicker">' + L("EDITORIAL", "EDİTORYAL") + '</div>' +
-          '<h3>' + S8_TITLE + '</h3>' + S8_BODY;
-        if (mgpx.parentNode) mgpx.parentNode.insertBefore(s8, mgpx.nextSibling);
-      }
+      if (!mgpx || mgpx.querySelector(".mg-bakim")) return;
+      var ba = mkAcc(L("CARE RITUAL", "BAKIM RİTÜELİ"), BAKIM_BODY);
+      ba.classList.add("mg-bakim"); mgpx.appendChild(ba);
     }
     var t20; new MutationObserver(function () { clearTimeout(t20); t20 = setTimeout(build, 300); })
       .observe(document.documentElement, { childList: true, subtree: true });
-    setTimeout(build, 700);
-    setInterval(build, 1300);
+    setTimeout(build, 700); setInterval(build, 1300);
   })();
+
 
 })();
