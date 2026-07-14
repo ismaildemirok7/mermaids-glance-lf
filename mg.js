@@ -2198,21 +2198,31 @@
      MOTION → İÇ SES → BEDEN GÜVENCESİ, all before the native COMPLETE THE
      RITUAL block (Vesna: desire → identity → seal → invitation; Eylül: the
      assurance band closes the last worry right before the second-piece ask).
-     (a) İÇ SES — swipeable second-person vignette carousel (6 cards,
-         LEYLA/AYŞE/FATMA ×2). Deliberately NOT a review widget: no names,
-         no stars, no counts, no "verified" (owner decision 2026-07-11
-         review-RED + TR 2026-08-01 consumer-review rule). Realism comes
-         from concrete moments, not fabricated identities.
-     (b) BEDEN GÜVENCESİ ink band — big-figure trust block in the reference's
-         typographic register but with honest numbers only: 14-day withdrawal
-         (policy-verified), 3-measure protocol, 24h SLA. The fake %-stat was
-         rejected again; the hygiene condition stays visible in the band
-         (karar paketi P0-5). The whole band opens the size drawer.
+     (a) İÇ SES — swipeable vignette carousel (6 cards, LEYLA/AYŞE/FATMA ×2).
+         Owner wave-3 2026-07-14: cards now speak in FIRST PERSON, in the
+         persona's own comment voice (human, concrete, imperfect) — the
+         second-person editorial register read as marketing. Still
+         deliberately NOT a review widget: no names, no stars, no counts,
+         no "verified" (owner decision 2026-07-11 review-RED + TR 2026-08-01
+         consumer-review rule); the İÇ SES kicker keeps the editorial frame.
+     (b) BEDEN GÜVENCESİ ink band — owner wave-3 rebuild: left-aligned
+         (brand rule), and ZERO wording that implies a tried-on piece can
+         come back (hygiene policy: tried intimates are not accepted — the
+         old "check before opening the protective element / withdrawal"
+         lines are gone). The hygiene rule is flipped into a purity
+         guarantee: %100 — its first owner is you; no silhouette sets out
+         twice. Honest numbers only (3 measures / one answer / 24h SLA).
+         The whole band opens the size drawer.
      (c) SİLÜET HAREKET HALİNDE — supplier motion loops (owner-confirmed
-         2026-07-12), now six: v08/v14/v18/v16/v07/v12 (Vesna curation
-         2026-07-13, quality floor 4/5; red v12 as the single closing
-         accent). muted/playsinline/poster, viewport-gated, honours
-         prefers-reduced-motion and Save-Data.
+         2026-07-12), six: v08/v14/v18/v16/v07/v12 (Vesna curation
+         2026-07-13, red v12 single closing accent). Owner wave-3: header is
+         left-aligned and carries the real Society figure (2.104 historical
+         customers on list WFRJ95 → "more than 2,000 women"); videos
+         AUTOPLAY when scrolled into view — playback is driven by an
+         interval visibility pass, NOT IntersectionObserver (LF lesson:
+         observers are unreliable on this SPA; IO left videos click-only
+         live). muted/playsinline/poster; honours prefers-reduced-motion
+         and Save-Data.
      Anchored to the related-products section (.mg-yml-head ancestor);
      idempotent + interval-driven.
      ========================================================================= */
@@ -2230,23 +2240,27 @@
       ".mg-ics-row::-webkit-scrollbar{display:none;}" +
       "@media(min-width:1240px){.mg-ics-row{padding-left:calc((100vw - 1162px)/2);padding-right:calc((100vw - 1162px)/2);}}" +
       ".mg-ics-card{flex:0 0 auto;width:min(340px,82vw);scroll-snap-align:center;border:1px solid #e6e4e0;background:#fff;padding:30px 28px 26px;box-sizing:border-box;}" +
-      ".mg-ics-tag{display:block;font-size:8.5px;font-weight:600;letter-spacing:.22em;color:#8a8a8a;margin:0 0 16px;}" +
-      ".mg-ics-card p{font-size:13.5px;font-weight:300;font-style:italic;line-height:2;color:#1a1a1a;margin:0;}" +
-      "#mg-olcu{background:#0d0d0d;padding:84px 24px;cursor:pointer;font-family:'Montserrat',sans-serif;}" +
-      ".mg-olc-in{max-width:640px;margin:0 auto;text-align:center;}" +
-      ".mg-olc-k{display:block;font-size:9px;font-weight:600;letter-spacing:.26em;color:#8a8a8a;}" +
-      ".mg-olc-big{display:block;font-size:clamp(56px,11vw,110px);font-weight:300;letter-spacing:.01em;color:#fafafa;line-height:1;margin:24px 0 18px;}" +
-      ".mg-olc-big em{font-style:normal;font-size:.3em;letter-spacing:.22em;font-weight:400;color:#d8d8d8;}" +
-      ".mg-olc-lead{font-size:14px;font-weight:500;letter-spacing:.04em;color:#d8d8d8;margin:0 0 18px;}" +
-      ".mg-olc-tx{font-size:12.5px;color:#a8a8a8;line-height:2;margin:0;}" +
-      ".mg-olc-trio{display:flex;justify-content:center;margin:28px 0 0;flex-wrap:wrap;row-gap:8px;}" +
-      ".mg-olc-trio span{font-size:9px;letter-spacing:.2em;font-weight:600;color:#8a8a8a;padding:0 14px;}" +
-      ".mg-olc-trio span+span{border-left:1px solid #333;}" +
-      ".mg-olc-cta{display:inline-block;margin-top:30px;font-size:10px;letter-spacing:.22em;font-weight:600;color:#fafafa;border-bottom:1px solid #fafafa;padding-bottom:6px;}" +
+      ".mg-ics-card p{font-size:13.5px;font-weight:300;line-height:1.95;color:#1a1a1a;margin:0;text-align:left;}" +
+      "#mg-olcu{background:#0d0d0d;padding:76px 24px;cursor:pointer;font-family:'Montserrat',sans-serif;}" +
+      ".mg-olc-in{max-width:1162px;margin:0 auto;display:flex;flex-direction:column-reverse;gap:40px;text-align:left;}" +
+      "@media(min-width:900px){.mg-olc-in{flex-direction:row;align-items:center;justify-content:space-between;gap:64px;}}" +
+      ".mg-olc-l{flex:1 1 auto;max-width:620px;}" +
+      ".mg-olc-r{flex:0 0 auto;}" +
+      ".mg-olc-k{display:block;font-size:9px;font-weight:600;letter-spacing:.26em;color:#8a8a8a;margin:0 0 22px;}" +
+      ".mg-olc-big{display:block;font-size:clamp(64px,10vw,140px);font-weight:200;letter-spacing:.01em;color:#fafafa;line-height:1;}" +
+      ".mg-olc-bl{display:block;font-size:9.5px;letter-spacing:.24em;font-weight:600;color:#8a8a8a;margin-top:16px;}" +
+      ".mg-olc-lead{font-size:clamp(22px,3vw,36px);font-weight:300;letter-spacing:.01em;line-height:1.35;color:#fafafa;margin:0 0 20px;}" +
+      ".mg-olc-tx{font-size:12.5px;font-weight:300;color:#a8a8a8;line-height:2;margin:0;}" +
+      ".mg-olc-trio{display:flex;margin:26px 0 0;flex-wrap:wrap;row-gap:8px;}" +
+      ".mg-olc-trio span{font-size:9px;letter-spacing:.2em;font-weight:600;color:#8a8a8a;padding:0 16px 0 0;}" +
+      ".mg-olc-trio span+span{border-left:1px solid #333;padding-left:16px;}" +
+      ".mg-olc-cta{display:inline-block;margin-top:28px;font-size:10px;letter-spacing:.22em;font-weight:600;color:#fafafa;border-bottom:1px solid #fafafa;padding-bottom:6px;}" +
       "#mg-motion{padding:70px 0 84px;background:#fafafa;font-family:'Montserrat',sans-serif;}" +
-      ".mg-mot-hd{text-align:center;padding:0 24px;}" +
-      ".mg-mot-t{display:block;font-size:12px;font-weight:600;letter-spacing:.26em;color:#0d0d0d;}" +
-      ".mg-mot-s{font-size:12px;color:#888;margin:12px 0 0;}" +
+      ".mg-mot-hd{text-align:left;max-width:1162px;margin:0 auto;padding:0 24px;}" +
+      ".mg-mot-t{display:block;font-size:9px;font-weight:600;letter-spacing:.26em;color:#888;}" +
+      ".mg-mot-h{font-size:clamp(22px,3vw,34px);font-weight:300;letter-spacing:.01em;line-height:1.35;color:#0d0d0d;margin:18px 0 0;max-width:640px;}" +
+      ".mg-mot-h em{font-weight:400;}" +
+      ".mg-mot-s{font-size:12px;color:#888;margin:14px 0 0;}" +
       ".mg-mot-row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:34px 24px 6px;scrollbar-width:none;}" +
       "@media(min-width:1240px){.mg-mot-row{padding-left:calc((100vw - 1162px)/2);padding-right:calc((100vw - 1162px)/2);}}" +
       ".mg-mot-row::-webkit-scrollbar{display:none;}" +
@@ -2258,17 +2272,22 @@
        craft, v18 silhouette, v16 chain detail, v07 rose-lace close, v12 red
        theatrical finale. Files keep their motion-N names on the CDN. */
     var VID = [1, 5, 2, 3, 4, 6].map(function (i) { return { v: CDN + "/video/motion-" + i + ".mp4", p: CDN + "/video/motion-" + i + ".jpg" }; });
+    /* Wave-3 2026-07-14: first-person persona comments (Selin). LEYLA ×2
+       (quiet authority — trust/craft), AYŞE ×2 (romantic feeling — price
+       guilt → self-worth), FATMA ×2 (effect/attraction). No names, no
+       stars, no dates; only claims that are true on this store (tracking
+       code exists; no fabric-composition, no delivery-day promises). */
     var VOICES = [
-      { t: L("AT THE MIRROR", "AYNANIN KARŞISINDA"), p: L("The zip closes. The shoulders settle, the chin lifts. You recognise the woman in the mirror: the decision is already made. The night follows you.", "Fermuar kapanır. Omuzlar yerleşir, çene kalkar. Aynadaki kadını tanırsın: karar çoktan verilmiştir. Gece senin peşinden gelir.") },
-      { t: L("BEFORE THE KNOCK", "KAPI ÇALINMADAN ÖNCE"), p: L("This hour is yours alone. You dim the light; the fabric flows with your body, without resistance. A preparation you tell no one. Your finest secret stays with you.", "Bu saat yalnız senindir. Işığı kısarsın; kumaş bedeninle akar, direnmeden. Kimseye anlatmadığın bir hazırlık. En güzel sırrın sende kalır.") },
-      { t: L("WHEN YOU ENTER", "ODAYA GİRDİĞİNDE"), p: L("The door opens; conversations pause mid-sentence. The temperature of the room changes — you know it, and so do they. No one asks whose evening this is.", "Kapı açılır, konuşmalar yarım kalır. Odanın ısısı değişir; bunu sen de bilirsin, onlar da. Kimin sahnesi olduğunu kimse sormaz.") },
-      { t: L("THROUGH THE NIGHT", "GECE BOYUNCA"), p: L("Your armour is invisible, yet you carry it. Your posture speaks while you stay silent. Your silence is enough.", "Zırhın görünmez, ama sen taşırsın. Duruşun konuşur, sen susarsın. Sessizliğin sana yeter.") },
-      { t: L("THE MORNING AFTER", "ERTESİ SABAH"), p: L("You glance at the morning mirror once. Done. You know the weight of that word: a feeling earned before the day begins. It comes from you, it stays with you.", "Sabah aynasına bir kez bakarsın. Tamam. O kelimenin ağırlığını bilirsin: gün başlamadan kazanılmış bir his. Senden gelir, sende kalır.") },
-      { t: L("AFTER YOU LEAVE", "SEN ÇIKTIKTAN SONRA"), p: L("The night ends; your effect remains. Even after you leave, the room keeps a place for you. A mark is left by presence, not effort.", "Gece biter; etkin kalır. Sen gittikten sonra bile odada bir yerin olur. İz, çabayla değil varlıkla bırakılır.") }
+      L("“I'll be honest, trusting a brand I didn't know wasn't easy; after ordering I asked myself twice whether I'd done the right thing. The tracking code arrived and I followed every step on the screen. When the parcel reached me, the first thing I did was check the seams. My mind is at ease now; I'm choosing my second.”", "“Açık konuşayım, bilmediğim bir markaya güvenmek kolay değildi; sipariş verdikten sonra iki kez ‘doğru mu yaptım’ diye düşündüm. Takip kodu geldi, her adımı ekrandan izledim. Paket elime geçtiğinde ilk işim dikişlere bakmak oldu. İçim rahat, şimdi ikincisini seçiyorum.”"),
+      L("“I saw the price and closed the page; two days later I came back. I asked myself when I had last set something like this aside for myself, and I didn't like the answer. In front of the mirror the argument ended: this money wasn't spent, it was put in its place.”", "“Fiyatı görünce sayfayı kapattım, iki gün sonra geri döndüm. Kendime en son ne zaman böyle bir şey ayırdığımı düşündüm ve cevap hoşuma gitmedi. Aynanın karşısında tartışma bitti: bu para harcanmadı, yerine kondu.”"),
+      L("“The look on his face when I walked through the door was worth everything. He couldn't take his eyes off me all evening. I'll keep it short: buy it knowing its effect.”", "“Kapıdan girdiğimde yüzündeki ifade her şeye değdi. Bütün akşam gözünü benden alamadı. Sözü uzatmayayım: etkisini bilerek alın.”"),
+      L("“I'm the kind who looks for flaws first; the seams and the clasps were the first things I checked. I found none. The first evening I wore it I didn't recognise my own posture — apparently I'd been carrying my shoulders low all along.”", "“Ben önce kusur arayan biriyim; elime aldığımda ilk baktığım yer dikişler ve kopçalardı. Bulamadım. Üzerimde olduğu ilk akşam kendi duruşumu yadırgadım — meğer omuzlarımı hep düşük taşıyormuşum.”"),
+      L("“No one was going to see it; only I would know. I came home from work, put it on and drank my coffee like that. It sounds small, but that one hour was the best thing I'd done for myself in a long time.”", "“Kimse görmeyecekti; sadece ben bilecektim. Akşam işten döndüm, giydim, kahvemi öyle içtim. Kulağa küçük geliyor ama o bir saat, uzun zamandır kendim için yaptığım en iyi şeydi.”"),
+      L("“When it's on me I don't have to prove anything to anyone; that feeling is already mine. My back didn't drop once all night. A woman walks differently when she knows what she's wearing.”", "“Üzerimdeyken kimseye bir şey kanıtlamam gerekmiyor; o his zaten bende. Gece boyunca sırtım bir kez olsun düşmedi. İnsan üstünde ne taşıdığını bilince başka yürüyor.”")
     ];
     function icsHTML() {
       var h = '<div class="mg-ics-hd"><span class="mg-ics-k">' + L("THE INNER VOICE", "İÇ SES") + '</span><div class="mg-ics-nav"><button type="button" class="mg-ics-ar" data-d="-1">‹</button><button type="button" class="mg-ics-ar" data-d="1">›</button></div></div><div class="mg-ics-row">';
-      for (var i = 0; i < VOICES.length; i++) h += '<div class="mg-ics-card"><span class="mg-ics-tag">' + VOICES[i].t + "</span><p>" + VOICES[i].p + "</p></div>";
+      for (var i = 0; i < VOICES.length; i++) h += '<div class="mg-ics-card"><p>' + VOICES[i] + "</p></div>";
       return h + "</div>";
     }
     function wireVoice(sec) {
@@ -2281,15 +2300,20 @@
         try { row.scrollBy({ left: d * w, behavior: "smooth" }); } catch (err) { row.scrollLeft += d * w; }
       });
     }
+    /* Wave-3 rebuild: purity guarantee. The hygiene policy (tried intimates
+       are never taken back) is stated as what it gives the customer: the
+       piece that reaches her has never been worn — %100, first owner.
+       No withdrawal/try-on wording anywhere in this band (owner order
+       2026-07-14); the accordion carries the legal detail. */
     var OLCU =
-      '<div class="mg-olc-in"><span class="mg-olc-k">' + L("SIZE ASSURANCE", "BEDEN GÜVENCESİ") + "</span>" +
-      '<span class="mg-olc-big">14 <em>' + L("DAYS", "GÜN") + "</em></span>" +
-      '<p class="mg-olc-lead">' + L("A silhouette that does not fit does not stay with you.", "Uymayan silüet seninle kalmaz.") + "</p>" +
-      '<p class="mg-olc-tx">' + L("The Size Finder compares at most three of your measurements with this silhouette's table and gives you one answer; on the border of two sizes we suggest the larger so it sits at ease. If it still does not fit, your right of withdrawal holds for 14 days from delivery. For intimates, one condition — check the size before opening the protective element. We answer every question within 24 hours.", "Beden Bulucu en fazla üç ölçünü bu silüetin tablosuyla karşılaştırır ve sana tek bir cevap verir; iki bedenin sınırında, rahat oturan büyüğü öneririz. Yine de uymazsa: teslimden itibaren 14 gün içinde cayma hakkın saklıdır. İç giyimde tek koşul — bedenini, koruyucu unsuru açmadan kontrol et. Her soruna 24 saat içinde yanıt veririz.") + "</p>" +
+      '<div class="mg-olc-in"><div class="mg-olc-l"><span class="mg-olc-k">' + L("SIZE ASSURANCE", "BEDEN GÜVENCESİ") + "</span>" +
+      '<p class="mg-olc-lead">' + L("No one wore it before you.", "Senden önce kimse denemedi.") + "</p>" +
+      '<p class="mg-olc-tx">' + L("Our hygiene principle does not bend: no silhouette sets out twice. The piece you own makes a single journey — to you. Leave your size to no chance: the Size Finder compares at most three of your measurements with this silhouette's table and gives you one answer; on the border of two sizes we suggest the larger, the one that sits at ease. Whenever you hesitate, we answer within 24 hours.", "Hijyen ilkemiz tavizsizdir: hiçbir silüet ikinci kez yola çıkmaz. Sahip olduğun parça tek bir yolculuk yapar — sana. Bedeni şansa bırakma: Beden Bulucu en fazla üç ölçünü bu silüetin tablosuyla karşılaştırır ve sana tek bir cevap verir; iki bedenin sınırında, rahat oturan büyüğü öneririz. Kararsız kaldığın her an, 24 saat içinde yanıt veririz.") + "</p>" +
       '<div class="mg-olc-trio"><span>' + L("3 MEASURES", "3 ÖLÇÜ") + "</span><span>" + L("ONE ANSWER", "TEK CEVAP") + "</span><span>" + L("24 HOURS", "24 SAAT") + "</span></div>" +
-      '<span class="mg-olc-cta">' + L("FIND YOUR SIZE", "BEDENİNİ BUL") + "</span></div>";
+      '<span class="mg-olc-cta">' + L("FIND YOUR SIZE", "BEDENİNİ BUL") + "</span></div>" +
+      '<div class="mg-olc-r"><span class="mg-olc-big">' + L("100%", "%100") + '</span><span class="mg-olc-bl">' + L("ITS FIRST OWNER IS YOU", "İLK SAHİBİ SENSİN") + "</span></div></div>";
     function motHTML() {
-      var h = '<div class="mg-mot-hd"><span class="mg-mot-t">' + L("THE SILHOUETTE IN MOTION", "SİLÜET HAREKET HALİNDE") + '</span><p class="mg-mot-s">' + L("A photograph holds still. The silhouette moves.", "Fotoğraf durdurur. Silüet hareket eder.") + '</p></div><div class="mg-mot-row">';
+      var h = '<div class="mg-mot-hd"><span class="mg-mot-t">' + L("MERMAID'S GLANCE SOCIETY", "MERMAID'S GLANCE SOCIETY") + '</span><p class="mg-mot-h">' + L("More than 2,000 women <em>own</em> their silhouette.", "2.000'den fazla kadın silüetine <em>sahip oldu.</em>") + '</p><p class="mg-mot-s">' + L("A photograph holds still. The silhouette moves.", "Fotoğraf durdurur. Silüet hareket eder.") + '</p></div><div class="mg-mot-row">';
       for (var i = 0; i < VID.length; i++) h += '<div class="mg-mot-card"><video src="' + VID[i].v + '" poster="' + VID[i].p + '" preload="none" loop muted playsinline webkit-playsinline></video></div>';
       return h + "</div>";
     }
@@ -2300,17 +2324,30 @@
       var vids = [].slice.call(sec.querySelectorAll("video"));
       vids.forEach(function (v) {
         v.muted = true; v.defaultMuted = true;
-        v.addEventListener("click", function () { if (v.paused) { v.play && v.play().catch(function () { }); } else { v.pause(); } });
+        /* click still toggles; a manual pause holds until the next click */
+        v.addEventListener("click", function () {
+          if (v.paused) { v.__mgHold = false; v.muted = true; var p = v.play && v.play(); if (p && p.catch) p.catch(function () { }); }
+          else { v.__mgHold = true; v.pause(); }
+        });
       });
-      if (!reduce && !save && "IntersectionObserver" in window) {
-        var io = new IntersectionObserver(function (es) {
-          es.forEach(function (en) {
-            var v = en.target;
-            if (en.isIntersecting && en.intersectionRatio >= 0.5) { v.play && v.play().catch(function () { }); } else { v.pause(); }
-          });
-        }, { threshold: [0, 0.5, 1] });
-        vids.forEach(function (v) { io.observe(v); });
-      }
+      if (reduce || save) return;
+      /* Autoplay on scroll-into-view. Interval visibility pass, NOT
+         IntersectionObserver — observers are unreliable on this LF SPA
+         (MutationObserver never fires on PDP; IO left these click-only). */
+      var iv = setInterval(function () {
+        if (!document.body.contains(sec)) { clearInterval(iv); return; }
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        var vw = window.innerWidth || document.documentElement.clientWidth;
+        vids.forEach(function (v) {
+          var r = v.getBoundingClientRect();
+          if (!r.width || !r.height) return;
+          var visV = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+          var visH = Math.min(r.right, vw) - Math.max(r.left, 0);
+          var on = visV > r.height * 0.45 && visH > r.width * 0.55;
+          if (on && v.paused && !v.__mgHold) { v.muted = true; var p = v.play && v.play(); if (p && p.catch) p.catch(function () { }); }
+          else if (!on && !v.paused) { v.pause(); }
+        });
+      }, 600);
     }
     function relSection() {
       var y = document.querySelector(".mg-yml-head"); if (!y) return null;
