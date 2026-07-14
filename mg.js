@@ -2332,8 +2332,11 @@
       { h: L("A woman walks differently when she knows what she carries.", "İnsan ne taşıdığını bilince başka yürüyor."), s: L("— One who knows what she carries", "— Ne taşıdığını bilen"), q: L("“When it's on me I don't have to prove anything to anyone; that feeling is already mine. My back didn't drop once all night. A woman walks differently when she knows what she's wearing.”", "“Üzerimdeyken kimseye bir şey kanıtlamam gerekmiyor; o his zaten bende. Gece boyunca sırtım bir kez olsun düşmedi. İnsan üstünde ne taşıdığını bilince başka yürüyor.”") }
     ];
     function icsHTML() {
-      var h = '<div class="mg-ics-hd"><div class="mg-ics-hl"><span class="mg-ics-k">' + L("FROM THE WOMEN WHO OWN IT", "SAHİP OLANLARDAN") + '</span><span class="mg-ics-sub">' + L("More than 2,000 women have come to own their silhouette.", "2.000'den fazla kadın silüetine sahip oldu.") + '</span></div><div class="mg-ics-nav"><button type="button" class="mg-ics-ar" data-d="-1">‹</button><button type="button" class="mg-ics-ar" data-d="1">›</button></div></div><div class="mg-ics-row">';
-      for (var i = 0; i < VOICES.length; i++) h += '<div class="mg-ics-card"><p class="mg-ics-h">' + VOICES[i].h + '</p><p>' + VOICES[i].q + '</p><span class="mg-ics-sig">' + VOICES[i].s + "</span></div>";
+      var h = '<div class="mg-ics-hd"><div class="mg-ics-hl"><span class="mg-ics-k">' + L("FROM THE WOMEN WHO OWN IT", "SAHİP OLANLARDAN") + '</span><span class="mg-ics-sub">' + L("From the world of the Society — some a whisper, some a confession.", "Society'nin dünyasından — kimi fısıltı, kimi itiraf.") + '</span></div><div class="mg-ics-nav"><button type="button" class="mg-ics-ar" data-d="-1">‹</button><button type="button" class="mg-ics-ar" data-d="1">›</button></div></div><div class="mg-ics-row">';
+      /* Wave-3.5: no signatures (owner "isim yazma" + earlier "olmasın"); card = headline + body only.
+         ORD = emotional-weight order (identity gut-punch first), owner "en duygusal baskılayıcı önce". */
+      var ORD = [2, 0, 10, 3, 13, 1, 4, 5, 8, 9, 7, 6, 11, 12];
+      for (var k = 0; k < ORD.length; k++) { var v = VOICES[ORD[k]]; h += '<div class="mg-ics-card"><p class="mg-ics-h">' + v.h + '</p><p>' + v.q + "</p></div>"; }
       return h + "</div>";
     }
     function wireVoice(sec) {
