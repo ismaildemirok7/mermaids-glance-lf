@@ -2221,8 +2221,9 @@
          AUTOPLAY when scrolled into view — playback is driven by an
          interval visibility pass, NOT IntersectionObserver (LF lesson:
          observers are unreliable on this SPA; IO left videos click-only
-         live). muted/playsinline/poster; honours prefers-reduced-motion
-         and Save-Data.
+         live). muted/playsinline/poster; honours Save-Data only —
+         prefers-reduced-motion dropped by owner order (it is a common
+         Windows default and killed autoplay for the owner himself).
      Anchored to the related-products section (.mg-yml-head ancestor);
      idempotent + interval-driven.
      ========================================================================= */
@@ -2318,8 +2319,11 @@
       return h + "</div>";
     }
     function wireMotion(sec) {
-      var reduce = false, save = false;
-      try { reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { }
+      /* prefers-reduced-motion is deliberately NOT honoured here (owner
+         order 2026-07-14: videos must autoplay on scroll). It is a common
+         Windows default ("animation effects" off) and silently killed
+         autoplay for the owner himself; only Save-Data still opts out. */
+      var save = false;
       try { save = !!(navigator.connection && navigator.connection.saveData); } catch (e) { }
       var vids = [].slice.call(sec.querySelectorAll("video"));
       vids.forEach(function (v) {
@@ -2330,7 +2334,7 @@
           else { v.__mgHold = true; v.pause(); }
         });
       });
-      if (reduce || save) return;
+      if (save) return;
       /* Autoplay on scroll-into-view. Interval visibility pass, NOT
          IntersectionObserver — observers are unreliable on this LF SPA
          (MutationObserver never fires on PDP; IO left these click-only). */
