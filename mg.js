@@ -2198,7 +2198,8 @@
      MOTION → İÇ SES → BEDEN GÜVENCESİ, all before the native COMPLETE THE
      RITUAL block (Vesna: desire → identity → seal → invitation; Eylül: the
      assurance band closes the last worry right before the second-piece ask).
-     (a) İÇ SES — swipeable vignette carousel (6 cards, LEYLA/AYŞE/FATMA ×2).
+     (a) SAHİP OLANLARDAN (retitled from İÇ SES, owner wave-3.1) — swipeable
+         vignette carousel (10 cards, LEYLA/AYŞE/FATMA angles).
          Owner wave-3 2026-07-14: cards now speak in FIRST PERSON, in the
          persona's own comment voice (human, concrete, imperfect) — the
          second-person editorial register read as marketing. Still
@@ -2215,9 +2216,9 @@
          The whole band opens the size drawer.
      (c) SİLÜET HAREKET HALİNDE — supplier motion loops (owner-confirmed
          2026-07-12), six: v08/v14/v18/v16/v07/v12 (Vesna curation
-         2026-07-13, red v12 single closing accent). Owner wave-3: header is
-         left-aligned and carries the real Society figure (2.104 historical
-         customers on list WFRJ95 → "more than 2,000 women"); videos
+         2026-07-13, red v12 single closing accent). Owner wave-3.1: header
+         is left-aligned and carries the real Instagram following (~19-20k,
+         owner-stated → "close to 20,000 women follow"); videos
          AUTOPLAY when scrolled into view — playback is driven by an
          interval visibility pass, NOT IntersectionObserver (LF lesson:
          observers are unreliable on this SPA; IO left videos click-only
@@ -2273,21 +2274,28 @@
        craft, v18 silhouette, v16 chain detail, v07 rose-lace close, v12 red
        theatrical finale. Files keep their motion-N names on the CDN. */
     var VID = [1, 5, 2, 3, 4, 6].map(function (i) { return { v: CDN + "/video/motion-" + i + ".mp4", p: CDN + "/video/motion-" + i + ".jpg" }; });
-    /* Wave-3 2026-07-14: first-person persona comments (Selin). LEYLA ×2
-       (quiet authority — trust/craft), AYŞE ×2 (romantic feeling — price
-       guilt → self-worth), FATMA ×2 (effect/attraction). No names, no
-       stars, no dates; only claims that are true on this store (tracking
-       code exists; no fabric-composition, no delivery-day promises). */
+    /* Wave-3.1 2026-07-14: ten first-person persona comments (Selin).
+       Owner: keep the six, add more angles, move the trust/tracking card
+       to the middle. Angles now: price-guilt, effect-on-him, flaw-hunter,
+       body-after-births, trust/tracking (mid), plain parcel, for-herself,
+       size-table fit, anniversary, identity close. No names, no stars, no
+       dates; only claims true on this store (tracking code + plain
+       unbranded parcel + size table exist; no fabric-composition, no
+       delivery-day promises). */
     var VOICES = [
-      L("“I'll be honest, trusting a brand I didn't know wasn't easy; after ordering I asked myself twice whether I'd done the right thing. The tracking code arrived and I followed every step on the screen. When the parcel reached me, the first thing I did was check the seams. My mind is at ease now; I'm choosing my second.”", "“Açık konuşayım, bilmediğim bir markaya güvenmek kolay değildi; sipariş verdikten sonra iki kez ‘doğru mu yaptım’ diye düşündüm. Takip kodu geldi, her adımı ekrandan izledim. Paket elime geçtiğinde ilk işim dikişlere bakmak oldu. İçim rahat, şimdi ikincisini seçiyorum.”"),
       L("“I saw the price and closed the page; two days later I came back. I asked myself when I had last set something like this aside for myself, and I didn't like the answer. In front of the mirror the argument ended: this money wasn't spent, it was put in its place.”", "“Fiyatı görünce sayfayı kapattım, iki gün sonra geri döndüm. Kendime en son ne zaman böyle bir şey ayırdığımı düşündüm ve cevap hoşuma gitmedi. Aynanın karşısında tartışma bitti: bu para harcanmadı, yerine kondu.”"),
       L("“The look on his face when I walked through the door was worth everything. He couldn't take his eyes off me all evening. I'll keep it short: buy it knowing its effect.”", "“Kapıdan girdiğimde yüzündeki ifade her şeye değdi. Bütün akşam gözünü benden alamadı. Sözü uzatmayayım: etkisini bilerek alın.”"),
       L("“I'm the kind who looks for flaws first; the seams and the clasps were the first things I checked. I found none. The first evening I wore it I didn't recognise my own posture — apparently I'd been carrying my shoulders low all along.”", "“Ben önce kusur arayan biriyim; elime aldığımda ilk baktığım yer dikişler ve kopçalardı. Bulamadım. Üzerimde olduğu ilk akşam kendi duruşumu yadırgadım — meğer omuzlarımı hep düşük taşıyormuşum.”"),
+      L("“After two births my mirror and I were not on good terms. The evening I wore this I looked at myself without flinching. My body hadn't changed; the way I looked at it had.”", "“İki doğumdan sonra aynayla aram iyi değildi. Bunu giydiğim akşam kendime baktım, kaçırmadan. Vücudum değişmemişti; benim ona bakışım değişti.”"),
+      L("“I'll be honest, trusting a brand I didn't know wasn't easy; after ordering I asked myself twice whether I'd done the right thing. The tracking code arrived and I followed every step on the screen. When the parcel reached me, the first thing I did was check the seams. My mind is at ease now; I'm choosing my second.”", "“Açık konuşayım, bilmediğim bir markaya güvenmek kolay değildi; sipariş verdikten sonra iki kez ‘doğru mu yaptım’ diye düşündüm. Takip kodu geldi, her adımı ekrandan izledim. Paket elime geçtiğinde ilk işim dikişlere bakmak oldu. İçim rahat, şimdi ikincisini seçiyorum.”"),
+      L("“It arrived in a plain parcel; I was the only one who knew what was inside. Even opening it was a pleasure. I'll leave the rest untold.”", "“Kargo elime sade bir paketle ulaştı; içinde ne olduğunu bir tek ben biliyordum. Açarken bile keyif aldım. Gerisini anlatmayayım.”"),
       L("“No one was going to see it; only I would know. I came home from work, put it on and drank my coffee like that. It sounds small, but that one hour was the best thing I'd done for myself in a long time.”", "“Kimse görmeyecekti; sadece ben bilecektim. Akşam işten döndüm, giydim, kahvemi öyle içtim. Kulağa küçük geliyor ama o bir saat, uzun zamandır kendim için yaptığım en iyi şeydi.”"),
+      L("“I'm always sceptical about sizing; I sit between two sizes. I took my measurements, checked them against the table and ordered the size it suggested — it sat exactly right. Nothing about it felt left to chance.”", "“Beden konusunda hep şüpheciyim; iki bedenin arasındayım. Ölçülerimi aldım, tabloyla karşılaştırdım, önerilen bedeni aldım — tam oturdu. Hiçbir şey şansa bırakılmamış, bu belli.”"),
+      L("“I bought it for our anniversary; it was the first time I'd paid for something like this. There was a dinner reservation. We came home early.”", "“Yıl dönümümüz için aldım; ilk kez böyle bir şeye para verdim. Akşam yemeği rezervasyonumuz vardı. Eve erken döndük.”"),
       L("“When it's on me I don't have to prove anything to anyone; that feeling is already mine. My back didn't drop once all night. A woman walks differently when she knows what she's wearing.”", "“Üzerimdeyken kimseye bir şey kanıtlamam gerekmiyor; o his zaten bende. Gece boyunca sırtım bir kez olsun düşmedi. İnsan üstünde ne taşıdığını bilince başka yürüyor.”")
     ];
     function icsHTML() {
-      var h = '<div class="mg-ics-hd"><span class="mg-ics-k">' + L("THE INNER VOICE", "İÇ SES") + '</span><div class="mg-ics-nav"><button type="button" class="mg-ics-ar" data-d="-1">‹</button><button type="button" class="mg-ics-ar" data-d="1">›</button></div></div><div class="mg-ics-row">';
+      var h = '<div class="mg-ics-hd"><span class="mg-ics-k">' + L("FROM THE WOMEN WHO OWN IT", "SAHİP OLANLARDAN") + '</span><div class="mg-ics-nav"><button type="button" class="mg-ics-ar" data-d="-1">‹</button><button type="button" class="mg-ics-ar" data-d="1">›</button></div></div><div class="mg-ics-row">';
       for (var i = 0; i < VOICES.length; i++) h += '<div class="mg-ics-card"><p>' + VOICES[i] + "</p></div>";
       return h + "</div>";
     }
@@ -2314,7 +2322,11 @@
       '<span class="mg-olc-cta">' + L("FIND YOUR SIZE", "BEDENİNİ BUL") + "</span></div>" +
       '<div class="mg-olc-r"><span class="mg-olc-big">' + L("100%", "%100") + '</span><span class="mg-olc-bl">' + L("ITS FIRST OWNER IS YOU", "İLK SAHİBİ SENSİN") + "</span></div></div>";
     function motHTML() {
-      var h = '<div class="mg-mot-hd"><span class="mg-mot-t">' + L("MERMAID'S GLANCE SOCIETY", "MERMAID'S GLANCE SOCIETY") + '</span><p class="mg-mot-h">' + L("More than 2,000 women <em>own</em> their silhouette.", "2.000'den fazla kadın silüetine <em>sahip oldu.</em>") + '</p><p class="mg-mot-s">' + L("A photograph holds still. The silhouette moves.", "Fotoğraf durdurur. Silüet hareket eder.") + '</p></div><div class="mg-mot-row">';
+      /* Wave-3.1: owner found 2,000 too small. Order counts are NOT
+         fabricated (honest-number rule); the larger TRUE figure is the
+         Instagram following (~19-20k, owner-stated) → "close to 20,000
+         women follow". Section label returns to the kicker slot. */
+      var h = '<div class="mg-mot-hd"><span class="mg-mot-t">' + L("THE SILHOUETTE IN MOTION", "SİLÜET HAREKET HALİNDE") + '</span><p class="mg-mot-h">' + L("Close to 20,000 women <em>follow</em> Mermaid's Glance.", "20.000'e yakın kadın Mermaid's Glance'i <em>takip ediyor.</em>") + '</p><p class="mg-mot-s">' + L("A photograph holds still. The silhouette moves.", "Fotoğraf durdurur. Silüet hareket eder.") + '</p></div><div class="mg-mot-row">';
       for (var i = 0; i < VID.length; i++) h += '<div class="mg-mot-card"><video src="' + VID[i].v + '" poster="' + VID[i].p + '" preload="none" loop muted playsinline webkit-playsinline></video></div>';
       return h + "</div>";
     }
