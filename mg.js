@@ -2207,11 +2207,13 @@
          Owner wave-3 2026-07-14: cards now speak in FIRST PERSON, in the
          persona's own comment voice (human, concrete, imperfect) — the
          second-person editorial register read as marketing.
-         Owner wave-3.2 2026-07-14: "doesn't look like a review" — cards get
-         REVIEW ANATOMY without fabricated identity: an angle kicker on top
-         (curated-testimonial künye) + an anonymous signature line below
-         ("— SAHİP OLANLARDAN BİRİ"), most compelling card leads, four new
-         angles (cost-of-cheap, on-the-skin comfort, after-forty, gift box).
+         Owner wave-3.2 2026-07-14: "doesn't look like a review" — review
+         anatomy without fabricated identity; most compelling card leads,
+         four new angles (cost-of-cheap, on-the-skin comfort, after-forty,
+         gift box). Wave-3.3 same night: the UPPERCASE angle kickers read
+         "robot" to the owner → kickers removed; the human element is the
+         per-card SIGNATURE line: sentence-case anonymous person sketches
+         ("— İki doğum yapmış bir sahibi"), varied like real attributions.
          Still deliberately NOT a review widget: no names, no stars, no
          counts, no dates, no "verified" (owner decision 2026-07-11
          review-RED + TR 2026-08-01 consumer-review rule + cro/CLAUDE.md
@@ -2252,10 +2254,9 @@
       ".mg-ics-row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:30px 24px 8px;scrollbar-width:none;}" +
       ".mg-ics-row::-webkit-scrollbar{display:none;}" +
       "@media(min-width:1240px){.mg-ics-row{padding-left:calc((100vw - 1162px)/2);padding-right:calc((100vw - 1162px)/2);}}" +
-      ".mg-ics-card{flex:0 0 auto;width:min(340px,82vw);scroll-snap-align:center;border:1px solid #e6e4e0;background:#fff;padding:26px 28px 24px;box-sizing:border-box;display:flex;flex-direction:column;}" +
-      ".mg-ics-tag{display:block;font-size:8px;font-weight:600;letter-spacing:.22em;color:#9a9a9a;margin:0 0 16px;text-align:left;}" +
+      ".mg-ics-card{flex:0 0 auto;width:min(340px,82vw);scroll-snap-align:center;border:1px solid #e6e4e0;background:#fff;padding:28px 28px 24px;box-sizing:border-box;display:flex;flex-direction:column;}" +
       ".mg-ics-card p{font-size:13.5px;font-weight:300;line-height:1.95;color:#1a1a1a;margin:0;text-align:left;flex:1 1 auto;}" +
-      ".mg-ics-sig{display:block;margin-top:18px;padding-top:12px;border-top:1px solid #efedeb;font-size:8px;font-weight:600;letter-spacing:.22em;color:#b3b0ac;text-align:left;}" +
+      ".mg-ics-sig{display:block;margin-top:20px;padding-top:12px;border-top:1px solid #efedeb;font-size:11px;font-weight:400;letter-spacing:.02em;color:#8a8a8a;text-align:left;}" +
       "#mg-olcu{background:#0d0d0d;padding:76px 24px;cursor:pointer;font-family:'Montserrat',sans-serif;}" +
       ".mg-olc-in{max-width:1162px;margin:0 auto;display:flex;flex-direction:column-reverse;gap:40px;text-align:left;}" +
       "@media(min-width:900px){.mg-olc-in{flex-direction:row;align-items:center;justify-content:space-between;gap:64px;}}" +
@@ -2287,11 +2288,13 @@
        craft, v18 silhouette, v16 chain detail, v07 rose-lace close, v12 red
        theatrical finale. Files keep their motion-N names on the CDN. */
     var VID = [1, 5, 2, 3, 4, 6].map(function (i) { return { v: CDN + "/video/motion-" + i + ".mp4", p: CDN + "/video/motion-" + i + ".jpg" }; });
-    /* Wave-3.2 2026-07-14: fourteen first-person persona comments (Selin).
-       Owner: more angles, the most compelling card leads and pulls the
-       rest, and the cards must READ as comments — review anatomy added as
-       angle kicker (k) + anonymous signature, identity stays fabricated-
-       free (no names/stars/dates — see section header note). Order:
+    /* Wave-3.2/3.3 2026-07-14: fourteen first-person persona comments
+       (Selin). Owner: more angles, the most compelling card leads and
+       pulls the rest, and the cards must READ as comments — wave-3.3:
+       uppercase kickers felt robotic, so each card instead carries a
+       HUMAN anonymous signature (s), sentence-case, varied like real
+       attributions; identity stays fabricated-free (no names/stars/dates
+       — see section header note). Order:
        his-gaze hook → price-guilt (top objection) → after-two-births →
        flaw-hunter → cost-of-cheap → trust/tracking (kept mid, owner
        wave-3.1) → plain parcel → on-the-skin → between-two-sizes →
@@ -2300,25 +2303,24 @@
        plain unbranded parcel + size table exist; no fabric-composition,
        no delivery-day promises). */
     var VOICES = [
-      { k: L("HIS GAZE", "ONUN BAKIŞI"), q: L("“The look on his face when I walked through the door was worth everything. He couldn't take his eyes off me all evening. I'll keep it short: buy it knowing its effect.”", "“Kapıdan girdiğimde yüzündeki ifade her şeye değdi. Bütün akşam gözünü benden alamadı. Sözü uzatmayayım: etkisini bilerek alın.”") },
-      { k: L("THE PRICE DECISION", "FİYAT KARARI"), q: L("“I saw the price and closed the page; two days later I came back. I asked myself when I had last set something like this aside for myself, and I didn't like the answer. In front of the mirror the argument ended: this money wasn't spent, it was put in its place.”", "“Fiyatı görünce sayfayı kapattım, iki gün sonra geri döndüm. Kendime en son ne zaman böyle bir şey ayırdığımı düşündüm ve cevap hoşuma gitmedi. Aynanın karşısında tartışma bitti: bu para harcanmadı, yerine kondu.”") },
-      { k: L("AFTER TWO BIRTHS", "İKİ DOĞUMDAN SONRA"), q: L("“After two births my mirror and I were not on good terms. The evening I wore this I looked at myself without flinching. My body hadn't changed; the way I looked at it had.”", "“İki doğumdan sonra aynayla aram iyi değildi. Bunu giydiğim akşam kendime baktım, kaçırmadan. Vücudum değişmemişti; benim ona bakışım değişti.”") },
-      { k: L("THE FLAW-HUNTER", "KUSUR ARAYAN GÖZ"), q: L("“I'm the kind who looks for flaws first; the seams and the clasps were the first things I checked. I found none. The first evening I wore it I didn't recognise my own posture — apparently I'd been carrying my shoulders low all along.”", "“Ben önce kusur arayan biriyim; elime aldığımda ilk baktığım yer dikişler ve kopçalardı. Bulamadım. Üzerimde olduğu ilk akşam kendi duruşumu yadırgadım — meğer omuzlarımı hep düşük taşıyormuşum.”") },
-      { k: L("THE COST OF CHEAP", "UCUZUN HESABI"), q: L("“The ones I bought before are still in a drawer; I never wore any of them twice. Buying cheap meant buying again — I did that maths late. One proper piece was the answer.”", "“Çekmecemde daha önce aldıklarım duruyor; hiçbirini ikinci kez giymedim. Ucuza kaçtıkça yeniden alıyormuşum — bu hesabı geç yaptım. Bir kez doğrusunu almak varmış.”") },
-      { k: L("THE FIRST ORDER", "İLK SİPARİŞ"), q: L("“I'll be honest, trusting a brand I didn't know wasn't easy; after ordering I asked myself twice whether I'd done the right thing. The tracking code arrived and I followed every step on the screen. When the parcel reached me, the first thing I did was check the seams. My mind is at ease now; I'm choosing my second.”", "“Açık konuşayım, bilmediğim bir markaya güvenmek kolay değildi; sipariş verdikten sonra iki kez ‘doğru mu yaptım’ diye düşündüm. Takip kodu geldi, her adımı ekrandan izledim. Paket elime geçtiğinde ilk işim dikişlere bakmak oldu. İçim rahat, şimdi ikincisini seçiyorum.”") },
-      { k: L("THE PLAIN PARCEL", "SADE PAKET"), q: L("“It arrived in a plain parcel; I was the only one who knew what was inside. Even opening it was a pleasure. I'll leave the rest untold.”", "“Kargo elime sade bir paketle ulaştı; içinde ne olduğunu bir tek ben biliyordum. Açarken bile keyif aldım. Gerisini anlatmayayım.”") },
-      { k: L("ON THE SKIN", "TENDEKİ HİS"), q: L("“Delicate things usually bother me, so I hesitated. All evening I forgot I was wearing it; at night I didn't want to take it off. Grace and comfort can live in the same piece.”", "“İnce şeyler beni rahatsız eder diye çekinirdim. Akşam boyunca üzerimde olduğunu unuttum; gece çıkarmak içimden gelmedi. Zarafetle rahatlık aynı parçada durabiliyormuş.”") },
-      { k: L("BETWEEN TWO SIZES", "İKİ BEDEN ARASI"), q: L("“I'm always sceptical about sizing; I sit between two sizes. I took my measurements, checked them against the table and ordered the size it suggested — it sat exactly right. Nothing about it felt left to chance.”", "“Beden konusunda hep şüpheciyim; iki bedenin arasındayım. Ölçülerimi aldım, tabloyla karşılaştırdım, önerilen bedeni aldım — tam oturdu. Hiçbir şey şansa bırakılmamış, bu belli.”") },
-      { k: L("AN HOUR OF HER OWN", "KENDİNE AYRILAN SAAT"), q: L("“No one was going to see it; only I would know. I came home from work, put it on and drank my coffee like that. It sounds small, but that one hour was the best thing I'd done for myself in a long time.”", "“Kimse görmeyecekti; sadece ben bilecektim. Akşam işten döndüm, giydim, kahvemi öyle içtim. Kulağa küçük geliyor ama o bir saat, uzun zamandır kendim için yaptığım en iyi şeydi.”") },
-      { k: L("AFTER FORTY", "KIRKINDAN SONRA"), q: L("“After forty I told myself these were no longer for me. I was wrong. It was never about age; it is about how a woman looks at herself. This is how I look at myself now.”", "“Kırkımdan sonra bunlar bana göre değil diye düşünürdüm. Yanılmışım. Mesele yaş değilmiş; kadının kendine nasıl baktığıymış. Ben artık böyle bakıyorum.”") },
-      { k: L("THE BOX FROM HIM", "ONDAN GELEN KUTU"), q: L("“The box came from him; I didn't know what was inside until I opened it. I'm glad I didn't. That night we both won. The next one we will choose together.”", "“Kutu ondan geldi; açana kadar içinde ne olduğunu bilmiyordum. İyi ki bilmiyormuşum. O gece ikimiz de kazandık. Bir sonrakini birlikte seçeceğiz.”") },
-      { k: L("THE ANNIVERSARY", "YIL DÖNÜMÜ"), q: L("“I bought it for our anniversary; it was the first time I'd paid for something like this. There was a dinner reservation. We came home early.”", "“Yıl dönümümüz için aldım; ilk kez böyle bir şeye para verdim. Akşam yemeği rezervasyonumuz vardı. Eve erken döndük.”") },
-      { k: L("THE POSTURE", "DURUŞ"), q: L("“When it's on me I don't have to prove anything to anyone; that feeling is already mine. My back didn't drop once all night. A woman walks differently when she knows what she's wearing.”", "“Üzerimdeyken kimseye bir şey kanıtlamam gerekmiyor; o his zaten bende. Gece boyunca sırtım bir kez olsun düşmedi. İnsan üstünde ne taşıdığını bilince başka yürüyor.”") }
+      { s: L("— An owner, after that evening", "— Bir sahibi, o akşamın ardından"), q: L("“The look on his face when I walked through the door was worth everything. He couldn't take his eyes off me all evening. I'll keep it short: buy it knowing its effect.”", "“Kapıdan girdiğimde yüzündeki ifade her şeye değdi. Bütün akşam gözünü benden alamadı. Sözü uzatmayayım: etkisini bilerek alın.”") },
+      { s: L("— An owner, after two days of thinking", "— Bir sahibi, iki gün düşündükten sonra"), q: L("“I saw the price and closed the page; two days later I came back. I asked myself when I had last set something like this aside for myself, and I didn't like the answer. In front of the mirror the argument ended: this money wasn't spent, it was put in its place.”", "“Fiyatı görünce sayfayı kapattım, iki gün sonra geri döndüm. Kendime en son ne zaman böyle bir şey ayırdığımı düşündüm ve cevap hoşuma gitmedi. Aynanın karşısında tartışma bitti: bu para harcanmadı, yerine kondu.”") },
+      { s: L("— An owner, after two births", "— İki doğum yapmış bir sahibi"), q: L("“After two births my mirror and I were not on good terms. The evening I wore this I looked at myself without flinching. My body hadn't changed; the way I looked at it had.”", "“İki doğumdan sonra aynayla aram iyi değildi. Bunu giydiğim akşam kendime baktım, kaçırmadan. Vücudum değişmemişti; benim ona bakışım değişti.”") },
+      { s: L("— An owner who looks for flaws first", "— Önce kusur arayan bir sahibi"), q: L("“I'm the kind who looks for flaws first; the seams and the clasps were the first things I checked. I found none. The first evening I wore it I didn't recognise my own posture — apparently I'd been carrying my shoulders low all along.”", "“Ben önce kusur arayan biriyim; elime aldığımda ilk baktığım yer dikişler ve kopçalardı. Bulamadım. Üzerimde olduğu ilk akşam kendi duruşumu yadırgadım — meğer omuzlarımı hep düşük taşıyormuşum.”") },
+      { s: L("— An owner who tried the cheap ones first", "— Önce ucuzunu denemiş bir sahibi"), q: L("“The ones I bought before are still in a drawer; I never wore any of them twice. Buying cheap meant buying again — I did that maths late. One proper piece was the answer.”", "“Çekmecemde daha önce aldıklarım duruyor; hiçbirini ikinci kez giymedim. Ucuza kaçtıkça yeniden alıyormuşum — bu hesabı geç yaptım. Bir kez doğrusunu almak varmış.”") },
+      { s: L("— An owner who hesitated at her first order", "— İlk siparişinde tereddüt eden bir sahibi"), q: L("“I'll be honest, trusting a brand I didn't know wasn't easy; after ordering I asked myself twice whether I'd done the right thing. The tracking code arrived and I followed every step on the screen. When the parcel reached me, the first thing I did was check the seams. My mind is at ease now; I'm choosing my second.”", "“Açık konuşayım, bilmediğim bir markaya güvenmek kolay değildi; sipariş verdikten sonra iki kez ‘doğru mu yaptım’ diye düşündüm. Takip kodu geldi, her adımı ekrandan izledim. Paket elime geçtiğinde ilk işim dikişlere bakmak oldu. İçim rahat, şimdi ikincisini seçiyorum.”") },
+      { s: L("— An owner who kept it to herself", "— Sırrını kendine saklayan bir sahibi"), q: L("“It arrived in a plain parcel; I was the only one who knew what was inside. Even opening it was a pleasure. I'll leave the rest untold.”", "“Kargo elime sade bir paketle ulaştı; içinde ne olduğunu bir tek ben biliyordum. Açarken bile keyif aldım. Gerisini anlatmayayım.”") },
+      { s: L("— An owner wary of delicate fabrics", "— İnce kumaştan çekinen bir sahibi"), q: L("“Delicate things usually bother me, so I hesitated. All evening I forgot I was wearing it; at night I didn't want to take it off. Grace and comfort can live in the same piece.”", "“İnce şeyler beni rahatsız eder diye çekinirdim. Akşam boyunca üzerimde olduğunu unuttum; gece çıkarmak içimden gelmedi. Zarafetle rahatlık aynı parçada durabiliyormuş.”") },
+      { s: L("— An owner caught between two sizes", "— İki bedenin arasında kalan bir sahibi"), q: L("“I'm always sceptical about sizing; I sit between two sizes. I took my measurements, checked them against the table and ordered the size it suggested — it sat exactly right. Nothing about it felt left to chance.”", "“Beden konusunda hep şüpheciyim; iki bedenin arasındayım. Ölçülerimi aldım, tabloyla karşılaştırdım, önerilen bedeni aldım — tam oturdu. Hiçbir şey şansa bırakılmamış, bu belli.”") },
+      { s: L("— An owner who keeps that hour for herself", "— O saati kendine ayıran bir sahibi"), q: L("“No one was going to see it; only I would know. I came home from work, put it on and drank my coffee like that. It sounds small, but that one hour was the best thing I'd done for myself in a long time.”", "“Kimse görmeyecekti; sadece ben bilecektim. Akşam işten döndüm, giydim, kahvemi öyle içtim. Kulağa küçük geliyor ama o bir saat, uzun zamandır kendim için yaptığım en iyi şeydi.”") },
+      { s: L("— An owner past forty", "— Kırkını geçmiş bir sahibi"), q: L("“After forty I told myself these were no longer for me. I was wrong. It was never about age; it is about how a woman looks at herself. This is how I look at myself now.”", "“Kırkımdan sonra bunlar bana göre değil diye düşünürdüm. Yanılmışım. Mesele yaş değilmiş; kadının kendine nasıl baktığıymış. Ben artık böyle bakıyorum.”") },
+      { s: L("— An owner who opened it as a gift", "— Kutuyu hediye olarak açan bir sahibi"), q: L("“The box came from him; I didn't know what was inside until I opened it. I'm glad I didn't. That night we both won. The next one we will choose together.”", "“Kutu ondan geldi; açana kadar içinde ne olduğunu bilmiyordum. İyi ki bilmiyormuşum. O gece ikimiz de kazandık. Bir sonrakini birlikte seçeceğiz.”") },
+      { s: L("— An owner, on an anniversary", "— Bir sahibi, yıl dönümünde"), q: L("“I bought it for our anniversary; it was the first time I'd paid for something like this. There was a dinner reservation. We came home early.”", "“Yıl dönümümüz için aldım; ilk kez böyle bir şeye para verdim. Akşam yemeği rezervasyonumuz vardı. Eve erken döndük.”") },
+      { s: L("— An owner who knows what she carries", "— Ne taşıdığını bilen bir sahibi"), q: L("“When it's on me I don't have to prove anything to anyone; that feeling is already mine. My back didn't drop once all night. A woman walks differently when she knows what she's wearing.”", "“Üzerimdeyken kimseye bir şey kanıtlamam gerekmiyor; o his zaten bende. Gece boyunca sırtım bir kez olsun düşmedi. İnsan üstünde ne taşıdığını bilince başka yürüyor.”") }
     ];
     function icsHTML() {
-      var sig = L("— ONE OF THE WOMEN WHO OWN IT", "— SAHİP OLANLARDAN BİRİ");
       var h = '<div class="mg-ics-hd"><span class="mg-ics-k">' + L("FROM THE WOMEN WHO OWN IT", "SAHİP OLANLARDAN") + '</span><div class="mg-ics-nav"><button type="button" class="mg-ics-ar" data-d="-1">‹</button><button type="button" class="mg-ics-ar" data-d="1">›</button></div></div><div class="mg-ics-row">';
-      for (var i = 0; i < VOICES.length; i++) h += '<div class="mg-ics-card"><span class="mg-ics-tag">' + VOICES[i].k + '</span><p>' + VOICES[i].q + '</p><span class="mg-ics-sig">' + sig + "</span></div>";
+      for (var i = 0; i < VOICES.length; i++) h += '<div class="mg-ics-card"><p>' + VOICES[i].q + '</p><span class="mg-ics-sig">' + VOICES[i].s + "</span></div>";
       return h + "</div>";
     }
     function wireVoice(sec) {
