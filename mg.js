@@ -2469,10 +2469,13 @@
     function armed() { if (LIVE) return true; try { return localStorage.getItem("mg_jest") === "1"; } catch (e) { return false; } }
 
     var A = "https://assets.lightfunnels.com/account-99158/images_library/";
+    /* won = one-shot congratulation shown for a few seconds at the crossing
+       moment (owner 2026-07-17: add the gift to the bag AND congratulate);
+       the earned gift then lives on as an item-like row among the bag lines. */
     var TIERS = [
-      { t: 120, n: "BEL",  won: "BEL seninle geliyor.", img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
-      { t: 170, n: "ESME", won: "ESME de çantanda.", img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
-      { t: 280, n: "GIA",  won: "Üçü de seninle.", img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
+      { t: 120, n: "BEL",  full: "BEL – Vegan Leather & Steel Ring Body Harness", won: "Tebrikler. BEL artık senin — çantana eklendi.", img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
+      { t: 170, n: "ESME", full: "ESME – Satin & Sheer Lace Slit Chemise", won: "Tebrikler. ESME de senin.", img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
+      { t: 280, n: "GIA",  full: "GIA – Noir Tulle Bodysuit & Glove Set", won: "Tebrikler. Üçü de senin. Çantan tamam.", img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
     ];
     var RECS = [
       { n: "MARCELLA – Noir Nightgown with Integrated Garters", u: "/products/rnightgownwithintegratedgarters-noir75kJ", img: A + "81a473bc-9cb1-46c5-9fcd-a43baf50cdf2.jpg", usd: 60 },
@@ -2488,9 +2491,15 @@
       ".mgj-track{height:2px;background:#e6e4e0;position:relative;}" +
       ".mgj-fill{position:absolute;left:0;top:0;bottom:0;background:#0d0d0d;transition:width .4s ease;}" +
       ".mgj-goal{margin-top:10px;font-size:12px;font-weight:400;letter-spacing:.02em;color:#0d0d0d;text-align:left;}" +
-      ".mgj-won{display:flex;align-items:center;gap:12px;margin-top:12px;}" +
-      ".mgj-wimg{width:34px;height:42px;object-fit:cover;flex:none;border:1px solid #e6e4e0;}" +
-      ".mgj-wtx{font-size:11.5px;font-weight:500;letter-spacing:.04em;color:#0d0d0d;text-align:left;}" +
+      ".mgj-congrat{margin-top:10px;font-size:12.5px;font-weight:500;letter-spacing:.02em;color:#0d0d0d;text-align:left;animation:mgjIn .5s ease;}" +
+      "@keyframes mgjIn{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}" +
+      ".mgj-gitem{display:flex;gap:16px;padding:20px 28px;border-bottom:1px solid #f0eeeb;animation:mgjIn .5s ease;}" +
+      ".mgj-gimg{width:68px;height:84px;object-fit:cover;flex:none;border:1px solid #e6e4e0;}" +
+      ".mgj-ginfo{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}" +
+      ".mgj-gtop{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}" +
+      ".mgj-gnm{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#0d0d0d;line-height:1.4;flex:1;min-width:0;}" +
+      ".mgj-gtag{font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#7a7a7a;white-space:nowrap;}" +
+      ".mgj-gsub{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#7a7a7a;}" +
       ".mgj-recs{padding:20px 28px 24px;border-top:1px solid #f0eeeb;font-family:'Montserrat',sans-serif;}" +
       ".mgj-rttl{font-size:12px;font-weight:500;letter-spacing:.02em;color:#0d0d0d;margin:0 0 14px;text-align:left;}" +
       ".mgj-rrow{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}" +
@@ -2526,17 +2535,33 @@
       return st.sym + v.toLocaleString(st.sym === "₺" ? "tr-TR" : "en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    function barHTML(st) {
-      var won = "", goal = "", fill = 0, prev = 0, next = null;
-      for (var i = 0; i < TIERS.length; i++) {
-        if (st.usd >= TIERS[i].t) { won += '<div class="mgj-won"><img class="mgj-wimg" src="' + TIERS[i].img + '" alt=""><span class="mgj-wtx">' + TIERS[i].won + "</span></div>"; prev = TIERS[i].t; }
-        else { next = TIERS[i]; break; }
-      }
-      if (next) {
-        fill = Math.max(0, Math.min(1, (st.usd - prev) / (next.t - prev)));
-        goal = '<div class="mgj-goal">' + next.n + " için " + money(next.t - st.usd, st) + " kaldı.</div>";
-      } else { fill = 1; }
-      return '<div class="mgj-track"><div class="mgj-fill" style="width:' + (fill * 100).toFixed(1) + '%"></div></div>' + goal + won;
+    function level(st) { var l = 0; for (var i = 0; i < TIERS.length; i++) { if (st.usd >= TIERS[i].t) l = i + 1; } return l; }
+    /* crossing detector: remembers the highest tier already celebrated so the
+       congratulation fires ONCE, at the moment the threshold is crossed */
+    function congrat(lvl) {
+      var pl = 0, ts = 0;
+      try { pl = +localStorage.getItem("mg_jest_lvl") || 0; ts = +localStorage.getItem("mg_jest_ts") || 0; } catch (e) {}
+      var now = Date.now();
+      if (lvl > pl) { try { localStorage.setItem("mg_jest_lvl", lvl); localStorage.setItem("mg_jest_ts", now); } catch (e) {} return true; }
+      if (lvl < pl) { try { localStorage.setItem("mg_jest_lvl", lvl); localStorage.setItem("mg_jest_ts", 0); } catch (e) {} return false; }
+      return lvl > 0 && (now - ts) < 6500;
+    }
+    function barHTML(st, lvl, cg) {
+      var goal = "", fill = 1, prev = lvl > 0 ? TIERS[lvl - 1].t : 0, next = TIERS[lvl] || null;
+      if (next) fill = Math.max(0, Math.min(1, (st.usd - prev) / (next.t - prev)));
+      if (cg) goal = '<div class="mgj-congrat">' + TIERS[lvl - 1].won + "</div>";
+      else if (next) goal = '<div class="mgj-goal">' + next.n + " için " + money(next.t - st.usd, st) + " kaldı.</div>";
+      else goal = '<div class="mgj-goal">Üçü de seninle.</div>';
+      return '<div class="mgj-track"><div class="mgj-fill" style="width:' + (fill * 100).toFixed(1) + '%"></div></div>' + goal;
+    }
+    /* earned gifts live among the bag lines as item-look rows (no price — the
+       right-hand slot carries the JEST tag; fulfillment adds them via dxm) */
+    function giftsHTML(lvl) {
+      return TIERS.slice(0, lvl).map(function (g) {
+        return '<div class="mgj-gitem"><img class="mgj-gimg" src="' + g.img + '" alt="">'
+          + '<div class="mgj-ginfo"><div class="mgj-gtop"><div class="mgj-gnm">' + g.full + '</div><span class="mgj-gtag">JEST</span></div>'
+          + '<div class="mgj-gsub">Çantanla birlikte gönderilir.</div></div></div>';
+      }).join("");
     }
     function recsHTML(st) {
       /* bag titles carry a "- Noir" colour suffix the rec names don't — prefix match */
@@ -2549,7 +2574,7 @@
       }).join("");
     }
 
-    function sweep() { ["mgj-bar", "mgj-recs"].forEach(function (id) { var n = document.getElementById(id); if (n) n.remove(); }); }
+    function sweep() { ["mgj-bar", "mgj-gifts", "mgj-recs"].forEach(function (id) { var n = document.getElementById(id); if (n) n.remove(); }); }
     var lastSig = "";
     function pass() {
       if (!armed()) { sweep(); return; }
@@ -2557,12 +2582,22 @@
       if (!bd || !bd.querySelector(".mgc-item")) { sweep(); lastSig = ""; return; }
       var st = state();
       if (!st) { sweep(); lastSig = ""; return; }
-      var sig = st.usd + "|" + st.items.length + "|" + st.rate.toFixed(2);
-      var bar = document.getElementById("mgj-bar"), rc = document.getElementById("mgj-recs");
-      if (bar && rc && sig === lastSig) return;
+      var lvl = level(st), cg = congrat(lvl);
+      var sig = st.usd + "|" + st.items.length + "|" + st.rate.toFixed(2) + "|" + lvl + "|" + (cg ? 1 : 0);
+      var bar = document.getElementById("mgj-bar"), gf = document.getElementById("mgj-gifts"), rc = document.getElementById("mgj-recs");
+      if (bar && rc && (lvl === 0 || gf) && sig === lastSig) return;
       lastSig = sig;
       if (!bar) { bar = document.createElement("div"); bar.id = "mgj-bar"; bar.className = "mgj-wrap"; bd.insertBefore(bar, bd.firstChild); }
-      bar.innerHTML = barHTML(st);
+      bar.innerHTML = barHTML(st, lvl, cg);
+      /* gift rows sit right below the real bag lines, above the recs */
+      if (lvl > 0) {
+        if (!gf) {
+          gf = document.createElement("div"); gf.id = "mgj-gifts";
+          var its = bd.querySelectorAll(".mgc-item"), last = its[its.length - 1];
+          last.parentNode.insertBefore(gf, last.nextSibling);
+        }
+        gf.innerHTML = giftsHTML(lvl);
+      } else if (gf) { gf.remove(); }
       if (!rc) { rc = document.createElement("div"); rc.id = "mgj-recs"; rc.className = "mgj-recs"; bd.appendChild(rc); }
       var recs = recsHTML(st);
       rc.innerHTML = recs ? '<p class="mgj-rttl">Yanına yakışır.</p><div class="mgj-rrow">' + recs + "</div>" : "";
