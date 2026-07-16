@@ -2539,9 +2539,10 @@
       return '<div class="mgj-track"><div class="mgj-fill" style="width:' + (fill * 100).toFixed(1) + '%"></div></div>' + goal + won;
     }
     function recsHTML(st) {
-      var inBag = {}; st.items.forEach(function (it) { inBag[(it.name || "").toUpperCase()] = 1; });
+      /* bag titles carry a "- Noir" colour suffix the rec names don't — prefix match */
+      var bag = st.items.map(function (it) { return (it.name || "").toUpperCase(); });
       var rem = 0; for (var i = 0; i < TIERS.length; i++) { if (st.usd < TIERS[i].t) { rem = TIERS[i].t - st.usd; break; } }
-      var pool = RECS.filter(function (r) { return !inBag[r.n.toUpperCase()]; });
+      var pool = RECS.filter(function (r) { var rn = r.n.toUpperCase(); return !bag.some(function (bn) { return bn.indexOf(rn) === 0; }); });
       if (rem > 0) pool.sort(function (a, b) { return Math.abs(a.usd - rem) - Math.abs(b.usd - rem); });
       return pool.slice(0, 3).map(function (r) {
         return '<a class="mgj-card" href="' + r.u + '"><img class="mgj-cimg" src="' + r.img + '" alt=""><span class="mgj-cnm">' + r.n + '</span><span class="mgj-cpr">' + price(r.usd, st) + "</span></a>";
