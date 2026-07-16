@@ -2579,7 +2579,11 @@
     function pass() {
       if (!armed()) { sweep(); return; }
       var bd = document.getElementById("mgcd-bd");
-      if (!bd || !bd.querySelector(".mgc-item")) { sweep(); lastSig = ""; return; }
+      if (!bd || !bd.querySelector(".mgc-item")) {
+        /* emptied bag (checkout done / cleared) → next bag celebrates from zero */
+        if (!cart().length) { try { localStorage.setItem("mg_jest_lvl", "0"); localStorage.setItem("mg_jest_ts", "0"); } catch (e) {} }
+        sweep(); lastSig = ""; return;
+      }
       var st = state();
       if (!st) { sweep(); lastSig = ""; return; }
       var lvl = level(st), cg = congrat(lvl);
