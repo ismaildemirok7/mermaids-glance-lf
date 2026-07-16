@@ -2439,4 +2439,135 @@
   })();
 
 
+  /* =========================================================================
+     §23 — JEST MERDİVENİ + YANINA YAKIŞIR (cart drawer, PREVIEW-GATED)
+     Cumulative gift ladder (owner 2026-07-16): the bag's USD total decides
+     the tiers ($120 BEL / $170 +ESME / $280 +GIA — cumulative, all earned
+     gifts ship). Truth stays USD (checkout charges USD; dxm-bridge reads USD)
+     but the shopper sees ₺: LF converts display prices at a live rate, so the
+     rate is DERIVED from the cart mirror itself (Σ display pn / Σ usd, both
+     captured at add time by the inline snapshot). Remaining amounts round UP
+     to a whole ₺10 — never promise a shorter distance than the true one.
+     Progress bar fills toward the NEXT gift only (segment-relative): a full
+     $280 scale would make tier 1 feel forever-empty. Goal line sits BELOW
+     the bar (owner requirement). Gift cards carry NO price tag (perceived
+     value comes from the pieces themselves); rec cards DO show prices.
+     PREVIEW GATE: policy v1.2 blocks customer-facing activation until the
+     owner's `I APPROVE JEST LADDER ACTIVATION V2` — until then this renders
+     only when localStorage mg_jest==='1' (?mgjest=1 arms, ?mgjest=0 clears;
+     flip LIVE to true only with that approval). RECS usd values are the
+     pre-v2 catalog prices — refresh them at activation, after the reprice.
+     Injected into #mgcd-bd by an interval pass: the drawer's render()
+     rewrites its innerHTML on every change (LF lesson: intervals, not
+     observers). Items added before this deploy lack the usd field — the
+     ladder then hides itself rather than guess (fail-quiet).
+     ========================================================================= */
+  (function () {
+    if (window.__mgJestLadder) return; window.__mgJestLadder = true;
+    var LIVE = false; /* ← flips true only with I APPROVE JEST LADDER ACTIVATION V2 */
+    try { var qm = location.search.match(/[?&]mgjest=([01])/); if (qm) localStorage.setItem("mg_jest", qm[1]); } catch (e) {}
+    function armed() { if (LIVE) return true; try { return localStorage.getItem("mg_jest") === "1"; } catch (e) { return false; } }
+
+    var A = "https://assets.lightfunnels.com/account-99158/images_library/";
+    var TIERS = [
+      { t: 120, n: "BEL",  won: "BEL seninle geliyor.", img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
+      { t: 170, n: "ESME", won: "ESME de çantanda.", img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
+      { t: 280, n: "GIA",  won: "Üçü de seninle.", img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
+    ];
+    var RECS = [
+      { n: "MARCELLA – Noir Nightgown with Integrated Garters", u: "/products/rnightgownwithintegratedgarters-noir75kJ", img: A + "81a473bc-9cb1-46c5-9fcd-a43baf50cdf2.jpg", usd: 60 },
+      { n: "LAYLA – Lace & Modal Soft Chemise", u: "/products/laylalacemodalsoftchemise-noirvJ6D", img: A + "fbfda3ad-4df2-4e12-b8c2-1db0d810face.jpg", usd: 83 },
+      { n: "ZOSIA – Dotted Tulle Bodysuit with Thigh Bands", u: "/products/ttedtullebodysuitwiththighbands-noirkg9t", img: A + "4f73d5d3-4717-4199-871b-676262e93d76.jpg", usd: 80 },
+      { n: "PETRA – High-Neck Strappy & Sheer Mesh Garter Set", u: "/products/h-neckstrappysheermeshgarterset-noirdznw", img: A + "2cfcc5cc-9dfb-42c9-88c9-5fee8d4c1fca.jpg", usd: 79 },
+      { n: "CLEO – Gold Chain & Geometric Mesh Bodysuit", u: "/products/cleogoldchaingeometricmeshbodysuitRwgO", img: A + "24c97a58-9bdd-40c0-bb4b-3345434857cc.jpg", usd: 65 },
+      { n: "GINA – Sheer Mesh Mini Night Dress", u: "/products/ginasheermeshmininightdress-noirsFRA", img: A + "997416fb-353b-4ca4-9a8d-66a5c330c79a.png", usd: 62 }
+    ];
+
+    css(
+      ".mgj-wrap{padding:18px 28px 16px;border-bottom:1px solid #f0eeeb;font-family:'Montserrat',sans-serif;}" +
+      ".mgj-track{height:2px;background:#e6e4e0;position:relative;}" +
+      ".mgj-fill{position:absolute;left:0;top:0;bottom:0;background:#0d0d0d;transition:width .4s ease;}" +
+      ".mgj-goal{margin-top:10px;font-size:12px;font-weight:400;letter-spacing:.02em;color:#0d0d0d;text-align:left;}" +
+      ".mgj-won{display:flex;align-items:center;gap:12px;margin-top:12px;}" +
+      ".mgj-wimg{width:34px;height:42px;object-fit:cover;flex:none;border:1px solid #e6e4e0;}" +
+      ".mgj-wtx{font-size:11.5px;font-weight:500;letter-spacing:.04em;color:#0d0d0d;text-align:left;}" +
+      ".mgj-recs{padding:20px 28px 24px;border-top:1px solid #f0eeeb;font-family:'Montserrat',sans-serif;}" +
+      ".mgj-rttl{font-size:12px;font-weight:500;letter-spacing:.02em;color:#0d0d0d;margin:0 0 14px;text-align:left;}" +
+      ".mgj-rrow{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}" +
+      ".mgj-rrow::-webkit-scrollbar{display:none;}" +
+      ".mgj-card{flex:0 0 auto;width:104px;text-decoration:none;display:block;}" +
+      ".mgj-cimg{width:104px;height:130px;object-fit:cover;border:1px solid #e6e4e0;display:block;}" +
+      ".mgj-cnm{margin-top:7px;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#0d0d0d;line-height:1.35;display:block;text-align:left;}" +
+      ".mgj-cpr{margin-top:4px;font-size:11px;font-weight:500;color:#0d0d0d;display:block;text-align:left;}"
+    );
+
+    function cart() { try { return JSON.parse(localStorage.getItem("mg_cart") || "[]") || []; } catch (e) { return []; } }
+    /* usdTot: only trustworthy when EVERY line carries the usd base */
+    function state() {
+      var its = cart(); if (!its.length) return null;
+      var usd = 0, pn = 0, sym = "";
+      for (var i = 0; i < its.length; i++) {
+        var it = its[i], q = +it.qty || 1;
+        if (!(+it.usd > 0)) return null;
+        usd += (+it.usd) * q; pn += (+it.pn || 0) * q;
+        if (!sym && it.sym) sym = it.sym;
+      }
+      var rate = 1;
+      if (sym === "₺" && usd > 0) { rate = pn / usd; if (!(rate > 10 && rate < 200)) return null; }
+      else if (sym && sym !== "$") return null;
+      return { items: its, usd: usd, sym: sym || "$", rate: rate };
+    }
+    function money(u, st) { /* remaining distance → clean, rounded-UP display */
+      if (st.sym === "₺") { var t = Math.ceil(u * st.rate / 10) * 10; return "₺" + t.toLocaleString("tr-TR"); }
+      return "$" + Math.ceil(u);
+    }
+    function price(u, st) { /* rec price → same 2-decimal format the drawer lines use */
+      var v = u * st.rate;
+      return st.sym + v.toLocaleString(st.sym === "₺" ? "tr-TR" : "en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function barHTML(st) {
+      var won = "", goal = "", fill = 0, prev = 0, next = null;
+      for (var i = 0; i < TIERS.length; i++) {
+        if (st.usd >= TIERS[i].t) { won += '<div class="mgj-won"><img class="mgj-wimg" src="' + TIERS[i].img + '" alt=""><span class="mgj-wtx">' + TIERS[i].won + "</span></div>"; prev = TIERS[i].t; }
+        else { next = TIERS[i]; break; }
+      }
+      if (next) {
+        fill = Math.max(0, Math.min(1, (st.usd - prev) / (next.t - prev)));
+        goal = '<div class="mgj-goal">' + next.n + " için " + money(next.t - st.usd, st) + " kaldı.</div>";
+      } else { fill = 1; }
+      return '<div class="mgj-track"><div class="mgj-fill" style="width:' + (fill * 100).toFixed(1) + '%"></div></div>' + goal + won;
+    }
+    function recsHTML(st) {
+      var inBag = {}; st.items.forEach(function (it) { inBag[(it.name || "").toUpperCase()] = 1; });
+      var rem = 0; for (var i = 0; i < TIERS.length; i++) { if (st.usd < TIERS[i].t) { rem = TIERS[i].t - st.usd; break; } }
+      var pool = RECS.filter(function (r) { return !inBag[r.n.toUpperCase()]; });
+      if (rem > 0) pool.sort(function (a, b) { return Math.abs(a.usd - rem) - Math.abs(b.usd - rem); });
+      return pool.slice(0, 3).map(function (r) {
+        return '<a class="mgj-card" href="' + r.u + '"><img class="mgj-cimg" src="' + r.img + '" alt=""><span class="mgj-cnm">' + r.n + '</span><span class="mgj-cpr">' + price(r.usd, st) + "</span></a>";
+      }).join("");
+    }
+
+    function sweep() { ["mgj-bar", "mgj-recs"].forEach(function (id) { var n = document.getElementById(id); if (n) n.remove(); }); }
+    var lastSig = "";
+    function pass() {
+      if (!armed()) { sweep(); return; }
+      var bd = document.getElementById("mgcd-bd");
+      if (!bd || !bd.querySelector(".mgc-item")) { sweep(); lastSig = ""; return; }
+      var st = state();
+      if (!st) { sweep(); lastSig = ""; return; }
+      var sig = st.usd + "|" + st.items.length + "|" + st.rate.toFixed(2);
+      var bar = document.getElementById("mgj-bar"), rc = document.getElementById("mgj-recs");
+      if (bar && rc && sig === lastSig) return;
+      lastSig = sig;
+      if (!bar) { bar = document.createElement("div"); bar.id = "mgj-bar"; bar.className = "mgj-wrap"; bd.insertBefore(bar, bd.firstChild); }
+      bar.innerHTML = barHTML(st);
+      if (!rc) { rc = document.createElement("div"); rc.id = "mgj-recs"; rc.className = "mgj-recs"; bd.appendChild(rc); }
+      var recs = recsHTML(st);
+      rc.innerHTML = recs ? '<p class="mgj-rttl">Yanına yakışır.</p><div class="mgj-rrow">' + recs + "</div>" : "";
+    }
+    setInterval(pass, 700);
+  })();
+
+
 })();
