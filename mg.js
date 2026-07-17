@@ -2837,6 +2837,11 @@
         its.forEach(function (it) { var q = +it.qty || 1; u += (+it.usd || 0) * q; p += (+it.pn || 0) * q; if (!s && it.sym) s = it.sym; });
         if (s === "₺" && u > 0) { var r = p / u; if (r > 10 && r < 200) return r; }
       } catch (e) {}
+      /* çanta yoksa §25'in PDP'den türetip cache'lediği kur (24 saat taze) */
+      try {
+        var c = JSON.parse(localStorage.getItem("mg_jest_rate") || "null");
+        if (c && c.r > 10 && c.r < 200 && Date.now() - c.ts < 864e5) return c.r;
+      } catch (e) {}
       return 0;
     }
     function amt(usd) { var r = rate(); return r ? "₺" + (Math.ceil(usd * r / 10) * 10).toLocaleString("tr-TR") : "$" + usd; }
@@ -2936,6 +2941,8 @@
           if (base > 0 && pp && pp.sym === "₺" && pp.pn > 0) { var r2 = pp.pn / base; if (r2 > 10 && r2 < 200) rate = r2; }
         } catch (e) {}
       }
+      /* türetilen kuru paylaş: §24 duyuru çubuğu boş çantada da ₺ gösterebilsin */
+      if (rate) { try { localStorage.setItem("mg_jest_rate", JSON.stringify({ r: rate, ts: Date.now() })); } catch (e) {} }
       return { usd: ok ? usd : (its.length ? null : 0), rate: rate };
     }
     function amt(u, rate) { return rate ? "₺" + (Math.ceil(u * rate / 10) * 10).toLocaleString("tr-TR") : "$" + u; }
