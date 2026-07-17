@@ -2462,9 +2462,9 @@
      gift image sit BELOW the bar. Earned gifts show their $75 shelf value
      struck through beside JEST; rec cards show prices.
      CHECKOUT GÖRÜNÜRLÜĞÜ (2026-07-17): kazanılan jestler LF cart cookie'sine
-     GERÇEK satır (adet 1, sayısal vid) olarak yazılır → checkout satırı doğar;
-     JEST indirim kodu (%100, yalnız BEL/ESME/GIA ürünlerine sınırlı, API'de
-     oluşturuldu) kupon alanına otomatik uygulanır → jest satırları $0'a iner.
+     GERÇEK satır (adet 1, sayısal vid) olarak yazılır → checkout satırı doğar.
+     Satırlar $0'lık JEST-İKİZ ürünlere işaret eder (compare_at $75 üstü çizili
+     görünür; ikizler mağazaya bağlı değil → vitrin/arama/koleksiyonda yoklar).
      Jest satırları mg_cart mirror'ına girmez (merdiven matematiği ücretli
      satırlardan); mg_jest_gifts anahtarı §14 resync'inin köprüsüdür.
      PREVIEW GATE: policy v1.2 blocks customer-facing activation until the
@@ -2490,11 +2490,17 @@
        the earned gift then lives on as an item-like row among the bag lines. */
     /* vid'ler LF cart cookie'sinin SAYISAL varyant kimlikleri (canlı doğrulama
        2026-07-17: cookie body id'si 4301449625 gibi numeriktir; var_... GraphQL
-       id'si cookie'de ÇÖZÜLMEZ — o satır checkout'ta hiç doğmaz). */
+       id'si cookie'de ÇÖZÜLMEZ — o satır checkout'ta hiç doğmaz).
+       Jest vid'leri $0'lık JEST-İKİZ ürünlere aittir (JEST-BEL/ESME/GIA sku,
+       compare_at $75, mağazaya BAĞLI DEĞİL → vitrinde/aramada görünmez ama
+       checkout satır olarak kabul eder — canlı kanıtlandı). Kupon yaklaşımı
+       REDDEDİLDİ: LF products_ids kapsamı "sepetteki HER ürün kapsamda olmalı"
+       geçerlilik filtresi + indirim TÜM siparişe uygulanıyor (TESTJEST7 canlı
+       testi toplamı ₺0 yaptı). */
     var TIERS = [
-      { t: 120, n: "BEL",  full: "BEL – Vegan Leather & Steel Ring Body Harness", won: "Tebrikler. BEL artık senin — çantana eklendi.", usd: 75, vid: 4301449568, img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
-      { t: 170, n: "ESME", full: "ESME – Satin & Sheer Lace Slit Chemise", won: "Tebrikler. ESME de senin.", usd: 75, vid: 4301448017, img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
-      { t: 280, n: "GIA",  full: "GIA – Noir Tulle Bodysuit & Glove Set", won: "Tebrikler. Üçü de senin. Çantan tamam.", usd: 75, sizes: ["S", "M", "L", "XL"], v: { S: 4301449589, M: 4301449590, L: 4301449591, XL: 4301449592 }, img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
+      { t: 120, n: "BEL",  full: "BEL – Vegan Leather & Steel Ring Body Harness", won: "Tebrikler. BEL artık senin — çantana eklendi.", usd: 75, vid: 4301494029, img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
+      { t: 170, n: "ESME", full: "ESME – Satin & Sheer Lace Slit Chemise", won: "Tebrikler. ESME de senin.", usd: 75, vid: 4301494031, img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
+      { t: 280, n: "GIA",  full: "GIA – Noir Tulle Bodysuit & Glove Set", won: "Tebrikler. Üçü de senin. Çantan tamam.", usd: 75, sizes: ["S", "M", "L", "XL"], v: { S: 4301494033, M: 4301494034, L: 4301494035, XL: 4301494036 }, img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
     ];
     var RECS = [
       { n: "MARCELLA – Noir Nightgown with Integrated Garters", u: "/products/rnightgownwithintegratedgarters-noir75kJ", img: A + "81a473bc-9cb1-46c5-9fcd-a43baf50cdf2.jpg", usd: 60, v: { "Standart": 4301449841 } },
@@ -2618,18 +2624,14 @@
     }
     function syncGifts(st, lvl) {
       var want = wantedGiftVids(lvl);
-      /* çapa ürünü zaten ÜCRETLİ satırsa jest kopyası ekleme: inline dedupe
-         aynı vid'in iki kaydını tek satıra (adet 2) eritir, mirror bozulur */
-      var paid = {};
-      if (st) st.items.forEach(function (it) { if (it.vid != null) paid[String(it.vid)] = 1; });
-      want = want.filter(function (v) { return !paid[String(v)]; });
+      /* twin vid'ler mağaza kataloğunda yok → ücretli satırla çakışamaz */
       try { if (want.length) localStorage.setItem(GIFT_KEY, JSON.stringify(want)); else localStorage.removeItem(GIFT_KEY); } catch (e) {}
       var ck = ckRead(); if (!ck || !ck.data || !Array.isArray(ck.data.body)) return;
       var ALL = allGiftVids(), wantS = want.map(String), changed = false, keep = [];
       ck.data.body.forEach(function (e) {
         var v = e && e.variants && e.variants[0];
         var id = v && v.id != null ? String(v.id) : "";
-        if (id && ALL[id] && !paid[id]) { /* yönettiğimiz jest satırı */
+        if (id && ALL[id]) { /* yönettiğimiz jest satırı */
           if (wantS.indexOf(id) === -1) { changed = true; return; } /* düşen kademe / beden değişimi → at */
           if ((+v.quantity || 1) !== 1) { v.quantity = 1; changed = true; }
         }
@@ -2654,34 +2656,8 @@
       if (keep.length !== ck.data.body.length) ckWrite(ck.name, { body: keep });
     }
 
-    /* Checkout'ta JEST kodunu bir kez otomatik uygula. Alan doluysa (müşteri
-       kendi kodunu yazıyorsa) asla yarışma — tek deneme, sayfa başına. */
-    var couponTried = false;
-    function setNative(el, v) {
-      try {
-        var d = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value");
-        if (d && d.set) d.set.call(el, v); else el.value = v;
-      } catch (e) { el.value = v; }
-      el.dispatchEvent(new Event("input", { bubbles: true }));
-      el.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    function couponPass() {
-      if (couponTried || !armed()) return;
-      if (!(window.data && window.data.step_type === "checkout_page")) return;
-      var gifts = []; try { gifts = JSON.parse(localStorage.getItem(GIFT_KEY) || "[]"); } catch (e) {}
-      if (!gifts.length) return;
-      var inp = document.querySelector('input[name="discount_code"]');
-      if (!inp || inp.value) return;
-      var btn = null;
-      [].slice.call(document.querySelectorAll("button")).forEach(function (b) {
-        if (!btn && /^(uygula|apply)$/i.test((b.innerText || "").trim())) btn = b;
-      });
-      if (!btn) return;
-      couponTried = true;
-      setNative(inp, "JEST");
-      setTimeout(function () { btn.click(); }, 150);
-    }
-    setInterval(couponPass, 900);
+    /* Kupon YOK: jest ikizleri $0 doğduğu için checkout toplamı kendiliğinden
+       doğru; SOCIETY10/15 gibi müşteri kodlarıyla çakışma da kalmadı. */
     /* crossing detector: remembers the highest tier already celebrated so the
        congratulation fires ONCE, at the moment the threshold is crossed */
     function congrat(lvl) {
