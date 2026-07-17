@@ -1283,6 +1283,15 @@
           return { variants: [{ id: it.vid, quantity: it.qty || 1 }], price_bundle: null };
         });
         if (!body.length && items.length) return; /* no vids captured — don't wipe a non-empty cart */
+        /* §23 jest satırları mirror'da yaşamaz — mirror'dan kurulan cookie'ye
+           burada geri eklenmezse resync kazanılmış jestleri sessizce yutar */
+        try {
+          var gifts = JSON.parse(localStorage.getItem("mg_jest_gifts") || "[]");
+          gifts.forEach(function (vid) {
+            var has = body.some(function (e) { return String(e.variants[0].id) === String(vid); });
+            if (!has) body.push({ variants: [{ id: vid, quantity: 1 }], price_bundle: null });
+          });
+        } catch (e) {}
         document.cookie = m[1] + "=" + encodeURIComponent(JSON.stringify({ body: body })) + "; path=/";
       } catch (e) {}
     }
@@ -2449,14 +2458,21 @@
      captured at add time by the inline snapshot). Remaining amounts round UP
      to a whole ₺10 — never promise a shorter distance than the true one.
      Progress bar fills toward the NEXT gift only (segment-relative): a full
-     $280 scale would make tier 1 feel forever-empty. Goal line sits BELOW
-     the bar (owner requirement). Gift cards carry NO price tag (perceived
-     value comes from the pieces themselves); rec cards DO show prices.
+     $280 scale would make tier 1 feel forever-empty. Goal line and the next
+     gift image sit BELOW the bar. Earned gifts show their $75 shelf value
+     struck through beside JEST; rec cards show prices.
+     CHECKOUT GÖRÜNÜRLÜĞÜ (2026-07-17): kazanılan jestler LF cart cookie'sine
+     GERÇEK satır (adet 1, sayısal vid) olarak yazılır → checkout satırı doğar;
+     JEST indirim kodu (%100, yalnız BEL/ESME/GIA ürünlerine sınırlı, API'de
+     oluşturuldu) kupon alanına otomatik uygulanır → jest satırları $0'a iner.
+     Jest satırları mg_cart mirror'ına girmez (merdiven matematiği ücretli
+     satırlardan); mg_jest_gifts anahtarı §14 resync'inin köprüsüdür.
      PREVIEW GATE: policy v1.2 blocks customer-facing activation until the
      owner's `I APPROVE JEST LADDER ACTIVATION V2` — until then this renders
      only when localStorage mg_jest==='1' (?mgjest=1 arms, ?mgjest=0 clears;
-     flip LIVE to true only with that approval). RECS usd values are the
-     pre-v2 catalog prices — refresh them at activation, after the reprice.
+     flip LIVE to true only with that approval). Recommendation prices and
+     variant ids were refreshed from the post-v2 catalog on 2026-07-17;
+     tüm vid'ler cookie'nin beklediği SAYISAL kimliklerdir (var_ değil).
      Injected into #mgcd-bd by an interval pass: the drawer's render()
      rewrites its innerHTML on every change (LF lesson: intervals, not
      observers). Items added before this deploy lack the usd field — the
@@ -2472,25 +2488,41 @@
     /* won = one-shot congratulation shown for a few seconds at the crossing
        moment (owner 2026-07-17: add the gift to the bag AND congratulate);
        the earned gift then lives on as an item-like row among the bag lines. */
+    /* vid'ler LF cart cookie'sinin SAYISAL varyant kimlikleri (canlı doğrulama
+       2026-07-17: cookie body id'si 4301449625 gibi numeriktir; var_... GraphQL
+       id'si cookie'de ÇÖZÜLMEZ — o satır checkout'ta hiç doğmaz). */
     var TIERS = [
-      { t: 120, n: "BEL",  full: "BEL – Vegan Leather & Steel Ring Body Harness", won: "Tebrikler. BEL artık senin — çantana eklendi.", img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
-      { t: 170, n: "ESME", full: "ESME – Satin & Sheer Lace Slit Chemise", won: "Tebrikler. ESME de senin.", img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
-      { t: 280, n: "GIA",  full: "GIA – Noir Tulle Bodysuit & Glove Set", won: "Tebrikler. Üçü de senin. Çantan tamam.", img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
+      { t: 120, n: "BEL",  full: "BEL – Vegan Leather & Steel Ring Body Harness", won: "Tebrikler. BEL artık senin — çantana eklendi.", usd: 75, vid: 4301449568, img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
+      { t: 170, n: "ESME", full: "ESME – Satin & Sheer Lace Slit Chemise", won: "Tebrikler. ESME de senin.", usd: 75, vid: 4301448017, img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
+      { t: 280, n: "GIA",  full: "GIA – Noir Tulle Bodysuit & Glove Set", won: "Tebrikler. Üçü de senin. Çantan tamam.", usd: 75, sizes: ["S", "M", "L", "XL"], v: { S: 4301449589, M: 4301449590, L: 4301449591, XL: 4301449592 }, img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
     ];
     var RECS = [
-      { n: "MARCELLA – Noir Nightgown with Integrated Garters", u: "/products/rnightgownwithintegratedgarters-noir75kJ", img: A + "81a473bc-9cb1-46c5-9fcd-a43baf50cdf2.jpg", usd: 60 },
-      { n: "LAYLA – Lace & Modal Soft Chemise", u: "/products/laylalacemodalsoftchemise-noirvJ6D", img: A + "fbfda3ad-4df2-4e12-b8c2-1db0d810face.jpg", usd: 83 },
-      { n: "ZOSIA – Dotted Tulle Bodysuit with Thigh Bands", u: "/products/ttedtullebodysuitwiththighbands-noirkg9t", img: A + "4f73d5d3-4717-4199-871b-676262e93d76.jpg", usd: 80 },
-      { n: "PETRA – High-Neck Strappy & Sheer Mesh Garter Set", u: "/products/h-neckstrappysheermeshgarterset-noirdznw", img: A + "2cfcc5cc-9dfb-42c9-88c9-5fee8d4c1fca.jpg", usd: 79 },
-      { n: "CLEO – Gold Chain & Geometric Mesh Bodysuit", u: "/products/cleogoldchaingeometricmeshbodysuitRwgO", img: A + "24c97a58-9bdd-40c0-bb4b-3345434857cc.jpg", usd: 65 },
-      { n: "GINA – Sheer Mesh Mini Night Dress", u: "/products/ginasheermeshmininightdress-noirsFRA", img: A + "997416fb-353b-4ca4-9a8d-66a5c330c79a.png", usd: 62 }
+      { n: "MARCELLA – Noir Nightgown with Integrated Garters", u: "/products/rnightgownwithintegratedgarters-noir75kJ", img: A + "81a473bc-9cb1-46c5-9fcd-a43baf50cdf2.jpg", usd: 60, v: { "Standart": 4301449841 } },
+      { n: "LAYLA – Lace & Modal Soft Chemise", u: "/products/laylalacemodalsoftchemise-noirvJ6D", img: A + "fbfda3ad-4df2-4e12-b8c2-1db0d810face.jpg", usd: 70, v: { S: 4301447683, M: 4301447684, L: 4301447685, XL: 4301447686 } },
+      { n: "ZOSIA – Dotted Tulle Bodysuit with Thigh Bands", u: "/products/ttedtullebodysuitwiththighbands-noirkg9t", img: A + "4f73d5d3-4717-4199-871b-676262e93d76.jpg", usd: 70, v: { S: 4301449766, M: 4301449767, L: 4301449768, XL: 4301449769 } },
+      { n: "PETRA – High-Neck Strappy & Sheer Mesh Garter Set", u: "/products/h-neckstrappysheermeshgarterset-noirdznw", img: A + "2cfcc5cc-9dfb-42c9-88c9-5fee8d4c1fca.jpg", usd: 70, v: { S: 4301448443, M: 4301448444, L: 4301448445, XL: 4301448446 } },
+      { n: "CLEO – Gold Chain & Geometric Mesh Bodysuit", u: "/products/cleogoldchaingeometricmeshbodysuitRwgO", img: A + "24c97a58-9bdd-40c0-bb4b-3345434857cc.jpg", usd: 65, v: { S: 4301447269, M: 4301447270, L: 4301447271, XL: 4301447272 } },
+      { n: "GINA – Sheer Mesh Mini Night Dress", u: "/products/ginasheermeshmininightdress-noirsFRA", img: A + "997416fb-353b-4ca4-9a8d-66a5c330c79a.png", usd: 62, v: { S: 4301448653, M: 4301448654, L: 4301448655 } },
+      { n: "CHRISTINE – Scalloped Lace Strappy Garter Set", u: "/products/escallopedlacestrappygarterset-blackZLZx", img: A + "9afc9b08-f823-405e-9146-95e986bc5443.jpg", usd: 70, v: { S: 4301449948, M: 4301449949, L: 4301449950, XL: 4301449951 } },
+      { n: "SERAPHINA – Noir Satin Kimono with Lace Detail", u: "/products/nanoirsatinkimonowithlacedetail-noir9xd7", img: A + "566322c2-6e40-4e38-96a5-a0ca67076a14.jpg", usd: 66, v: { S: 4301449815, M: 4301449816, L: 4301449817, XL: 4301449818 } },
+      { n: "RUBIA – Dotted Tulle Bodysuit with Thigh Bands", u: "/products/tullebodysuitwiththighbands-bordeauxFTJ4", img: A + "cd544726-5659-4133-9929-2b61efe8cc2b.jpg", usd: 70, v: { S: 4301449761, M: 4301449762, L: 4301449763, XL: 4301449764 } },
+      { n: "KAZIA – Full Lace Transparent Kimono", u: "/products/kaziafulllacetransparentkimono-noirl_XX", img: A + "ae2844c9-5d5e-497e-9621-b3496227fa3f.jpg", usd: 69, v: { S: 4301449756, M: 4301449757, L: 4301449758, XL: 4301449759 } },
+      { n: "ISOLDE – Noir Satin & Lace Open-Back Nightgown", u: "/products/noirsatinlaceopen-backnightgown-noirImBw", img: A + "7c1fa2fd-106c-4e93-8529-189b46861833.jpg", usd: 60, v: { "S-M": 4301449812, "M-L": 4301449813 } },
+      { n: "AMALIA – Noir Heart Embroidery Tulle Nightgown", u: "/products/irheartembroiderytullenightgown-noirXmX1", img: A + "da6c04d1-ab68-4b6b-9388-b23e6d60f8a2.jpg", usd: 70, v: { "S-M": 4301449820, "M-L": 4301449821 } },
+      { n: "SABINA – Classic Satin Nightdress", u: "/products/sabinaclassicsatinnightdress-noir3dhe", img: A + "e4341608-bd43-4132-af0d-c28339c6d3e5.jpg", usd: 60, v: { "S-M": 4301449793, "M-L": 4301449794 } },
+      { n: "KENZA – Four-Piece Choker Lingerie Set", u: "/products/enzafour-piecechokerlingerieset-noirC6he", img: A + "b1167620-b729-4a45-8c45-c68e845b453a.jpg", usd: 64, v: { S: 4301449774, M: 4301449775, L: 4301449776 } },
+      { n: "MYRA – Noir Mesh & Opaque Bodysuit", u: "/products/myranoirmeshopaquebodysuit-noirjn3b", img: A + "63e49c41-2cf0-47f2-bbf1-a65bcb319ac4.jpg", usd: 70, v: { S: 4301449629, M: 4301449630, L: 4301449631, XL: 4301449632 } },
+      { n: "NOEMI – Sheer Tulle & Embroidery Nightgown", u: "/products/misheertulleembroiderynightgown-noirVkbN", img: A + "4c384dbf-f37f-4559-860e-cad05d8a5bc4.jpg", usd: 69, v: { "Standart": 4301449754 } }
     ];
 
     css(
       ".mgj-wrap{padding:18px 28px 16px;border-bottom:1px solid #f0eeeb;font-family:'Montserrat',sans-serif;}" +
       ".mgj-track{height:2px;background:#e6e4e0;position:relative;}" +
       ".mgj-fill{position:absolute;left:0;top:0;bottom:0;background:#0d0d0d;transition:width .4s ease;}" +
-      ".mgj-goal{margin-top:10px;font-size:12px;font-weight:400;letter-spacing:.02em;color:#0d0d0d;text-align:left;}" +
+      ".mgj-goal{margin-top:12px;display:flex;gap:12px;align-items:center;font-size:12px;font-weight:400;letter-spacing:.02em;color:#0d0d0d;text-align:left;}" +
+      ".mgj-next{width:48px;height:60px;object-fit:cover;border:1px solid #e6e4e0;flex:none;}" +
+      ".mgj-goaltx{display:flex;flex-direction:column;gap:4px;line-height:1.45;}" +
+      ".mgj-goaltx strong{font-size:9px;letter-spacing:.16em;text-transform:uppercase;}" +
       ".mgj-congrat{margin-top:10px;font-size:12.5px;font-weight:500;letter-spacing:.02em;color:#0d0d0d;text-align:left;animation:mgjIn .5s ease;}" +
       "@keyframes mgjIn{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}" +
       ".mgj-gitem{display:flex;gap:16px;padding:20px 28px;border-bottom:1px solid #f0eeeb;animation:mgjIn .5s ease;}" +
@@ -2498,16 +2530,37 @@
       ".mgj-ginfo{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}" +
       ".mgj-gtop{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}" +
       ".mgj-gnm{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#0d0d0d;line-height:1.4;flex:1;min-width:0;}" +
-      ".mgj-gtag{font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#7a7a7a;white-space:nowrap;}" +
+      ".mgj-gprice{display:flex;align-items:center;gap:7px;white-space:nowrap;}" +
+      ".mgj-gold{font-size:10px;color:#999;text-decoration:line-through;}" +
+      ".mgj-gtag{font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#0d0d0d;white-space:nowrap;}" +
       ".mgj-gsub{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#7a7a7a;}" +
+      ".mgj-gsize{border:0;background:none;padding:0;font:inherit;color:#0d0d0d;text-decoration:underline;text-underline-offset:2px;cursor:pointer;}" +
       ".mgj-recs{padding:20px 28px 24px;border-top:1px solid #f0eeeb;font-family:'Montserrat',sans-serif;}" +
       ".mgj-rttl{font-size:12px;font-weight:500;letter-spacing:.02em;color:#0d0d0d;margin:0 0 14px;text-align:left;}" +
       ".mgj-rrow{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}" +
       ".mgj-rrow::-webkit-scrollbar{display:none;}" +
-      ".mgj-card{flex:0 0 auto;width:104px;text-decoration:none;display:block;}" +
-      ".mgj-cimg{width:104px;height:130px;object-fit:cover;border:1px solid #e6e4e0;display:block;}" +
+      ".mgj-card{flex:0 0 auto;width:112px;text-decoration:none;display:flex;flex-direction:column;}" +
+      ".mgj-cimg{width:112px;height:140px;object-fit:cover;border:1px solid #e6e4e0;display:block;}" +
       ".mgj-cnm{margin-top:7px;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#0d0d0d;line-height:1.35;display:block;text-align:left;}" +
-      ".mgj-cpr{margin-top:4px;font-size:11px;font-weight:500;color:#0d0d0d;display:block;text-align:left;}"
+      ".mgj-cpr{margin-top:4px;font-size:11px;font-weight:500;color:#0d0d0d;display:block;text-align:left;}" +
+      ".mgj-add{margin-top:9px;width:100%;border:1px solid #0d0d0d;background:#fff;color:#0d0d0d;padding:8px 5px;font:600 8px 'Montserrat',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}" +
+      ".mgj-add:hover{background:#0d0d0d;color:#fff;}" +
+      "#mgj-qov{position:fixed;inset:0;background:rgba(13,13,13,.54);z-index:300000;display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Montserrat',sans-serif;}" +
+      ".mgj-qv{width:min(680px,100%);max-height:90vh;overflow:auto;background:#fff;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);position:relative;}" +
+      ".mgj-qimg{width:100%;height:100%;min-height:430px;object-fit:cover;}" +
+      ".mgj-qbody{padding:42px 34px 34px;display:flex;flex-direction:column;}" +
+      ".mgj-qx{position:absolute;right:16px;top:14px;border:0;background:none;font-size:20px;cursor:pointer;z-index:1;}" +
+      ".mgj-qk{font-size:8px;font-weight:600;letter-spacing:.22em;color:#888;text-transform:uppercase;}" +
+      ".mgj-qn{font-size:14px;line-height:1.55;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 8px;}" +
+      ".mgj-qp{font-size:14px;margin-bottom:28px;}" +
+      ".mgj-ql{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px;}" +
+      ".mgj-sizes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}" +
+      ".mgj-size{min-width:44px;height:40px;border:1px solid #d8d5d0;background:#fff;font:600 10px 'Montserrat',sans-serif;cursor:pointer;}" +
+      ".mgj-size.on{background:#0d0d0d;color:#fff;border-color:#0d0d0d;}" +
+      ".mgj-qadd{width:100%;border:0;background:#0d0d0d;color:#fff;padding:15px;font:600 9px 'Montserrat',sans-serif;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;}" +
+      ".mgj-qadd:disabled{opacity:.38;cursor:not-allowed;}" +
+      ".mgj-qdetail{margin-top:14px;text-align:center;font-size:9px;letter-spacing:.1em;color:#555;text-underline-offset:3px;}" +
+      "@media(max-width:560px){.mgj-qv{grid-template-columns:1fr}.mgj-qimg{height:260px;min-height:0}.mgj-qbody{padding:28px 24px 26px}.mgj-qn{font-size:12px}.mgj-recs{padding-left:20px;padding-right:20px}}"
     );
 
     function cart() { try { return JSON.parse(localStorage.getItem("mg_cart") || "[]") || []; } catch (e) { return []; } }
@@ -2536,6 +2589,99 @@
     }
 
     function level(st) { var l = 0; for (var i = 0; i < TIERS.length; i++) { if (st.usd >= TIERS[i].t) l = i + 1; } return l; }
+
+    /* ---- jest satırları → LF cart cookie (checkout görünürlüğü) ----------
+       Kazanılan jestler artık GERÇEK cookie satırı: LF checkout'u cookie'den
+       kurar, satır orada $75 doğar, JEST indirim kodu (%100, yalnız 3 çapa
+       ürünü) toplamı sıfırlar. Jest satırları mirror'a (mg_cart) GİRMEZ —
+       merdiven matematiği ve drawer çizimi ücretli satırlardan yaşar; §14
+       resync'i mirror'dan cookie kurarken mg_jest_gifts'i geri ekler. */
+    var GIFT_KEY = "mg_jest_gifts";
+    function ckRead() {
+      var m = document.cookie.match(/(?:^|;\s*)(lf_\d+_cart)=([^;]*)/);
+      if (!m) return null;
+      try { return { name: m[1], data: JSON.parse(decodeURIComponent(m[2]) || "null") }; } catch (e) { return { name: m[1], data: null }; }
+    }
+    function ckWrite(name, data) { try { document.cookie = name + "=" + encodeURIComponent(JSON.stringify(data)) + "; path=/"; } catch (e) {} }
+    function giaVid() { var s = ""; try { s = localStorage.getItem("mg_jest_gia_size") || ""; } catch (e) {} return TIERS[2].v[s] || TIERS[2].v.M; }
+    function wantedGiftVids(lvl) {
+      var out = [];
+      if (lvl >= 1) out.push(TIERS[0].vid);
+      if (lvl >= 2) out.push(TIERS[1].vid);
+      if (lvl >= 3) out.push(giaVid());
+      return out;
+    }
+    function allGiftVids() {
+      var m = {}; m[String(TIERS[0].vid)] = 1; m[String(TIERS[1].vid)] = 1;
+      for (var k in TIERS[2].v) m[String(TIERS[2].v[k])] = 1;
+      return m;
+    }
+    function syncGifts(st, lvl) {
+      var want = wantedGiftVids(lvl);
+      /* çapa ürünü zaten ÜCRETLİ satırsa jest kopyası ekleme: inline dedupe
+         aynı vid'in iki kaydını tek satıra (adet 2) eritir, mirror bozulur */
+      var paid = {};
+      if (st) st.items.forEach(function (it) { if (it.vid != null) paid[String(it.vid)] = 1; });
+      want = want.filter(function (v) { return !paid[String(v)]; });
+      try { if (want.length) localStorage.setItem(GIFT_KEY, JSON.stringify(want)); else localStorage.removeItem(GIFT_KEY); } catch (e) {}
+      var ck = ckRead(); if (!ck || !ck.data || !Array.isArray(ck.data.body)) return;
+      var ALL = allGiftVids(), wantS = want.map(String), changed = false, keep = [];
+      ck.data.body.forEach(function (e) {
+        var v = e && e.variants && e.variants[0];
+        var id = v && v.id != null ? String(v.id) : "";
+        if (id && ALL[id] && !paid[id]) { /* yönettiğimiz jest satırı */
+          if (wantS.indexOf(id) === -1) { changed = true; return; } /* düşen kademe / beden değişimi → at */
+          if ((+v.quantity || 1) !== 1) { v.quantity = 1; changed = true; }
+        }
+        keep.push(e);
+      });
+      want.forEach(function (vid) {
+        var has = keep.some(function (e) { var v = e && e.variants && e.variants[0]; return v && String(v.id) === String(vid); });
+        if (!has) { keep.push({ variants: [{ id: vid, quantity: 1 }], price_bundle: null }); changed = true; }
+      });
+      if (changed) ckWrite(ck.name, { body: keep });
+    }
+    function clearGifts() {
+      var had = null; try { had = localStorage.getItem(GIFT_KEY); } catch (e) {}
+      if (!had) return;
+      var vids = []; try { vids = (JSON.parse(had) || []).map(String); } catch (e) {}
+      try { localStorage.removeItem(GIFT_KEY); } catch (e) {}
+      var ck = ckRead(); if (!ck || !ck.data || !Array.isArray(ck.data.body) || !vids.length) return;
+      var keep = ck.data.body.filter(function (e) {
+        var v = e && e.variants && e.variants[0];
+        return !(v && vids.indexOf(String(v.id)) > -1);
+      });
+      if (keep.length !== ck.data.body.length) ckWrite(ck.name, { body: keep });
+    }
+
+    /* Checkout'ta JEST kodunu bir kez otomatik uygula. Alan doluysa (müşteri
+       kendi kodunu yazıyorsa) asla yarışma — tek deneme, sayfa başına. */
+    var couponTried = false;
+    function setNative(el, v) {
+      try {
+        var d = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value");
+        if (d && d.set) d.set.call(el, v); else el.value = v;
+      } catch (e) { el.value = v; }
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    function couponPass() {
+      if (couponTried || !armed()) return;
+      if (!(window.data && window.data.step_type === "checkout_page")) return;
+      var gifts = []; try { gifts = JSON.parse(localStorage.getItem(GIFT_KEY) || "[]"); } catch (e) {}
+      if (!gifts.length) return;
+      var inp = document.querySelector('input[name="discount_code"]');
+      if (!inp || inp.value) return;
+      var btn = null;
+      [].slice.call(document.querySelectorAll("button")).forEach(function (b) {
+        if (!btn && /^(uygula|apply)$/i.test((b.innerText || "").trim())) btn = b;
+      });
+      if (!btn) return;
+      couponTried = true;
+      setNative(inp, "JEST");
+      setTimeout(function () { btn.click(); }, 150);
+    }
+    setInterval(couponPass, 900);
     /* crossing detector: remembers the highest tier already celebrated so the
        congratulation fires ONCE, at the moment the threshold is crossed */
     function congrat(lvl) {
@@ -2550,17 +2696,21 @@
       var goal = "", fill = 1, prev = lvl > 0 ? TIERS[lvl - 1].t : 0, next = TIERS[lvl] || null;
       if (next) fill = Math.max(0, Math.min(1, (st.usd - prev) / (next.t - prev)));
       if (cg) goal = '<div class="mgj-congrat">' + TIERS[lvl - 1].won + "</div>";
-      else if (next) goal = '<div class="mgj-goal">' + next.n + " için " + money(next.t - st.usd, st) + " kaldı.</div>";
-      else goal = '<div class="mgj-goal">Üçü de seninle.</div>';
+      else if (next) goal = '<div class="mgj-goal"><img class="mgj-next" src="' + next.img + '" alt=""><span class="mgj-goaltx"><strong>Sıradaki jest · ' + next.n + '</strong><span>' + money(next.t - st.usd, st) + ' kaldı.</span></span></div>';
+      else goal = '<div class="mgj-goal"><span class="mgj-goaltx"><strong>Jestlerin tamam</strong><span>Üçü de seninle.</span></span></div>';
       return '<div class="mgj-track"><div class="mgj-fill" style="width:' + (fill * 100).toFixed(1) + '%"></div></div>' + goal;
     }
-    /* earned gifts live among the bag lines as item-look rows (no price — the
-       right-hand slot carries the JEST tag; fulfillment adds them via dxm) */
-    function giftsHTML(lvl) {
+    /* Earned gifts live among the bag lines. Shelf value is deliberately
+       visible but struck through: the charged value is the JEST, not $0. */
+    function giftsHTML(lvl, st) {
+      var giaSize = ""; try { giaSize = localStorage.getItem("mg_jest_gia_size") || ""; } catch (e) {}
       return TIERS.slice(0, lvl).map(function (g) {
+        var sub = g.n === "GIA"
+          ? '<button type="button" class="mgj-gsize" onclick="window.__mgJestGia()">' + (giaSize ? "Beden: " + giaSize : "Bedenini seç") + '</button>'
+          : "Çantanla birlikte gönderilir.";
         return '<div class="mgj-gitem"><img class="mgj-gimg" src="' + g.img + '" alt="">'
-          + '<div class="mgj-ginfo"><div class="mgj-gtop"><div class="mgj-gnm">' + g.full + '</div><span class="mgj-gtag">JEST</span></div>'
-          + '<div class="mgj-gsub">Çantanla birlikte gönderilir.</div></div></div>';
+          + '<div class="mgj-ginfo"><div class="mgj-gtop"><div class="mgj-gnm">' + g.full + '</div><span class="mgj-gprice"><span class="mgj-gold">' + price(g.usd, st) + '</span><span class="mgj-gtag">JEST</span></span></div>'
+          + '<div class="mgj-gsub">' + sub + '</div></div></div>';
       }).join("");
     }
     function recsHTML(st) {
@@ -2569,25 +2719,69 @@
       var rem = 0; for (var i = 0; i < TIERS.length; i++) { if (st.usd < TIERS[i].t) { rem = TIERS[i].t - st.usd; break; } }
       var pool = RECS.filter(function (r) { var rn = r.n.toUpperCase(); return !bag.some(function (bn) { return bn.indexOf(rn) === 0; }); });
       if (rem > 0) pool.sort(function (a, b) { return Math.abs(a.usd - rem) - Math.abs(b.usd - rem); });
-      return pool.slice(0, 3).map(function (r) {
-        return '<a class="mgj-card" href="' + r.u + '"><img class="mgj-cimg" src="' + r.img + '" alt=""><span class="mgj-cnm">' + r.n + '</span><span class="mgj-cpr">' + price(r.usd, st) + "</span></a>";
+      return pool.slice(0, 10).map(function (r) {
+        var ri = RECS.indexOf(r);
+        return '<div class="mgj-card"><a href="' + r.u + '"><img class="mgj-cimg" src="' + r.img + '" alt=""></a><a href="' + r.u + '" class="mgj-cnm">' + r.n + '</a><span class="mgj-cpr">' + price(r.usd, st) + '</span><button type="button" class="mgj-add" onclick="window.__mgJestQuick(' + ri + ')">Çantaya ekle</button></div>';
       }).join("");
     }
 
-    function sweep() { ["mgj-bar", "mgj-gifts", "mgj-recs"].forEach(function (id) { var n = document.getElementById(id); if (n) n.remove(); }); }
+    var quick = null, quickSize = "", giaAsked = false;
+    function closeQuick() { var o = document.getElementById("mgj-qov"); if (o) o.remove(); quick = null; quickSize = ""; }
+    function quickHTML(p, st, gift) {
+      var sizes = gift ? p.sizes : Object.keys(p.v || {}), only = sizes.length === 1;
+      if (only) quickSize = sizes[0];
+      return '<div id="mgj-qov"><div class="mgj-qv" role="dialog" aria-modal="true" aria-label="Beden seçimi">'
+        + '<button type="button" class="mgj-qx" onclick="window.__mgJestClose()" aria-label="Kapat">×</button><img class="mgj-qimg" src="' + p.img + '" alt="">'
+        + '<div class="mgj-qbody"><span class="mgj-qk">' + (gift ? "Jest beden seçimi" : "Hızlı görünüm") + '</span><div class="mgj-qn">' + (p.full || p.n) + '</div>'
+        + '<div class="mgj-qp">' + (gift ? '<span class="mgj-gold">' + price(p.usd, st) + '</span> &nbsp; JEST' : price(p.usd, st)) + '</div>'
+        + '<div class="mgj-ql">Beden</div><div class="mgj-sizes">' + sizes.map(function (z) { return '<button type="button" class="mgj-size' + (only ? " on" : "") + '" onclick="window.__mgJestSize(this,\'' + z + '\')">' + z + '</button>'; }).join("") + '</div>'
+        + '<button type="button" id="mgj-qadd" class="mgj-qadd" ' + (only ? "" : "disabled") + ' onclick="window.__mgJestCommit()">' + (gift ? "Bedeni onayla" : "Çantaya ekle") + '</button>'
+        + (gift ? "" : '<a class="mgj-qdetail" href="' + p.u + '">Silüeti incele</a>') + '</div></div></div>';
+    }
+    function openQuick(p, gift) {
+      var st = state(); if (!st || !p) return;
+      closeQuick(); quick = { p: p, gift: !!gift, st: st };
+      var w = document.createElement("div"); w.innerHTML = quickHTML(p, st, !!gift); document.body.appendChild(w.firstChild);
+    }
+    window.__mgJestClose = closeQuick;
+    window.__mgJestQuick = function (i) { openQuick(RECS[i], false); };
+    window.__mgJestGia = function () { openQuick(TIERS[2], true); };
+    window.__mgJestSize = function (b, z) {
+      quickSize = z; var root = b.closest(".mgj-qv"); if (!root) return;
+      [].slice.call(root.querySelectorAll(".mgj-size")).forEach(function (x) { x.classList.toggle("on", x === b); });
+      var add = root.querySelector("#mgj-qadd"); if (add) add.disabled = false;
+    };
+    window.__mgJestCommit = function () {
+      if (!quick || !quickSize) return;
+      if (quick.gift) {
+        try { localStorage.setItem("mg_jest_gia_size", quickSize); } catch (e) {}
+        closeQuick(); lastSig = ""; pass(); return;
+      }
+      var p = quick.p, vid = p.v && p.v[quickSize]; if (!vid || !window.__mgAddCartItem) return;
+      var ok = window.__mgAddCartItem({ vid: vid, name: p.n, img: p.img, size: "Beden: " + quickSize, qty: 1,
+        usd: p.usd, sym: quick.st.sym, pn: p.usd * quick.st.rate, price: price(p.usd, quick.st) });
+      if (ok) closeQuick();
+    };
+
+    function sweep() { ["mgj-bar", "mgj-gifts", "mgj-recs", "mgj-qov"].forEach(function (id) { var n = document.getElementById(id); if (n) n.remove(); }); }
     var lastSig = "";
     function pass() {
-      if (!armed()) { sweep(); return; }
+      if (!armed()) { sweep(); clearGifts(); return; }
       var bd = document.getElementById("mgcd-bd");
       if (!bd || !bd.querySelector(".mgc-item")) {
-        /* emptied bag (checkout done / cleared) → next bag celebrates from zero */
-        if (!cart().length) { try { localStorage.setItem("mg_jest_lvl", "0"); localStorage.setItem("mg_jest_ts", "0"); } catch (e) {} }
+        /* emptied bag (checkout done / cleared) → next bag celebrates from zero.
+           bd yoksa drawer bu sayfada hiç açılmadı demektir — cookie'deki jest
+           satırlarına DOKUNMA (önceki sayfadan meşru taşındılar). */
+        if (!cart().length) { try { localStorage.setItem("mg_jest_lvl", "0"); localStorage.setItem("mg_jest_ts", "0"); } catch (e) {} if (bd) clearGifts(); }
         sweep(); lastSig = ""; return;
       }
       var st = state();
-      if (!st) { sweep(); lastSig = ""; return; }
+      if (!st) { sweep(); clearGifts(); lastSig = ""; return; }
       var lvl = level(st), cg = congrat(lvl);
-      var sig = st.usd + "|" + st.items.length + "|" + st.rate.toFixed(2) + "|" + lvl + "|" + (cg ? 1 : 0);
+      var sig = st.usd + "|" + st.items.length + "|" + st.rate.toFixed(2) + "|" + lvl + "|" + (cg ? 1 : 0) + "|" + (lvl >= 3 ? giaVid() : 0);
+      /* her pass'te re-assert: LF'nin server Set-Cookie ezmesi jest satırını
+         sessizce düşürebilir; syncGifts yalnız fark varsa yazar (ucuz) */
+      syncGifts(st, lvl);
       var bar = document.getElementById("mgj-bar"), gf = document.getElementById("mgj-gifts"), rc = document.getElementById("mgj-recs");
       if (bar && rc && (lvl === 0 || gf) && sig === lastSig) return;
       lastSig = sig;
@@ -2600,11 +2794,15 @@
           var its = bd.querySelectorAll(".mgc-item"), last = its[its.length - 1];
           last.parentNode.insertBefore(gf, last.nextSibling);
         }
-        gf.innerHTML = giftsHTML(lvl);
+        gf.innerHTML = giftsHTML(lvl, st);
       } else if (gf) { gf.remove(); }
       if (!rc) { rc = document.createElement("div"); rc.id = "mgj-recs"; rc.className = "mgj-recs"; bd.appendChild(rc); }
       var recs = recsHTML(st);
       rc.innerHTML = recs ? '<p class="mgj-rttl">Yanına yakışır.</p><div class="mgj-rrow">' + recs + "</div>" : "";
+      if (lvl >= 3 && !giaAsked) {
+        var gs = ""; try { gs = localStorage.getItem("mg_jest_gia_size") || ""; } catch (e) {}
+        giaAsked = true; if (!gs) setTimeout(function () { window.__mgJestGia(); }, 180);
+      }
     }
     setInterval(pass, 700);
   })();
