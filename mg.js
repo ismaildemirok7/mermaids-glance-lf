@@ -2483,6 +2483,7 @@
     var LIVE = false; /* ← flips true only with I APPROVE JEST LADDER ACTIVATION V2 */
     try { var qm = location.search.match(/[?&]mgjest=([01])/); if (qm) localStorage.setItem("mg_jest", qm[1]); } catch (e) {}
     function armed() { if (LIVE) return true; try { return localStorage.getItem("mg_jest") === "1"; } catch (e) { return false; } }
+    window.__mgJestArmed = armed; /* §24 duyuru çubuğu aynı kapıdan yaşar */
 
     var A = "https://assets.lightfunnels.com/account-99158/images_library/";
     /* won = one-shot congratulation shown for a few seconds at the crossing
@@ -2543,13 +2544,18 @@
       ".mgj-gsize{border:0;background:none;padding:0;font:inherit;color:#0d0d0d;text-decoration:underline;text-underline-offset:2px;cursor:pointer;}" +
       ".mgj-recs{padding:20px 28px 24px;border-top:1px solid #f0eeeb;font-family:'Montserrat',sans-serif;}" +
       ".mgj-rttl{font-size:12px;font-weight:500;letter-spacing:.02em;color:#0d0d0d;margin:0 0 14px;text-align:left;}" +
-      ".mgj-rrow{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}" +
+      /* yatay kart karuseli: her kaydırmada 1 tam kart + sıradakinin ~üçte biri
+         görünür (kart %72 + 12px gap → kalan ~%34 peek); scroll-snap kart başına
+         hizalar. Kart yüksekliği SABİT — isim uzunluğu hizayı bozamaz. */
+      ".mgj-rrow{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;}" +
       ".mgj-rrow::-webkit-scrollbar{display:none;}" +
-      ".mgj-card{flex:0 0 auto;width:112px;text-decoration:none;display:flex;flex-direction:column;}" +
-      ".mgj-cimg{width:112px;height:140px;object-fit:cover;border:1px solid #e6e4e0;display:block;}" +
-      ".mgj-cnm{margin-top:7px;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#0d0d0d;line-height:1.35;display:block;text-align:left;}" +
-      ".mgj-cpr{margin-top:4px;font-size:11px;font-weight:500;color:#0d0d0d;display:block;text-align:left;}" +
-      ".mgj-add{margin-top:9px;width:100%;border:1px solid #0d0d0d;background:#fff;color:#0d0d0d;padding:8px 5px;font:600 8px 'Montserrat',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}" +
+      ".mgj-card{flex:0 0 72%;scroll-snap-align:start;display:flex;gap:14px;border:1px solid #e6e4e0;background:#fff;padding:10px;height:138px;box-sizing:border-box;}" +
+      ".mgj-cil{flex:none;display:block;}" +
+      ".mgj-cimg{width:88px;height:116px;object-fit:cover;border:1px solid #f0eeeb;display:block;}" +
+      ".mgj-cinfo{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;}" +
+      ".mgj-cnm{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#0d0d0d;line-height:1.4;text-decoration:none;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-align:left;}" +
+      ".mgj-cpr{margin-top:5px;font-size:11px;font-weight:500;color:#0d0d0d;display:block;text-align:left;}" +
+      ".mgj-add{margin-top:auto;border:1px solid #0d0d0d;background:#fff;color:#0d0d0d;padding:8px 14px;font:600 8px 'Montserrat',sans-serif;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;}" +
       ".mgj-add:hover{background:#0d0d0d;color:#fff;}" +
       "#mgj-qov{position:fixed;inset:0;background:rgba(13,13,13,.54);z-index:300000;display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Montserrat',sans-serif;}" +
       ".mgj-qv{width:min(680px,100%);max-height:90vh;overflow:auto;background:#fff;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);position:relative;}" +
@@ -2575,9 +2581,16 @@
       var its = cart(); if (!its.length) return null;
       var usd = 0, pn = 0, sym = "";
       for (var i = 0; i < its.length; i++) {
-        var it = its[i], q = +it.qty || 1;
-        if (!(+it.usd > 0)) return null;
-        usd += (+it.usd) * q; pn += (+it.pn || 0) * q;
+        var it = its[i], q = +it.qty || 1, u = +it.usd;
+        /* usd alanı bu deploy'dan önce eklenen satırlarda yok: mağaza para
+           birimi USD olduğundan, satır $ (ya da sembolsüz) yakalandıysa pn
+           zaten USD'dir — merdiveni saklamak yerine onu kullan. ₺ satırda
+           usd yoksa kur türetilemez → yine sakla (fail-quiet). */
+        if (!(u > 0)) {
+          if ((!it.sym || it.sym === "$") && +it.pn > 0) u = +it.pn;
+          else return null;
+        }
+        usd += u * q; pn += (+it.pn || 0) * q;
         if (!sym && it.sym) sym = it.sym;
       }
       var rate = 1;
@@ -2697,7 +2710,9 @@
       if (rem > 0) pool.sort(function (a, b) { return Math.abs(a.usd - rem) - Math.abs(b.usd - rem); });
       return pool.slice(0, 10).map(function (r) {
         var ri = RECS.indexOf(r);
-        return '<div class="mgj-card"><a href="' + r.u + '"><img class="mgj-cimg" src="' + r.img + '" alt=""></a><a href="' + r.u + '" class="mgj-cnm">' + r.n + '</a><span class="mgj-cpr">' + price(r.usd, st) + '</span><button type="button" class="mgj-add" onclick="window.__mgJestQuick(' + ri + ')">Çantaya ekle</button></div>';
+        return '<div class="mgj-card"><a class="mgj-cil" href="' + r.u + '"><img class="mgj-cimg" src="' + r.img + '" alt=""></a>'
+          + '<div class="mgj-cinfo"><a href="' + r.u + '" class="mgj-cnm">' + r.n + '</a><span class="mgj-cpr">' + price(r.usd, st) + '</span>'
+          + '<button type="button" class="mgj-add" onclick="window.__mgJestQuick(' + ri + ')">Çantaya ekle</button></div></div>';
       }).join("");
     }
 
@@ -2734,7 +2749,7 @@
         closeQuick(); lastSig = ""; pass(); return;
       }
       var p = quick.p, vid = p.v && p.v[quickSize]; if (!vid || !window.__mgAddCartItem) return;
-      var ok = window.__mgAddCartItem({ vid: vid, name: p.n, img: p.img, size: "Beden: " + quickSize, qty: 1,
+      var ok = window.__mgAddCartItem({ vid: vid, name: p.n, img: p.img, size: "Beden: " + quickSize, qty: 1, url: p.u,
         usd: p.usd, sym: quick.st.sym, pn: p.usd * quick.st.rate, price: price(p.usd, quick.st) });
       if (ok) closeQuick();
     };
@@ -2774,7 +2789,7 @@
       } else if (gf) { gf.remove(); }
       if (!rc) { rc = document.createElement("div"); rc.id = "mgj-recs"; rc.className = "mgj-recs"; bd.appendChild(rc); }
       var recs = recsHTML(st);
-      rc.innerHTML = recs ? '<p class="mgj-rttl">Yanına yakışır.</p><div class="mgj-rrow">' + recs + "</div>" : "";
+      rc.innerHTML = recs ? '<p class="mgj-rttl">Her gecenin kendi silüeti var.</p><div class="mgj-rrow">' + recs + "</div>" : "";
       if (lvl >= 3 && !giaAsked) {
         var gs = ""; try { gs = localStorage.getItem("mg_jest_gia_size") || ""; } catch (e) {}
         giaAsked = true; if (!gs) setTimeout(function () { window.__mgJestGia(); }, 180);
@@ -2783,5 +2798,80 @@
     setInterval(pass, 700);
   })();
 
+
+  /* =========================================================================
+     §24 — JEST DUYURU ÇUBUĞU (rotating announcement bar, §23 gate'ine bağlı)
+     3 slayt = merdivenin 3 çapası ($120 BEL / $170 ESME / $280 GIA). 5 sn'de
+     bir kendiliğinden döner; tıklama bir sonrakine geçirir (sayaç sıfırlanır).
+     Çubuk fixed #mg-header'ın İÇİNE ilk çocuk olarak girer → header'ın
+     hide-on-scroll davranışını aynen paylaşır; body padding'i mgj-ab sınıfı
+     telafi eder (inline 68/58px kuralından daha spesifik olduğu için kazanır).
+     Tutarlar varsayılan $ (checkout USD tahsil eder); çanta aynasında ₺ satır
+     varsa kur oradan türetilir ve eşikler yukarı-yuvarlak ₺'ye çevrilir (§23
+     ile aynı ilke: asla gerçekte olduğundan kısa mesafe vaat etme).
+     Checkout / thank-you sayfalarında çizilmez. LF dersi: interval, observer
+     değil. Gate: window.__mgJestArmed (§23) — LIVE flip'inde otomatik canlanır.
+     ========================================================================= */
+  (function () {
+    if (window.__mgJestAbar) return; window.__mgJestAbar = true;
+    var TIERS = [
+      { t: 120, m: "Çantan {A} çizgisine ulaştığında BEL senin. İlk jest." },
+      { t: 170, m: "Çantan {A} çizgisine ulaştığında ESME de senin. İkinci jest." },
+      { t: 280, m: "Çantan {A} çizgisine ulaştığında GIA da senin. Üçü birden." }
+    ];
+    css(
+      "#mgj-abar{background:#0d0d0d;color:#fafafa;height:36px;position:relative;overflow:hidden;cursor:pointer;font-family:'Montserrat',sans-serif;}" +
+      "#mgj-abar span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 34px;font-size:10px;font-weight:500;letter-spacing:.08em;text-align:center;line-height:1.3;opacity:0;transition:opacity .45s ease;pointer-events:none;}" +
+      "#mgj-abar span.on{opacity:1;}" +
+      "body.mgj-ab{padding-top:104px!important;}" +
+      "@media(max-width:920px){body.mgj-ab{padding-top:94px!important;}}"
+    );
+    function armed() { return !!(window.__mgJestArmed && window.__mgJestArmed()); }
+    function blockedPage() { return /m2xi2cayp|h6d5j2q1y/.test(location.pathname.toLowerCase()); }
+    function rate() { /* §23 ile aynı türetme: Σpn/Σusd, yalnız ₺ aynadan */
+      try {
+        var its = JSON.parse(localStorage.getItem("mg_cart") || "[]") || [], u = 0, p = 0, s = "";
+        its.forEach(function (it) { var q = +it.qty || 1; u += (+it.usd || 0) * q; p += (+it.pn || 0) * q; if (!s && it.sym) s = it.sym; });
+        if (s === "₺" && u > 0) { var r = p / u; if (r > 10 && r < 200) return r; }
+      } catch (e) {}
+      return 0;
+    }
+    function amt(usd) { var r = rate(); return r ? "₺" + (Math.ceil(usd * r / 10) * 10).toLocaleString("tr-TR") : "$" + usd; }
+    var idx = 0, timer = null, lastAmt = "";
+    function show(bar) {
+      var sp = bar.querySelectorAll("span");
+      for (var i = 0; i < sp.length; i++) sp[i].classList.toggle("on", i === idx);
+    }
+    /* paint = metinleri (yeniden) kur — yalnız ilk çizimde ve kur değişince;
+       rotasyon show() ile sınıf değiştirir ki opacity geçişi yaşasın */
+    function paint(bar) {
+      bar.innerHTML = TIERS.map(function (x) { return "<span>" + x.m.replace("{A}", amt(x.t)) + "</span>"; }).join("");
+      show(bar);
+    }
+    function next(bar, manual) {
+      idx = (idx + 1) % TIERS.length; show(bar);
+      if (manual) { clearInterval(timer); timer = setInterval(function () { next(bar); }, 5000); }
+    }
+    function tick() {
+      var bar = document.getElementById("mgj-abar");
+      if (!armed() || blockedPage()) {
+        if (bar) { bar.remove(); document.body.classList.remove("mgj-ab"); clearInterval(timer); timer = null; }
+        return;
+      }
+      var hd = document.getElementById("mg-header"); if (!hd) return;
+      if (!bar) {
+        bar = document.createElement("div"); bar.id = "mgj-abar";
+        bar.addEventListener("click", function () { next(bar, true); });
+        hd.insertBefore(bar, hd.firstChild);
+        document.body.classList.add("mgj-ab");
+        lastAmt = amt(120); paint(bar);
+        timer = setInterval(function () { next(bar); }, 5000);
+      } else {
+        var k = amt(120);
+        if (k !== lastAmt) { lastAmt = k; paint(bar); }
+      }
+    }
+    setInterval(tick, 800); tick();
+  })();
 
 })();
