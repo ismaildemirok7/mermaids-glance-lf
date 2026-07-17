@@ -2480,7 +2480,7 @@
      ========================================================================= */
   (function () {
     if (window.__mgJestLadder) return; window.__mgJestLadder = true;
-    var LIVE = false; /* ← flips true only with I APPROVE JEST LADDER ACTIVATION V2 */
+    var LIVE = true; /* AKTİF: sahip onayı "I APPROVE JEST LADDER ACTIVATION V2" 2026-07-17 */
     try { var qm = location.search.match(/[?&]mgjest=([01])/); if (qm) localStorage.setItem("mg_jest", qm[1]); } catch (e) {}
     function armed() { if (LIVE) return true; try { return localStorage.getItem("mg_jest") === "1"; } catch (e) { return false; } }
     window.__mgJestArmed = armed; /* §24 duyuru çubuğu aynı kapıdan yaşar */
