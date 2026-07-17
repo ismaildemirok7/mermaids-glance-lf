@@ -2884,7 +2884,40 @@
       return 0;
     }
     function amt(usd) { var r = rate(); return r ? "₺" + (Math.ceil(usd * r / 10) * 10).toLocaleString("tr-TR") : "$" + usd; }
-    var idx = 0, timer = null, lastAmt = "";
+    var idx = 0, timer = null, lastAmt = "", wbTxt = "";
+    /* --- "Çantan seni bekliyor." (sahip onayı 2026-07-17): DÖNEN ziyaretçi —
+       oturum yeni (sessionStorage temiz) ama çantası dolu — ilk slayt olarak
+       kişisel karşılama görür. Her kelime doğru: çanta gerçekten duruyor,
+       mesafe gerçekten o (Zeigarnik + kişiselleştirme; sayaç/rezervasyon
+       yalanı bilinçli RED). Oturumda bir kez; slayt ilk turdan sonra dönüşe
+       girmez (wrap 1'e döner). */
+    function cartUsd() {
+      try {
+        var its = JSON.parse(localStorage.getItem("mg_cart") || "[]") || [];
+        if (!its.length) return 0;
+        var usd = 0;
+        for (var i = 0; i < its.length; i++) {
+          var it = its[i], q = +it.qty || 1, u = +it.usd;
+          if (!(u > 0)) { if ((!it.sym || it.sym === "$") && +it.pn > 0) u = +it.pn; else return 0; }
+          usd += u * q;
+        }
+        return usd;
+      } catch (e) { return 0; }
+    }
+    function wbMsg() {
+      try { if (sessionStorage.getItem("mg_wb")) return ""; } catch (e) { return ""; }
+      var usd = cartUsd(); if (!(usd > 0)) return "";
+      var lvl = 0; for (var i = 0; i < TIERS.length; i++) { if (usd >= TIERS[i].t) lvl = i + 1; }
+      var m;
+      if (lvl >= 3) m = "Çantan seni bekliyor. Üçü de senin.";
+      else {
+        var kalan = amt2(TIERS[lvl].t - usd);
+        m = "Çantan seni bekliyor. " + (lvl === 1 ? "BEL senin — ESME" : lvl === 2 ? "GIA" : "BEL") + " için " + kalan + " kaldı.";
+      }
+      try { sessionStorage.setItem("mg_wb", "1"); } catch (e) {}
+      return m;
+    }
+    function amt2(u) { var r = rate(); return r ? "₺" + (Math.ceil(u * r / 10) * 10).toLocaleString("tr-TR") : "$" + Math.ceil(u); }
     function show(bar) {
       var sp = bar.querySelectorAll("span");
       for (var i = 0; i < sp.length; i++) sp[i].classList.toggle("on", i === idx);
@@ -2892,11 +2925,16 @@
     /* paint = metinleri (yeniden) kur — yalnız ilk çizimde ve kur değişince;
        rotasyon show() ile sınıf değiştirir ki opacity geçişi yaşasın */
     function paint(bar) {
-      bar.innerHTML = TIERS.map(function (x) { return "<span>" + x.m.replace("{A}", amt(x.t)) + "</span>"; }).join("");
+      var spans = (wbTxt ? ["<span>" + wbTxt + "</span>"] : []).concat(
+        TIERS.map(function (x) { return "<span>" + x.m.replace("{A}", amt(x.t)) + "</span>"; }));
+      bar.innerHTML = spans.join("");
       show(bar);
     }
     function next(bar, manual) {
-      idx = (idx + 1) % TIERS.length; show(bar);
+      var n = bar.querySelectorAll("span").length;
+      idx = idx + 1;
+      if (idx >= n) idx = wbTxt ? 1 : 0; /* karşılama slaytı döngüye geri girmez */
+      show(bar);
       if (manual) { clearInterval(timer); timer = setInterval(function () { next(bar); }, 5000); }
     }
     function tick() {
@@ -2911,8 +2949,13 @@
         bar.addEventListener("click", function () { next(bar, true); });
         hd.insertBefore(bar, hd.firstChild);
         document.body.classList.add("mgj-ab");
+        wbTxt = wbMsg(); idx = 0;
         lastAmt = amt(120); paint(bar);
-        timer = setInterval(function () { next(bar); }, 5000);
+        if (wbTxt) { /* kişisel karşılamaya biraz daha nefes: 7.5 sn */
+          setTimeout(function () { if (!timer && bar.isConnected) { next(bar); timer = setInterval(function () { next(bar); }, 5000); } }, 7500);
+        } else {
+          timer = setInterval(function () { next(bar); }, 5000);
+        }
       } else {
         var k = amt(120);
         if (k !== lastAmt) { lastAmt = k; paint(bar); }
