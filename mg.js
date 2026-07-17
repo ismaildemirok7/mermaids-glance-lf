@@ -2906,7 +2906,9 @@
       ".mgjp-sub{margin-top:6px;font-size:11px;font-weight:400;letter-spacing:.02em;color:#555;line-height:1.5;}" +
       ".mgjp-row{display:flex;gap:12px;margin-top:14px;}" +
       ".mgjp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-decoration:none;}" +
-      ".mgjp-t img{width:100%;aspect-ratio:4/5;object-fit:cover;border:1px solid #e6e4e0;display:block;}" +
+      /* sabit yükseklik: LF ortamında aspect-ratio güvenilir uygulanmadı
+         (canlı bulgu 2026-07-17 — görseller dev çizildi) */
+      ".mgjp-t img{width:100%;height:118px;object-fit:cover;border:1px solid #e6e4e0;display:block;}" +
       ".mgjp-n{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#0d0d0d;}" +
       ".mgjp-a{font-size:10px;font-weight:400;color:#7a7a7a;}" +
       ".mgjp-t.on .mgjp-a{color:#0d0d0d;font-weight:600;}" +
