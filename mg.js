@@ -2842,6 +2842,45 @@
         var c = JSON.parse(localStorage.getItem("mg_jest_rate") || "null");
         if (c && c.r > 10 && c.r < 200 && Date.now() - c.ts < 864e5) return c.r;
       } catch (e) {}
+      var d = derive();
+      if (d) { try { localStorage.setItem("mg_jest_rate", JSON.stringify({ r: d, ts: Date.now() })); } catch (e) {} }
+      return d;
+    }
+    /* derive: temiz depoda (gizli sekme ilk sayfa) bile kur bul — sayfanın
+       KENDİ verisinden. (1) PDP: product.price USD ↔ .mg-pdp-price ₺ metni;
+       (2) her sayfa: window.data.collections[].items[] slug+USD taban ↔
+       o slug'ın DOM kartındaki ₺ fiyat (inline __mgPrice parser'ı). NOT:
+       window.data.currency_rate GÜVENİLMEZ (canlı bulgu 2026-07-17: 1.14
+       gösterirken ekran 47.1 ile çeviriyordu — SSR artığı). Cache'e yazılır,
+       yani maliyet ilk ziyaretle sınırlı. */
+    function derive() {
+      try {
+        var P = window.__mgPrice; if (!P) return 0;
+        var d = window.data || {};
+        if (d.product && +d.product.price > 0) {
+          var el = document.querySelector(".mg-pdp-price");
+          var pp = el && P((el.innerText || "").trim());
+          if (pp && pp.sym === "₺" && pp.pn > 0) { var r = pp.pn / +d.product.price; if (r > 10 && r < 200) return r; }
+        }
+        var cols = d.collections || [];
+        for (var i = 0; i < cols.length; i++) {
+          var its = (cols[i] && cols[i].items) || [];
+          for (var j = 0; j < its.length && j < 8; j++) {
+            var it = its[j]; if (!(it && +it.price > 0 && it.slug)) continue;
+            var a = document.querySelector('a[href*="' + it.slug + '"]'); if (!a) continue;
+            var node = a;
+            for (var up = 0; up < 3 && node; up++) {
+              var els = node.querySelectorAll ? node.querySelectorAll("div,span,p") : [];
+              for (var k = 0; k < els.length; k++) {
+                var e = els[k]; if (e.children.length) continue;
+                var p2 = P((e.innerText || "").trim());
+                if (p2 && p2.sym === "₺" && p2.pn > 0) { var r2 = p2.pn / +it.price; if (r2 > 10 && r2 < 200) return r2; }
+              }
+              node = node.parentElement;
+            }
+          }
+        }
+      } catch (e) {}
       return 0;
     }
     function amt(usd) { var r = rate(); return r ? "₺" + (Math.ceil(usd * r / 10) * 10).toLocaleString("tr-TR") : "$" + usd; }
