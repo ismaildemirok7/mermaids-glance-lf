@@ -2877,4 +2877,109 @@
     setInterval(tick, 800); tick();
   })();
 
+
+  /* =========================================================================
+     §25 — PDP JEST MODÜLÜ (goal-gradient, §23/§24 gate'ine bağlı)
+     ÇANTAYA EKLE + paket şeridinin altında, marka akordeonlarının (.mgpx)
+     üstünde kompakt kutu: 3 jest görseli eşikleriyle yan yana (çapa PDP'lerine
+     linkli), altında segment-göreli ilerleme çizgisi + tek durum cümlesi.
+     Kazanılan kademede eşik yerine "Senin." yazar. Nöro ilke: dürüst ödül +
+     hedefe-yaklaşma; sahte kıtlık YOK (marka + etik karar 2026-07-17).
+     Kur önceliği: (1) çanta aynasından Σpn/Σusd, (2) çanta boşsa PDP'nin
+     kendi fiyatı (window.data.product.price USD ↔ .mg-pdp-price ₺ metni,
+     inline __mgPrice parser'ı ile) — böylece boş çantada da eşikler ₺ görünür.
+     Eski usd'süz ₺ satır varsa çanta durumu bilinmez → statik eşik moduna düşer
+     (yanlış "kaldı" asla yazma). PDP kapısı inline export __mgPDPCol; LF dersi
+     gereği interval pass, sig ile gereksiz re-render yok.
+     ========================================================================= */
+  (function () {
+    if (window.__mgJestPdp) return; window.__mgJestPdp = true;
+    var A = "https://assets.lightfunnels.com/account-99158/images_library/";
+    var TIERS = [
+      { t: 120, n: "BEL",  u: "/products/eganleathersteelringbodyharness-noir-Qqh", img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
+      { t: 170, n: "ESME", u: "/products/esmesatinsheerlaceslitchemise-noirgRQX", img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
+      { t: 280, n: "GIA",  u: "/products/gianoirtullebodysuitgloveset-noirKGsR", img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
+    ];
+    css(
+      "#mgj-pdp{margin:18px 0 8px;border:1px solid #e6e4e0;background:#fff;padding:16px 18px 18px;font-family:'Montserrat',sans-serif;text-align:left;}" +
+      ".mgjp-hd{font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#0d0d0d;}" +
+      ".mgjp-sub{margin-top:6px;font-size:11px;font-weight:400;letter-spacing:.02em;color:#555;line-height:1.5;}" +
+      ".mgjp-row{display:flex;gap:12px;margin-top:14px;}" +
+      ".mgjp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-decoration:none;}" +
+      ".mgjp-t img{width:100%;aspect-ratio:4/5;object-fit:cover;border:1px solid #e6e4e0;display:block;}" +
+      ".mgjp-n{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#0d0d0d;}" +
+      ".mgjp-a{font-size:10px;font-weight:400;color:#7a7a7a;}" +
+      ".mgjp-t.on .mgjp-a{color:#0d0d0d;font-weight:600;}" +
+      ".mgjp-track{height:2px;background:#e6e4e0;position:relative;margin-top:16px;}" +
+      ".mgjp-fill{position:absolute;left:0;top:0;bottom:0;background:#0d0d0d;transition:width .4s ease;}" +
+      ".mgjp-line{margin-top:10px;font-size:11px;font-weight:400;letter-spacing:.02em;color:#0d0d0d;line-height:1.5;}"
+    );
+    function armed() { return !!(window.__mgJestArmed && window.__mgJestArmed()); }
+    function mirror() { try { return JSON.parse(localStorage.getItem("mg_cart") || "[]") || []; } catch (e) { return []; } }
+    /* cartState: {usd,rate} | usd:null=çanta bilinmiyor (₺ satırda usd yok) */
+    function cartState() {
+      var its = mirror(), usd = 0, pn = 0, sym = "", ok = its.length > 0;
+      for (var i = 0; i < its.length; i++) {
+        var it = its[i], q = +it.qty || 1, u = +it.usd;
+        if (!(u > 0)) { if ((!it.sym || it.sym === "$") && +it.pn > 0) u = +it.pn; else { ok = false; break; } }
+        usd += u * q; pn += (+it.pn || 0) * q; if (!sym && it.sym) sym = it.sym;
+      }
+      var rate = 0;
+      if (ok && sym === "₺" && usd > 0) { var r = pn / usd; if (r > 10 && r < 200) rate = r; else ok = false; }
+      if (!rate) { /* boş/bilinmez çanta → kuru PDP'nin kendi fiyatından türet */
+        try {
+          var base = window.data && window.data.product && +window.data.product.price;
+          var el = document.querySelector(".mg-pdp-price");
+          var pp = el && window.__mgPrice && window.__mgPrice((el.innerText || "").trim());
+          if (base > 0 && pp && pp.sym === "₺" && pp.pn > 0) { var r2 = pp.pn / base; if (r2 > 10 && r2 < 200) rate = r2; }
+        } catch (e) {}
+      }
+      return { usd: ok ? usd : (its.length ? null : 0), rate: rate };
+    }
+    function amt(u, rate) { return rate ? "₺" + (Math.ceil(u * rate / 10) * 10).toLocaleString("tr-TR") : "$" + u; }
+    function level(usd) { var l = 0; for (var i = 0; i < TIERS.length; i++) { if (usd >= TIERS[i].t) l = i + 1; } return l; }
+    function html(st) {
+      var usd = st.usd, rate = st.rate, lvl = usd == null ? -1 : level(usd);
+      var row = TIERS.map(function (x, i) {
+        var on = lvl > i;
+        return '<a class="mgjp-t' + (on ? " on" : "") + '" href="' + x.u + '"><img src="' + x.img + '" alt="">'
+          + '<span class="mgjp-n">' + x.n + '</span><span class="mgjp-a">' + (on ? "Senin." : amt(x.t, rate)) + "</span></a>";
+      }).join("");
+      var bar = "", line;
+      if (lvl === -1 || usd === 0) {
+        line = "Çantan " + amt(TIERS[0].t, rate) + " çizgisine ulaştığında BEL senin. İlk jest.";
+      } else if (lvl >= 3) {
+        line = "Üçü de senin. Çantan tamam.";
+      } else {
+        var prev = lvl > 0 ? TIERS[lvl - 1].t : 0, next = TIERS[lvl];
+        var fill = Math.max(0, Math.min(1, (usd - prev) / (next.t - prev)));
+        bar = '<div class="mgjp-track"><div class="mgjp-fill" style="width:' + (fill * 100).toFixed(1) + '%"></div></div>';
+        line = (lvl === 1 ? "BEL senin. " : lvl === 2 ? "BEL ve ESME senin. " : "") + next.n + " için " + amt(next.t - usd, rate) + " kaldı.";
+      }
+      return '<div class="mgjp-hd">Jestler</div><div class="mgjp-sub">Eşiği geçtiğinde çantana eklenir. Ödemede ' + (rate ? "₺0" : "$0") + ".</div>"
+        + '<div class="mgjp-row">' + row + "</div>" + bar + '<div class="mgjp-line">' + line + "</div>";
+    }
+    var lastSig = "";
+    function pass() {
+      var onPdp = /\/products\//.test(location.pathname);
+      var box = document.getElementById("mgj-pdp");
+      if (!armed() || !onPdp) { if (box) box.remove(); lastSig = ""; return; }
+      var col = window.__mgPDPCol && window.__mgPDPCol();
+      if (!col) { if (box) { box.remove(); lastSig = ""; } return; }
+      if (!box || !col.contains(box)) {
+        if (box) box.remove();
+        box = document.createElement("div"); box.id = "mgj-pdp";
+        var px = col.querySelector(".mgpx");
+        if (px && px.parentNode) px.parentNode.insertBefore(box, px); else col.appendChild(box);
+        lastSig = "";
+      }
+      var st = cartState();
+      var sig = st.usd + "|" + (st.rate ? st.rate.toFixed(2) : 0);
+      if (sig === lastSig) return;
+      lastSig = sig;
+      box.innerHTML = html(st);
+    }
+    setInterval(pass, 900);
+  })();
+
 })();
