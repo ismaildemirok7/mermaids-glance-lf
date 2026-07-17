@@ -2499,9 +2499,11 @@
        geçerlilik filtresi + indirim TÜM siparişe uygulanıyor (TESTJEST7 canlı
        testi toplamı ₺0 yaptı). */
     var TIERS = [
-      { t: 120, n: "BEL",  full: "BEL – Vegan Leather & Steel Ring Body Harness", won: "Tebrikler. BEL artık senin — çantana eklendi.", usd: 75, vid: 4301494029, img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
-      { t: 170, n: "ESME", full: "ESME – Satin & Sheer Lace Slit Chemise", won: "Tebrikler. ESME de senin.", usd: 75, vid: 4301494031, img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
-      { t: 280, n: "GIA",  full: "GIA – Noir Tulle Bodysuit & Glove Set", won: "Tebrikler. Üçü de senin. Çantan tamam.", usd: 75, sizes: ["S", "M", "L", "XL"], v: { S: 4301494033, M: 4301494034, L: 4301494035, XL: 4301494036 }, img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
+      /* u = GERÇEK çapa ürünün PDP'si (jest satırı $0 ikize işaret eder ama
+         ikiz store-detached → sayfası yok; tıklama çapaya gider) */
+      { t: 120, n: "BEL",  full: "BEL – Vegan Leather & Steel Ring Body Harness", won: "Tebrikler. BEL artık senin — çantana eklendi.", usd: 75, vid: 4301494029, u: "/products/eganleathersteelringbodyharness-noir-Qqh", img: A + "d5f35035-ba31-4c55-96f1-196784f84c4c.jpg" },
+      { t: 170, n: "ESME", full: "ESME – Satin & Sheer Lace Slit Chemise", won: "Tebrikler. ESME de senin.", usd: 75, vid: 4301494031, u: "/products/esmesatinsheerlaceslitchemise-noirgRQX", img: A + "0d58a888-4a14-4ca3-b2f2-ba7a292c8e57.jpg" },
+      { t: 280, n: "GIA",  full: "GIA – Noir Tulle Bodysuit & Glove Set", won: "Tebrikler. Üçü de senin. Çantan tamam.", usd: 75, sizes: ["S", "M", "L", "XL"], v: { S: 4301494033, M: 4301494034, L: 4301494035, XL: 4301494036 }, u: "/products/gianoirtullebodysuitgloveset-noirKGsR", img: A + "d4e26b4d-9077-443c-b931-0a5ce0f88075.jpg" }
     ];
     var RECS = [
       { n: "MARCELLA – Noir Nightgown with Integrated Garters", u: "/products/rnightgownwithintegratedgarters-noir75kJ", img: A + "81a473bc-9cb1-46c5-9fcd-a43baf50cdf2.jpg", usd: 60, v: { "Standart": 4301449841 } },
@@ -2536,7 +2538,8 @@
       ".mgj-gimg{width:68px;height:84px;object-fit:cover;flex:none;border:1px solid #e6e4e0;}" +
       ".mgj-ginfo{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}" +
       ".mgj-gtop{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}" +
-      ".mgj-gnm{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#0d0d0d;line-height:1.4;flex:1;min-width:0;}" +
+      ".mgj-gnm{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#0d0d0d;line-height:1.4;flex:1;min-width:0;text-decoration:none;display:block;}" +
+      ".mgj-gil{flex:none;display:block;}" +
       ".mgj-gprice{display:flex;align-items:center;gap:7px;white-space:nowrap;}" +
       ".mgj-gold{font-size:10px;color:#999;text-decoration:line-through;}" +
       ".mgj-gtag{font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#0d0d0d;white-space:nowrap;}" +
@@ -2685,7 +2688,7 @@
       var goal = "", fill = 1, prev = lvl > 0 ? TIERS[lvl - 1].t : 0, next = TIERS[lvl] || null;
       if (next) fill = Math.max(0, Math.min(1, (st.usd - prev) / (next.t - prev)));
       if (cg) goal = '<div class="mgj-congrat">' + TIERS[lvl - 1].won + "</div>";
-      else if (next) goal = '<div class="mgj-goal"><img class="mgj-next" src="' + next.img + '" alt=""><span class="mgj-goaltx"><strong>Sıradaki jest · ' + next.n + '</strong><span>' + money(next.t - st.usd, st) + ' kaldı.</span></span></div>';
+      else if (next) goal = '<div class="mgj-goal"><a class="mgj-gil" href="' + next.u + '"><img class="mgj-next" src="' + next.img + '" alt=""></a><span class="mgj-goaltx"><strong>Sıradaki jest · ' + next.n + '</strong><span>' + money(next.t - st.usd, st) + ' kaldı.</span></span></div>';
       else goal = '<div class="mgj-goal"><span class="mgj-goaltx"><strong>Jestlerin tamam</strong><span>Üçü de seninle.</span></span></div>';
       return '<div class="mgj-track"><div class="mgj-fill" style="width:' + (fill * 100).toFixed(1) + '%"></div></div>' + goal;
     }
@@ -2697,8 +2700,8 @@
         var sub = g.n === "GIA"
           ? '<button type="button" class="mgj-gsize" onclick="window.__mgJestGia()">' + (giaSize ? "Beden: " + giaSize : "Bedenini seç") + '</button>'
           : "Çantanla birlikte gönderilir.";
-        return '<div class="mgj-gitem"><img class="mgj-gimg" src="' + g.img + '" alt="">'
-          + '<div class="mgj-ginfo"><div class="mgj-gtop"><div class="mgj-gnm">' + g.full + '</div><span class="mgj-gprice"><span class="mgj-gold">' + price(g.usd, st) + '</span><span class="mgj-gtag">JEST</span></span></div>'
+        return '<div class="mgj-gitem"><a class="mgj-gil" href="' + g.u + '"><img class="mgj-gimg" src="' + g.img + '" alt=""></a>'
+          + '<div class="mgj-ginfo"><div class="mgj-gtop"><a class="mgj-gnm" href="' + g.u + '">' + g.full + '</a><span class="mgj-gprice"><span class="mgj-gold">' + price(g.usd, st) + '</span><span class="mgj-gtag">JEST</span></span></div>'
           + '<div class="mgj-gsub">' + sub + '</div></div></div>';
       }).join("");
     }
