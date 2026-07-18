@@ -2532,7 +2532,11 @@
       ".mgj-next{width:48px;height:60px;object-fit:cover;border:1px solid #e6e4e0;flex:none;}" +
       ".mgj-goaltx{display:flex;flex-direction:column;gap:4px;line-height:1.45;}" +
       ".mgj-goaltx strong{font-size:9px;letter-spacing:.16em;text-transform:uppercase;}" +
-      ".mgj-congrat{margin-top:10px;font-size:12.5px;font-weight:500;letter-spacing:.02em;color:#0d0d0d;text-align:left;animation:mgjIn .5s ease;}" +
+      /* tebrik: hedef satırının ÜSTÜNDE kısa yaşar — belirir, ~2.6sn'de söner
+         ve yüksekliği sıfıra iner (animasyon süresi congrat() penceresiyle eşit:
+         DOM'dan düşüş anı görünmezdir, layout zıplamaz) */
+      ".mgj-congrat{overflow:hidden;max-height:0;margin-top:0;opacity:0;font-size:12.5px;font-weight:500;letter-spacing:.02em;color:#0d0d0d;text-align:left;animation:mgjCg 2.6s ease forwards;}" +
+      "@keyframes mgjCg{0%{opacity:0;max-height:0;margin-top:0;transform:translateY(4px);}12%{opacity:1;max-height:44px;margin-top:10px;transform:none;}80%{opacity:1;max-height:44px;margin-top:10px;}100%{opacity:0;max-height:0;margin-top:0;}}" +
       "@keyframes mgjIn{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}" +
       ".mgj-gitem{display:flex;gap:16px;padding:20px 28px;border-bottom:1px solid #f0eeeb;animation:mgjIn .5s ease;}" +
       ".mgj-gimg{width:68px;height:84px;object-fit:cover;flex:none;border:1px solid #e6e4e0;}" +
@@ -2682,14 +2686,18 @@
       var now = Date.now();
       if (lvl > pl) { try { localStorage.setItem("mg_jest_lvl", lvl); localStorage.setItem("mg_jest_ts", now); } catch (e) {} return true; }
       if (lvl < pl) { try { localStorage.setItem("mg_jest_lvl", lvl); localStorage.setItem("mg_jest_ts", 0); } catch (e) {} return false; }
-      return lvl > 0 && (now - ts) < 6500;
+      return lvl > 0 && (now - ts) < 2600;
     }
     function barHTML(st, lvl, cg) {
       var goal = "", fill = 1, prev = lvl > 0 ? TIERS[lvl - 1].t : 0, next = TIERS[lvl] || null;
       if (next) fill = Math.max(0, Math.min(1, (st.usd - prev) / (next.t - prev)));
+      /* tebrik goal'ün yerini almaz, ÜSTÜNE gelir: sıradaki hedef eşik anında
+         görünür (sahip kararı 2026-07-18 — eşzamanlı kurgu). Son kademede
+         next yok → tebrik tek başına, terminal satır sönüşten sonra çizilir
+         (ikisi aynı anda tekrara düşerdi). */
       if (cg) goal = '<div class="mgj-congrat">' + TIERS[lvl - 1].won + "</div>";
-      else if (next) goal = '<div class="mgj-goal"><a class="mgj-gil" href="' + next.u + '"><img class="mgj-next" src="' + next.img + '" alt=""></a><span class="mgj-goaltx"><strong>Sıradaki jest · ' + next.n + '</strong><span>' + money(next.t - st.usd, st) + ' kaldı.</span></span></div>';
-      else goal = '<div class="mgj-goal"><span class="mgj-goaltx"><strong>Jestlerin tamam</strong><span>Üçü de seninle.</span></span></div>';
+      if (next) goal += '<div class="mgj-goal"><a class="mgj-gil" href="' + next.u + '"><img class="mgj-next" src="' + next.img + '" alt=""></a><span class="mgj-goaltx"><strong>Sıradaki jest · ' + next.n + '</strong><span>' + money(next.t - st.usd, st) + ' kaldı.</span></span></div>';
+      else if (!cg) goal = '<div class="mgj-goal"><span class="mgj-goaltx"><strong>Jestlerin tamam</strong><span>Üçü de seninle.</span></span></div>';
       return '<div class="mgj-track"><div class="mgj-fill" style="width:' + (fill * 100).toFixed(1) + '%"></div></div>' + goal;
     }
     /* Earned gifts live among the bag lines. Shelf value is deliberately
